@@ -14,6 +14,8 @@ depth = d
 depth = rasterToPoints(depth)
 depth = as.data.frame(depth)
 
+load('/Users/ktanaka/jws_range/data/percentiles.RData')
+
 r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
   
   # year = 2019
@@ -34,7 +36,7 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     d = as.data.frame(d)
     colnames(d) = c("x", "y", "z")
     d = merge(d, depth, all = T)
-    d$z = ifelse(d$z < 18.1 & d$z > 17.9, 1, 0)
+    d$z = ifelse(d$z < 11.4 & d$z > 11.2, 1, 0)
     d$time = time
     
     # d %>%
@@ -54,25 +56,25 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
 }
 
 df = as.data.frame(r)
-save(df, file = paste0("/Users/ktanaka/jws_range/results/cold_shoulder_", Sys.Date(), ".Rdata"))
+save(df, file = paste0("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/cold_shoulder_", Sys.Date(), ".Rdata"))
 
-load('/Users/Kisei/jws_range/results/cold_shoulder_2020-05-08.Rdata')
+load('/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/cold_shoulder_2020-05-11.Rdata')
 
 df$month = substr(as.character(df$time), 6, 7)
 df = subset(df, month %in% c("06", "07", "08", "09", "10"))
 table(df$month)
 
 map = df %>% 
-  # group_by(x, y) %>% 
-  group_by(x, y, year) %>%
+  group_by(x, y) %>%
+  # group_by(x, y, year) %>%
   summarise(z = mean(z))
 
 map %>% 
   ggplot(aes(x, y, fill = z)) + 
   geom_tile() +
-  # geom_point() + 
+  geom_point() +
   scale_fill_viridis_c() + 
-  facet_wrap(.~ year) +
+  # facet_wrap(.~ year) +
   geom_smooth(data = subset(map, z > 0), se = F)
 
 map = subset(df, z > 0)
