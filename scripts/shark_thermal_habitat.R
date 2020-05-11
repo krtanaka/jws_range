@@ -7,8 +7,7 @@ library(doParallel)
 cores = detectCores()/2
 registerDoParallel(cores = cores)
 
-load('/Users/ktanaka/Dropbox (MBA)/Data/oisst/dummy.Rdata')
-load('/Users/Kisei/Dropbox/oisst/dummy.Rdata')
+load('/Users/Kisei/jws_range/data/dummy.Rdata')
 
 d$temp = round(d$temp, 1)
 d$temp = d$temp + 5
@@ -23,9 +22,9 @@ d$pred_count = range01(d$pred_count)
 
 s = d[,c("temp", "pred_count")]
 colnames(s) = c("z", "p")
+s$p = s$p/sum(s$p)
 
-load("/Users/ktanaka/Dropbox (MBA)/Data/oisst/depth_0.25.Rdata")
-load("/Users/Kisei/Dropbox/oisst/depth_0.25.Rdata")
+load("/Users/Kisei/jws_range/data/depth_0.25.Rdata")
 
 depth = d
 depth = rasterToPoints(depth)
@@ -35,7 +34,7 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
   
   # year = 2019
   
-  load(paste0("/Users/ktanaka/Dropbox (MBA)/Data/oisst/sst.day.mean.", year , ".RData"))
+  load(paste0("/Users/Kisei/jws_range/data/sst.day.mean.", year , ".RData"))
   # load(paste0("/Users/Kisei/Dropbox/oisst/sst.day.mean.", year , ".RData"))
   
   year_sum = NULL
@@ -56,16 +55,16 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     d = merge(d, depth)
     d$time = time
     
-    # xlims = range(d$x); ylims = range(d$y)
-    # d %>% ggplot(aes(x, y, fill = p)) +
-    #   geom_tile() +
-    #   scale_fill_viridis_c("") +
-    #   borders(xlim = xlims,
-    #           ylim = ylims,
-    #           fill = "gray20") +
-    #   coord_quickmap(xlim = xlims,
-    #                  ylim = ylims) +
-    #   theme_minimal()
+    xlims = range(d$x); ylims = range(d$y)
+    d %>% ggplot(aes(x, y, fill = p)) +
+      geom_tile() +
+      scale_fill_viridis_c("") +
+      borders(xlim = xlims,
+              ylim = ylims,
+              fill = "gray20") +
+      coord_quickmap(xlim = xlims,
+                     ylim = ylims) +
+      theme_minimal()
     
     year_sum = rbind(year_sum, d)
     
