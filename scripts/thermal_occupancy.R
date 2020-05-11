@@ -7,7 +7,10 @@ library(doParallel)
 cores = detectCores()/2
 registerDoParallel(cores = cores)
 
-load('/Users/Kisei/jws_range/data/dummy.Rdata')
+dir = Sys.info()[7]
+setwd(paste0('/Users/', dir, '/jws_range/data/'))
+
+load('dummy.Rdata')
 
 d$temp = round(d$temp, 1)
 d$temp = d$temp + 5
@@ -24,19 +27,24 @@ s = d[,c("temp", "pred_count")]
 colnames(s) = c("z", "p")
 s$p = s$p/sum(s$p)
 
-load("/Users/Kisei/jws_range/data/depth_0.25.Rdata")
+load('depth_0.25.Rdata')
 
 depth = d
 depth = rasterToPoints(depth)
 depth = as.data.frame(depth)
 
+load('occupancy.RData')
+occup = subset(occup, Depth_Range == "0-20m")
+s = occup[,c("Temperature", "count")]
+colnames(s) = c("z", "p")
+plot(s)
+
 r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
   
   # year = 2019
   
-  load(paste0("/Users/Kisei/jws_range/data/sst.day.mean.", year , ".RData"))
-  # load(paste0("/Users/Kisei/Dropbox/oisst/sst.day.mean.", year , ".RData"))
-  
+  load(paste0("/Users/ktanaka/jws_range/data/sst.day.mean.", year , ".RData"))
+
   year_sum = NULL
   
   for (day in 1:dim(df)[3]) {
@@ -55,16 +63,16 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     d = merge(d, depth)
     d$time = time
     
-    xlims = range(d$x); ylims = range(d$y)
-    d %>% ggplot(aes(x, y, fill = p)) +
-      geom_tile() +
-      scale_fill_viridis_c("") +
-      borders(xlim = xlims,
-              ylim = ylims,
-              fill = "gray20") +
-      coord_quickmap(xlim = xlims,
-                     ylim = ylims) +
-      theme_minimal()
+    # xlims = range(d$x); ylims = range(d$y)
+    # d %>% ggplot(aes(x, y, fill = p)) +
+    #   geom_tile() +
+    #   scale_fill_viridis_c("") +
+    #   borders(xlim = xlims,
+    #           ylim = ylims,
+    #           fill = "gray20") +
+    #   coord_quickmap(xlim = xlims,
+    #                  ylim = ylims) +
+    #   theme_minimal()
     
     year_sum = rbind(year_sum, d)
     
@@ -84,16 +92,17 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
 }
 
 df = as.data.frame(r)
-save(df, file = paste0("/Users/ktanaka/Dropbox (MBA)/Data/oisst/shark_habitat_", Sys.Date(), ".Rdata"))
+save(df, file = paste0("/Users/ktanaka/jws_range/results/thermal_occupancy_", Sys.Date(), ".Rdata"))
 
-load('/Users/ktanaka/Dropbox (MBA)/Data/oisst/shark_habitat_2020-05-07.Rdata')
+load('/Users/ktanaka/jws_range/results/thermal_occupancy_2020-05-11.Rdata')
 
 xlims = range(df$x); ylims = range(df$y)
 
 map = df %>% 
   group_by(x, y, year) %>% 
   summarise(p = mean(p)) %>% 
-  mutate(time = ifelse(year %in% c(1981:2000), "1982-2000", "2001-2019"))
+  mutate(time = ifelse(year %in% c(1981:2000), "1982-2000", "2001-2019"),
+         time = )
   # mutate(y_mean = sum(z*y)/sum(z))
 
 xlims = range(map$x); ylims = range(map$y)
