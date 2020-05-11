@@ -136,7 +136,7 @@ m = map %>%
 m
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/')
-pdf('thermal_occupancy_0-20m.pdf', height = 4, width = 6)
+pdf('thermal_occupancy_0-20m.pdf', height = 6, width = 7)
 print(m)
 dev.off()
 
