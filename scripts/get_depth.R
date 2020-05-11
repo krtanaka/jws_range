@@ -1,10 +1,11 @@
 library(raster)
 
-d = stack("/Users/ktanaka/Dropbox (MBA)/Data/oisst/gebco_2020_n50.0_s20.0_w-130.0_e-110.0.nc")
-e = extent(-140, -100, 22.50, 47.50) #California Current LME lat-lon range, just to reduce Hadley_SST data size
+# d = stack("/Users/ktanaka/Dropbox (MBA)/Data/oisst/gebco_2020_n50.0_s20.0_w-130.0_e-110.0.nc")
+load("/Users/Kisei/jws_range/data/gebco_2020_n50.0_s20.0_w-130.0_e-110.0.RData") 
+e = extent(-140, -100, 22.50, 47.50)
 d = crop(d, e); rm(e)
 
-load("/Users/ktanaka/Dropbox (MBA)/Data/oisst/sst.day.mean.1984.RData")
+load("/Users/Kisei/jws_range/data/sst.day.mean.1984.RData")
 
 d = rasterToPoints(d)
 d = as.data.frame(d)
@@ -20,6 +21,5 @@ o = df[[1]]
 d = resample(d, o, method = "bilinear") 
 plot(d)
 
-save(d, file = "/Users/Kisei/Dropbox/oisst/depth_0.25.Rdata")
-
-load('/Users/Kisei/Dropbox/oisst/depth_0.25.Rdata')
+setwd('/Users/Kisei/jws_range/data/')
+save(d, file = "depth_0.25.Rdata")
