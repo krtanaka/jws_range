@@ -9,7 +9,7 @@ probs <- c(0, 0.025, 0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95, 0.975, 1)
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/JWS_Corrected.RData")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/JWS_Corrected.RData")
 
-# JWS_Corrected$Temperature = round(JWS_Corrected$Temperature, 0)
+JWS_Corrected$Temperature = round(JWS_Corrected$Temperature, 1)
 
 d1 = subset(JWS_Corrected, Depth <= 20); d1 = d1[,c("Temperature", "Depth", "id")]
 d2 = subset(JWS_Corrected, Depth <= 2); d2 = d2[,c("Temperature", "Depth", "id")]
@@ -44,7 +44,9 @@ q2$Depth = "0-2m"
 colnames(q2) = c("temp", "p")
 q2 = data.table::setDT(q2, keep.rownames = TRUE)[]
 
-q = rbind(q1, q2)
+p = rbind(q1, q2)
+
+save(p, file = '/Users/Kisei/jws_range/data/percentiles.RData')
 
 q$rn = factor(q$rn, levels = order)
 
