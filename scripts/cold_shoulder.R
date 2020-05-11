@@ -2,11 +2,11 @@ library(dplyr)
 library(ggplot2)
 library(raster)
 library(doParallel)
-cores = detectCores()/2
-registerDoParallel(cores = cores)
+# cores = detectCores()/2
+# registerDoParallel(cores = cores)
 
 load("/Users/ktanaka/Dropbox (MBA)/Data/oisst/depth_0.25.Rdata")
-load("/Users/Kisei/Dropbox/oisst/depth_0.25.Rdata")
+load("/Users/Kisei/jws_range/data/depth_0.25.Rdata")
 
 depth = d
 depth = rasterToPoints(depth)
@@ -16,7 +16,7 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
   
   # year = 2019
   
-  load(paste0("/Users/ktanaka/Dropbox (MBA)/Data/oisst/sst.day.mean.", year , ".RData"))
+  load(paste0("/Users/Kisei/jws_range/data/sst.day.mean.", year , ".RData"))
   
   year_sum = NULL
   
@@ -31,12 +31,17 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     d = rasterToPoints(d)
     d = as.data.frame(d)
     colnames(d) = c("x", "y", "z")
-    d = merge(d, depth)
+    # d = merge(d, depth)
     d$z = ifelse(d$z < 18.1 & d$z > 17.9, 1, 0)
     d$time = time
+    
+    d %>%
+      ggplot(aes(x, y, color = z)) +
+      geom_point() +
+      scale_color_viridis_c() +
+      geom_smooth(data = subset(d, z > 0.5))
 
     year_sum = rbind(year_sum, d)
-    # qplot(d$x, d$y, color = d$z)
     
   }
   
@@ -48,11 +53,25 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
 
 df = as.data.frame(r)
 save(df, file = paste0("/Users/ktanaka/Dropbox (MBA)/Data/oisst/shark_coldline_", Sys.Date(), ".Rdata"))
-load('/Users/ktanaka/Dropbox (MBA)/Data/oisst/shark_coldline_2020-05-08.Rdata')
+
+load('/Users/Kisei/jws_range/results/shark_coldline_2020-05-08.Rdata')
 
 df$month = substr(as.character(df$time), 6, 7)
 df = subset(df, month %in% c("06", "07", "08", "09", "10"))
 table(df$month)
+
+map = df %>% 
+  # group_by(x, y) %>% 
+  group_by(x, y, year) %>%
+  summarise(z = mean(z))
+
+map %>% 
+  ggplot(aes(x, y, fill = z)) + 
+  geom_tile() +
+  # geom_point() + 
+  scale_fill_viridis_c() + 
+  facet_wrap(.~ year) +
+  geom_smooth(data = subset(map, z > 0), se = F)
 
 map = subset(df, z > 0)
 
