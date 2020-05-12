@@ -58,37 +58,51 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
 df = as.data.frame(r)
 save(df, file = paste0("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/cold_shoulder_", Sys.Date(), ".Rdata"))
 
-load('/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/cold_shoulder_2020-05-11.Rdata')
+load('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/cold_shoulder_2020-05-11.Rdata')
 
 df$month = substr(as.character(df$time), 6, 7)
 df = subset(df, month %in% c("06", "07", "08", "09", "10"))
+# df = subset(df, month %in% c("08"))
 table(df$month)
 
 map = df %>% 
-  group_by(x, y) %>%
-  # group_by(x, y, year) %>%
+  # group_by(x, y) %>%
+  subset(year %in% c(1982:2019)) %>% 
+  mutate(period = ifelse(year %in% c(1981:2010), "1982-2010", "2010-2019")) %>% 
+  group_by(x, y, period) %>%
   summarise(z = mean(z))
 
-map %>% 
-  ggplot(aes(x, y, fill = z)) + 
-  geom_tile() +
-  geom_point() +
-  scale_fill_viridis_c() + 
-  # facet_wrap(.~ year) +
-  geom_smooth(data = subset(map, z > 0), se = F)
+xlims = range(map$x); ylims = range(map$y)
+# ylims = c(35, 47); xlims = c(-126, -120)
 
-map = subset(df, z > 0)
+m = map %>% 
+  ggplot(aes(x, y, color = period, group = factor(period))) + 
+  # geom_raster() +
+  # geom_point() +
+  geom_smooth(
+    data = subset(map, z > 0),
+    # method = "loess", 
+    aes(color = period), 
+    se = F) + 
+  scale_color_viridis_d("11.5 deg C thermocline") +
+  borders(xlim = xlims,
+          ylim = ylims, 
+          fill = "gray20") +
+  coord_quickmap(xlim = xlims,
+                 ylim = ylims) + 
+  # facet_wrap(.~ period) +
+  theme_minimal() 
 
-xlims = range(map$x); ylims = range(map$y); ylims = c(35, 47); xlims = c(-126, -120)
+setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/')
+pdf('cold_shoulder.pdf', height = 4, width = 5)
+print(m)
+dev.off()
 
 lat = df %>% 
   group_by(year) %>% 
   # summarise(z = mean(z)) %>%
   summarise(y_mean = sum(z*y)/sum(z))
 
-map = df %>% 
-  group_by(x, y, year) %>% 
-  summarise(z = mean(z))
 
 map %>% 
   subset(z > 0) %>%
