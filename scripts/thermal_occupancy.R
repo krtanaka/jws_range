@@ -3,9 +3,9 @@ rm(list = ls())
 library(dplyr)
 library(ggplot2)
 library(raster)
-# library(doParallel)
-# cores = detectCores()/2
-# registerDoParallel(cores = cores)
+library(doParallel)
+cores = detectCores()/2
+registerDoParallel(cores = cores)
 
 dir = Sys.info()[7]
 setwd(paste0('/Users/', dir, '/jws_range/data/'))
@@ -35,6 +35,7 @@ depth = as.data.frame(depth)
 
 load('occupancy.RData')
 occup = subset(occup, Depth_Range == "0-20m")
+occup = subset(occup, Bin_width == "0.5 deg C")
 s = occup[,c("Temperature", "count")]
 colnames(s) = c("z", "p")
 plot(s)
@@ -49,7 +50,7 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
   
   for (day in 1:dim(df)[3]) {
     
-    # day = 36
+    # day = 180
     
     d = df[[day]]
     time = as.character(names(d))
@@ -58,7 +59,8 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     d = rasterToPoints(d)
     d = as.data.frame(d)
     colnames(d) = c("x", "y", "z")
-    d$z = round(d$z, 1)
+    # d$z = round(d$z, 1)
+    d$z = plyr::round_any(d$z, 0.5, floor)
     d = merge(d, s)
     d = merge(d, depth)
     d$time = time
@@ -95,7 +97,7 @@ df = as.data.frame(r)
 save(df, file = paste0("/Users/ktanaka/jws_range/results/thermal_occupancy_", Sys.Date(), ".Rdata"))
 
 setwd(paste0('/Users/', dir, '/jws_range/results/'))
-load('thermal_occupancy_2020-05-11.Rdata')
+load(paste0('thermal_occupancy_', Sys.Date(), '.Rdata'))
 
 df$month = substr(as.character(df$time), 6, 7)
 df = subset(df, month %in% c("06", "07", "08", "09", "10"))
@@ -136,7 +138,7 @@ m = map %>%
 m
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/')
-pdf('thermal_occupancy_0-20m.pdf', height = 6, width = 7)
+pdf('thermal_occupancy_map.pdf', height = 6, width = 7)
 print(m)
 dev.off()
 
