@@ -101,7 +101,8 @@ df = sum(ch4, co2_excl, co2_org, n2o)
 
 plot(log(df), col = matlab.like(100) ); maps::map(add = T, fill = T, resolution = 0)
 
-load('/Users/ktanaka/Dropbox (MBA)/Data/oisst/depth_0.25.Rdata')
+load('/Users/ktanaka/jws_range/data/depth_0.25.Rdata')
 
 df = resample(df, d, method = "bilinear") 
 plot(df)
+
