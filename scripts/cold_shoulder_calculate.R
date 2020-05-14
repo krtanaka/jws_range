@@ -4,8 +4,8 @@ library(dplyr)
 library(ggplot2)
 library(raster)
 library(doParallel)
-# cores = detectCores()/2
-# registerDoParallel(cores = cores)
+cores = detectCores()/2
+registerDoParallel(cores = cores)
 
 dir = Sys.info()[7] 
 
@@ -96,14 +96,14 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     d = as.data.frame(d)
     colnames(d) = c("x", "y", "z")
     d = merge(d, depth, all = T)
-    d$z = ifelse(d$z < 11.6 & d$z > 11.5, 1, 0)
+    d$z = ifelse(d$z <= 15.1 & d$z > 15, 1, 0)
     d$time = time
     
     # d %>%
     #   ggplot(aes(x, y)) +
-    #   geom_smooth(data = subset(d, z > 0), method = "gam") + 
+    #   geom_smooth(data = subset(d, z > 0), method = "gam") +
     #   borders(xlim = range(d$x),
-    #           ylim = range(d$y), 
+    #           ylim = range(d$y),
     #           fill = "gray20") +
     #   coord_quickmap(xlim = range(d$x),
     #                  ylim = range(d$y))
