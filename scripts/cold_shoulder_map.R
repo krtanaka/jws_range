@@ -4,7 +4,6 @@ library(dplyr)
 library(ggplot2)
 library(raster)
 
-dir = Sys.info()[7] 
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/")
 
 load(paste0('cold_shoulder_', Sys.Date(), '.Rdata'))

@@ -96,12 +96,16 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     d = as.data.frame(d)
     colnames(d) = c("x", "y", "z")
     d = merge(d, depth, all = T)
-    d$z = ifelse(d$z <= 15.1 & d$z > 15, 1, 0)
+    d$z = ifelse(d$z <= 15.4 & d$z >= 15, 1, 0)
     d$time = time
     
     # d %>%
-    #   ggplot(aes(x, y)) +
-    #   geom_smooth(data = subset(d, z > 0), method = "gam") +
+    #   ggplot(aes(x, y, fill = z)) +
+    #   geom_raster() +
+    #   geom_smooth(data = subset(d, z > 0)
+    #               , method = "auto",
+    #               span = 0.1
+    #               ) +
     #   borders(xlim = range(d$x),
     #           ylim = range(d$y),
     #           fill = "gray20") +
