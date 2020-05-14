@@ -2,6 +2,8 @@ rm(list = ls())
 
 library(ggpubr)
 library(dplyr)
+library(cowplot)
+library(reldist)
 
 range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 probs <- c(0, 0.025, 0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95, 0.975, 1)
@@ -92,11 +94,6 @@ q2 = data.table::setDT(q2, keep.rownames = TRUE)[]
 p = rbind(q1, q2)
 p
 
-save(p, file = '/Users/Kisei/jws_range/data/percentiles.RData')
-
-# q$rn = factor(q$rn, levels = order)
-# q %>% ggplot(aes(rn, temp, color = p)) + geom_point() + geom_text(label = q$temp)
-
 d = rbind(d1, d2)
 
 pdf("thermal_profile_tag.pdf", height = 5, width = 10)
@@ -139,8 +136,8 @@ pdf("thermal_profile.pdf", height = 3, width = 10)
 p = t %>% 
   ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
   geom_bar(stat="identity", position = position_dodge(width = 0.5)) +  
-  # scale_color_viridis_d() +
-  # scale_fill_viridis_d() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
   ylab("Freq") +  
   facet_wrap(.~ Bin_width, scales = "free", ncol = 3)+ 
   theme_cowplot() 
@@ -156,16 +153,25 @@ occup = t %>%
 
 library(mgcv)
 
-d = subset(occup, Bin_width == "0.5 deg C")
+d = subset(occup, Bin_width == "0.1 deg C")
 
-g = gam(count~s(Temperature, k = 5), 
-        data = d, 
-        family = "tw(theta = NULL, link = 'log', a = 1.01, b = 1.99)", gamma = 1.4)
+g1 = gam(count ~ s(Temperature), 
+        data = d, family = "tw(theta = NULL, link = 'log', a = 1.01, b = 1.99)", gamma = 1.4)
 
-d$pred_count = predict(g, d, se.fit = F, type = "response")
+g2 = gam(count ~ s(Temperature, k = 5), 
+        data = d, family = "tw(theta = NULL, link = 'log', a = 1.01, b = 1.99)", gamma = 1.4)
 
-d$weight = (d$count-min(d$count))/(max(d$count) - min(d$count))
-d$weight = (d$pred_count-min(d$pred_count))/(max(d$pred_count) - min(d$pred_count))
+g3 = gam(count ~ s(Temperature, k = 3), 
+        data = d, family = "tw(theta = NULL, link = 'log', a = 1.01, b = 1.99)", gamma = 1.4)
+
+d$pred_count_1 = predict(g1, d, se.fit = F, type = "response")
+d$pred_count_2 = predict(g2, d, se.fit = F, type = "response")
+d$pred_count_3 = predict(g3, d, se.fit = F, type = "response")
+
+d$weight_obs = (d$count-min(d$count))/(max(d$count) - min(d$count))
+d$weight_m1 = (d$pred_count_1 - min(d$pred_count_1))/(max(d$pred_count_1) - min(d$pred_count_1))
+d$weight_m2 = (d$pred_count_2 - min(d$pred_count_2))/(max(d$pred_count_2) - min(d$pred_count_2))
+d$weight_m3 = (d$pred_count_3 - min(d$pred_count_3))/(max(d$pred_count_3) - min(d$pred_count_3))
 
 q = 90
 
@@ -174,67 +180,60 @@ lq = (1-q/100)/2
 
 d = as.data.frame(d)
 
-low = wtd.quantile(d$Temperature, q = lq, weight = d$weight, na.rm = T)
-high = wtd.quantile(d$Temperature, q = hq, weight = d$weight, na.rm = T)
+l_o = wtd.quantile(d$Temperature, q = lq, weight = d$weight_obs, na.rm = T)
+l_1 = wtd.quantile(d$Temperature, q = lq, weight = d$weight_m1, na.rm = T)
+l_2 = wtd.quantile(d$Temperature, q = lq, weight = d$weight_m2, na.rm = T)
+l_3 = wtd.quantile(d$Temperature, q = lq, weight = d$weight_m3, na.rm = T)
 
-T_opt=sum(d$weight * d$Temperature/sum(d$weight)) #just weighted mean
+t_l = data.frame(t = rbind(l_o, l_1, l_2, l_3), 
+                 g = c("Observation", "Model_A", "Model_B", "Model_C"))
+colnames(t_l) = c("t", "g")
+
+h_o = wtd.quantile(d$Temperature, q = hq, weight = d$weight_obs, na.rm = T)
+h_1 = wtd.quantile(d$Temperature, q = hq, weight = d$weight_m1, na.rm = T)
+h_2 = wtd.quantile(d$Temperature, q = hq, weight = d$weight_m2, na.rm = T)
+h_3 = wtd.quantile(d$Temperature, q = hq, weight = d$weight_m3, na.rm = T)
+
+t_h = data.frame(t = rbind(h_o, h_1, h_2, h_3), 
+                 g = c("Observation", "Model_A", "Model_B", "Model_C"))
+colnames(t_h) = c("t", "g")
+
+T_opt_o = sum(d$weight_obs * d$Temperature/sum(d$weight_obs)) #just weighted mean
+T_opt_1 = sum(d$weight_m1 * d$Temperature/sum(d$weight_m1)) #just weighted mean
+T_opt_2 = sum(d$weight_m2 * d$Temperature/sum(d$weight_m2)) #just weighted mean
+T_opt_3 = sum(d$weight_m3 * d$Temperature/sum(d$weight_m3)) #just weighted mean
+
+t_opt = data.frame(t = rbind(T_opt_o, T_opt_1, T_opt_2, T_opt_3), 
+                   g = c("Observation", "Model_A", "Model_B", "Model_C"))
+colnames(t_opt) = c("t", "g")
+
+d1 = d[,c("Temperature", "count", "weight_obs")]; d1$g = "Observation"; colnames(d1) = c("t", "n", "w", "g")
+d2 = d[,c("Temperature", "pred_count_1", "weight_m1")]; d2$g = "Model_A"; colnames(d2) = c("t", "n", "w", "g")
+d3 = d[,c("Temperature", "pred_count_2", "weight_m2")]; d3$g = "Model_B"; colnames(d3) = c("t", "n", "w", "g")
+d4 = d[,c("Temperature", "pred_count_3", "weight_m3")]; d4$g = "Model_C"; colnames(d4) = c("t", "n", "w", "g")
+
+d = rbind(d1, d2, d3, d4); rm(d1, d2, d3, d4)
 
 pdf('thermal_percentiles.pdf', height = 5, width = 7)
 
-plot(d[,c(1, 3)],  xlab = "deg C", ylab = "JWS Thermal Occupancy", 
-     axes = F, type = "b", pch =20)
-abline(v = low, lty = 2); abline(v = high, lty = 2)
-abline(v = T_opt, lty = 2, lwd = 2)
-points(d$Temperature, d$pred_count, col = 4, type = "b", pch = 20)
-legend("topleft", c(paste0("0.05p = ", round(low,1)),
-                     paste0("0.95p = ", round(high,1)),
-                     paste0("T_opt = ", round(T_opt,1))), 
-       lty = 2, lwd = c(1,2), bty = "n")
-axis(1)
-axis(2, las = 2)
-box(bty = "l")
+d$g <- factor(d$g, levels = c("Observation", "Model_A", "Model_B", "Model_C"))
 
-dev.off()
-
-pdf("thermal_occupancy_0.1_0.5_1.pdf", height = 3, width = 10)
-
-occup %>% 
-  # subset(Bin_width == "0.5 deg C") %>%
-  ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
-  geom_bar(stat="identity", position = position_dodge(width = 0.3)) +  
-  scale_color_viridis_d("Depth range") +
-  scale_fill_viridis_d("Depth range") +
-  ylab("Thermal_Occupancy")  +  
-  facet_wrap(.~ Bin_width, scales = "free", ncol = 3) + 
-  theme_cowplot() 
-
-dev.off()
-
-pdf("thermal_occupancy_0.5.pdf", height = 5, width = 5)
-
-occup %>% 
-  subset(Bin_width == "0.5 deg C") %>%
-  ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
-  geom_bar(stat="identity", position = position_dodge(width = 0.3)) +  
-  scale_color_viridis_d("Depth range") +
-  scale_fill_viridis_d("Depth range") +
-  ylab("Thermal_Occupancy")  +  
-  facet_wrap(.~ Bin_width, scales = "free", ncol = 3) + 
-  theme_cowplot() 
-
-dev.off()
-
-pdf("thermal_occupancy_1.pdf", height = 5, width = 5)
-
-occup %>% 
-  subset(Bin_width == "1 deg C") %>%
-  ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
-  geom_bar(stat="identity", position = position_dodge(width = 0.3)) +  
-  scale_color_viridis_d("Depth range") +
-  scale_fill_viridis_d("Depth range") +
-  ylab("Thermal_Occupancy")  +  
-  facet_wrap(.~ Bin_width, scales = "free", ncol = 3) + 
-  theme_cowplot() 
+d %>% 
+  ggplot(aes(t, n, color = g)) + 
+  geom_point(size = 2, alpha = 0.8) +
+  geom_vline(data = t_opt, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
+  geom_vline(data = t_h, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
+  geom_vline(data = t_l, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
+  xlim(9, 27) + 
+  geom_text(data = t_opt, aes(x = 9, y = c(0.004, 0.0038, 0.0036, 0.0034), 
+                              label = paste0("t_opt=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
+  geom_text(data = t_l, aes(x = 9, y = c(0.003, 0.0028, 0.0026, 0.0024), 
+                              label = paste0("0.05p=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
+  geom_text(data = t_h, aes(x = 9, y = c(0.002, 0.0018, 0.0016, 0.0014), 
+                              label = paste0("0.95p=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
+  # scale_color_viridis_d("") +
+  ylab("JWS Thermal Occupancy") + xlab("Temperature (deg C)") + 
+  theme(legend.position = c(0.75, 0.9))
 
 dev.off()
 
