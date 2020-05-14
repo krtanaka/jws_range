@@ -8,7 +8,7 @@ setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/")
 
 load(paste0('cold_shoulder_', Sys.Date(), '.Rdata'))
 
-d = df %>% sample_frac(0.01)
+# d = df %>% sample_frac(0.01)
 d = df; rm(df)
 
 d$month = substr(as.character(d$time), 6, 7)
@@ -25,26 +25,28 @@ map = d %>%
   summarise(z = mean(z))
 
 m = map %>% 
-  ggplot(aes(x, y, color = period, group = factor(period))) + 
+  ggplot(aes(x, y, color = period, group = factor(period), fill = z)) + 
+  geom_raster(alpha = 0.9) + 
   geom_smooth(
-    data = subset(map, z > 0.001),
+    data = subset(map, z > 0.01),
     method = "gam",
     aes(color = period), 
+    # span = 0.1,
     se = T) + 
   scale_color_viridis_d("") +
+  scale_fill_viridis_c("") + 
   # ggtitle("11.55 deg C thermocline") + 
   borders(fill = "gray20") +
   coord_quickmap(xlim = c(-127, -115),
                  ylim = c(30, 45)) + 
   # facet_wrap(.~ period) +
   xlab("Longitude") + ylab("Latitude") +
-  theme_classic() + 
-  theme(legend.position = c(0.2, 0.1))
+  theme_classic()
 
 m
 
 setwd('/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/')
-pdf('cold_shoulder_1.pdf', height = 6, width = 4)
+pdf('cold_shoulder_1.pdf', height = 6, width = 6)
 print(m)
 dev.off()
 
