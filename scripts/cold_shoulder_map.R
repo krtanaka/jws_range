@@ -24,14 +24,21 @@ map = d %>%
   group_by(x, y, period) %>%
   summarise(z = mean(z))
 
+map = d %>% 
+  # group_by(x, y) %>%
+  subset(year %in% c(1982:2019)) %>% 
+  mutate(period = ifelse(year %in% c(1982:2013), "1982-2013", "2014-2019")) %>% 
+  group_by(x, y, period) %>%
+  summarise(z = mean(z))
+
 m = map %>% 
-  ggplot(aes(x, y, color = period, group = factor(period), fill = z)) + 
-  geom_raster(alpha = 0.9) + 
+  ggplot(aes(x, y, color = period, group = factor(period))) + 
+  geom_raster(data = map, aes(fill = z), alpha = 0.9) + 
   geom_smooth(
     data = subset(map, z > 0.01),
     method = "gam",
     aes(color = period), 
-    # span = 0.1,
+    span = 0.1,
     se = T) + 
   scale_color_viridis_d("") +
   scale_fill_viridis_c("") + 
