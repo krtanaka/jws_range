@@ -11,14 +11,19 @@ load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/JWS_Corr
 
 # JWS_Corrected$Temperature = round(JWS_Corrected$Temperature, 1)
 
+# JWS_Corrected = subset(JWS_Corrected, id != c("JWS_14_07_12P0072_12398")) #remove Monterey Bay release
+
 d = JWS_Corrected
+d$month = substr(as.character(d$Time_s), 6, 7)
+plot(table(d$month))
+
 d$count = 1
 d = d %>% group_by(lat_pop, lon_pop, id, sex) %>% summarise(count = sum(count))
 d$id = as.factor(d$id)
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/')
 
-pdf("tag_locations.pdf", height = 10, width = 7.5)
+pdf("tag_locations.pdf", height = 10, width = 8)
 d %>% 
   ggplot(aes(lon_pop, lat_pop, 
              color = id,
@@ -29,12 +34,13 @@ d %>%
   coord_map(xlim = range(pretty(d$lon_pop)),
             ylim = range(pretty(d$lat_pop))) +
   geom_point() +
-  ggrepel::geom_text_repel(aes(color = id), box.padding = 2) + 
-  theme_classic2() + 
+  ggrepel::geom_text_repel(aes(color = id), box.padding = 3) +
+  xlab("Longitude") + ylab("Latitude") +
+  # theme_classic2() + 
   theme(legend.position = "none")
 dev.off()
 
-pdf("tag_counts.pdf", height = 10, width = 7.5)
+pdf("tag_counts.pdf", height = 5, width = 6)
 d %>% 
   ggplot(aes(lon_pop, lat_pop, 
              color = log10(count))) +
@@ -44,9 +50,10 @@ d %>%
   coord_map(xlim = range(pretty(d$lon_pop)),
             ylim = range(pretty(d$lat_pop))) +
   geom_point(size = 5, alpha = 0.8) +
-  theme_classic2() + 
+  xlab("Longitude") + ylab("Latitude") +
+  # theme_classic2() + 
   scale_color_viridis_c("log10(n)") + 
-  theme(legend.position = c(0.1, 0.1))
+  theme(legend.position = c(0.15, 0.2))
 dev.off()
 
 d1 = subset(JWS_Corrected, Depth <= 20); d1 = d1[,c("Temperature", "Depth", "id")]
@@ -99,7 +106,7 @@ p = d %>% ggplot(aes(Temperature, count, color = Depth_Range, fill = Depth_Range
   facet_wrap(.~id) +
   # scale_color_viridis_d() + 
   # scale_fill_viridis_d() + 
-  theme_minimal() + 
+  # theme_minimal() + 
   ylab("Freq") + 
   theme(legend.position = "right")
 
@@ -135,8 +142,8 @@ p = t %>%
   # scale_color_viridis_d() +
   # scale_fill_viridis_d() +
   ylab("Freq") +  
-  facet_wrap(.~ Bin_width, scales = "free", ncol = 3) + 
-  theme_minimal() 
+  facet_wrap(.~ Bin_width, scales = "free", ncol = 3)+ 
+  theme_cowplot() 
   
 p
 
@@ -147,16 +154,87 @@ occup = t %>%
   mutate(sum = colSums(.[3]),
          count = count/sum)
 
-pdf("thermal_occupancy.pdf", height = 3, width = 10)
+library(mgcv)
+
+d = subset(occup, Bin_width == "0.5 deg C")
+
+g = gam(count~s(Temperature, k = 5), 
+        data = d, 
+        family = "tw(theta = NULL, link = 'log', a = 1.01, b = 1.99)", gamma = 1.4)
+
+d$pred_count = predict(g, d, se.fit = F, type = "response")
+
+d$weight = (d$count-min(d$count))/(max(d$count) - min(d$count))
+d$weight = (d$pred_count-min(d$pred_count))/(max(d$pred_count) - min(d$pred_count))
+
+q = 90
+
+hq = 1-(1-q/100)/2
+lq = (1-q/100)/2
+
+d = as.data.frame(d)
+
+low = wtd.quantile(d$Temperature, q = lq, weight = d$weight, na.rm = T)
+high = wtd.quantile(d$Temperature, q = hq, weight = d$weight, na.rm = T)
+
+T_opt=sum(d$weight * d$Temperature/sum(d$weight)) #just weighted mean
+
+pdf('thermal_percentiles.pdf', height = 5, width = 7)
+
+plot(d[,c(1, 3)],  xlab = "deg C", ylab = "JWS Thermal Occupancy", 
+     axes = F, type = "b", pch =20)
+abline(v = low, lty = 2); abline(v = high, lty = 2)
+abline(v = T_opt, lty = 2, lwd = 2)
+points(d$Temperature, d$pred_count, col = 4, type = "b", pch = 20)
+legend("topleft", c(paste0("0.05p = ", round(low,1)),
+                     paste0("0.95p = ", round(high,1)),
+                     paste0("T_opt = ", round(T_opt,1))), 
+       lty = 2, lwd = c(1,2), bty = "n")
+axis(1)
+axis(2, las = 2)
+box(bty = "l")
+
+dev.off()
+
+pdf("thermal_occupancy_0.1_0.5_1.pdf", height = 3, width = 10)
 
 occup %>% 
+  # subset(Bin_width == "0.5 deg C") %>%
   ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
-  geom_bar(stat="identity", position = position_dodge(width = 0.5)) +  
-  scale_color_viridis_d() +
-  scale_fill_viridis_d() +
+  geom_bar(stat="identity", position = position_dodge(width = 0.3)) +  
+  scale_color_viridis_d("Depth range") +
+  scale_fill_viridis_d("Depth range") +
   ylab("Thermal_Occupancy")  +  
   facet_wrap(.~ Bin_width, scales = "free", ncol = 3) + 
-  theme_minimal() 
+  theme_cowplot() 
+
+dev.off()
+
+pdf("thermal_occupancy_0.5.pdf", height = 5, width = 5)
+
+occup %>% 
+  subset(Bin_width == "0.5 deg C") %>%
+  ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
+  geom_bar(stat="identity", position = position_dodge(width = 0.3)) +  
+  scale_color_viridis_d("Depth range") +
+  scale_fill_viridis_d("Depth range") +
+  ylab("Thermal_Occupancy")  +  
+  facet_wrap(.~ Bin_width, scales = "free", ncol = 3) + 
+  theme_cowplot() 
+
+dev.off()
+
+pdf("thermal_occupancy_1.pdf", height = 5, width = 5)
+
+occup %>% 
+  subset(Bin_width == "1 deg C") %>%
+  ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
+  geom_bar(stat="identity", position = position_dodge(width = 0.3)) +  
+  scale_color_viridis_d("Depth range") +
+  scale_fill_viridis_d("Depth range") +
+  ylab("Thermal_Occupancy")  +  
+  facet_wrap(.~ Bin_width, scales = "free", ncol = 3) + 
+  theme_cowplot() 
 
 dev.off()
 
