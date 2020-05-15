@@ -145,7 +145,7 @@ pdf('cold_shoulder_time_series_1.pdf', height = 6, width = 10)
 pdf('cold_shoulder_time_series_2.pdf', height = 5, width = 10)
 
 ggplot(t1, aes(x = time, y = coldline, color = coldline)) +
-  geom_line(aes(y = rollmean(coldline, 30, na.pad = TRUE))) +
+  geom_line(aes(y = rollmean(coldline, 1, na.pad = TRUE))) +
   scale_color_viridis_c("") + 
   # stat_smooth(method = "loess",
   #             color = "gray60", 
