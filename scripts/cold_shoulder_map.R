@@ -5,6 +5,7 @@ library(ggplot2)
 library(raster)
 
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/")
+setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/")
 
 load(paste0('cold_shoulder_', Sys.Date(), '.Rdata'))
 
@@ -20,39 +21,37 @@ table(d$month)
 map = d %>% 
   # group_by(x, y) %>%
   subset(year %in% c(1982:2019)) %>% 
-  mutate(period = ifelse(year %in% c(1981:2010), "1982-2010", "2010-2019")) %>% 
-  group_by(x, y, period) %>%
-  summarise(z = mean(z))
-
-map = d %>% 
-  # group_by(x, y) %>%
-  subset(year %in% c(1982:2019)) %>% 
-  mutate(period = ifelse(year %in% c(1982:2013), "1982-2013", "2014-2019")) %>% 
+  
+  mutate(period = case_when(year %in% c(1982:2013) ~ "1982-2013",
+                            year %in% c(2014:2015) ~ "2014-2015",
+                            year %in% c(2016:2019) ~ "2016-2019")) %>% 
+  # mutate(period = ifelse(year %in% c(1982:2013), "1982-2013", "2014-2019")) %>% 
   group_by(x, y, period) %>%
   summarise(z = mean(z))
 
 m = map %>% 
-  ggplot(aes(x, y, color = period, group = factor(period))) + 
-  geom_raster(data = map, aes(fill = z), alpha = 0.9) + 
+  ggplot(aes(x, y)) + 
+  geom_tile(aes(fill = z), alpha = 0.9) + 
   geom_smooth(
-    data = subset(map, z > 0.01),
+    data = subset(map, z > 0.01), aes(color = period, group = period),
     method = "gam",
-    aes(color = period), 
+    # method = "loess",
+    # method = "auto",
     span = 0.1,
     se = T) + 
   scale_color_viridis_d("") +
   scale_fill_viridis_c("") + 
-  # ggtitle("11.55 deg C thermocline") + 
   borders(fill = "gray20") +
   coord_quickmap(xlim = c(-127, -115),
                  ylim = c(30, 45)) + 
   # facet_wrap(.~ period) +
-  xlab("Longitude") + ylab("Latitude") +
-  theme_classic()
+  xlab("Longitude") + ylab("Latitude")
 
 m
 
-setwd('/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/')
+setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/")
+setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/")
+
 pdf('cold_shoulder_1.pdf', height = 6, width = 6)
 print(m)
 dev.off()
@@ -64,61 +63,62 @@ map = d %>%
 
 m = map %>% 
   subset(year %in% c(1982:2019)) %>%
-  ggplot(aes(x, y, group = year)) +  
+  ggplot(aes(x, y)) +  
+  # geom_tile(aes(fill = z), alpha = 0.9) +
   geom_smooth(
-    data = subset(map, z > 0.001),
-    method = "gam",
-    aes(color = year), 
-    se = F, 
-    alpha = 0.5) + 
+    data = subset(map, z > 0.01),
+    # method = "gam",
+    # method = "auto",
+    method = "loess",
+    span = 0.1,
+    aes(color = year, group = year), 
+    se = F) + 
   scale_color_viridis_c("") +
-  # ggtitle("11.55 deg C thermocline") + 
+  scale_fill_viridis_c("") + 
   borders(fill = "gray20") +
   coord_quickmap(xlim = c(-127, -115),
                  ylim = c(30, 45)) + 
-  xlab("Longitude") + ylab("Latitude") +
-  theme_classic() + 
-  theme(legend.position = c(0.15, 0.18))
+  xlab("Longitude") + ylab("Latitude")
 
 m
 
-pdf('cold_shoulder_2.pdf', height = 6, width = 4)
+pdf('cold_shoulder_2.pdf', height = 6, width = 6)
 print(m)
 dev.off()
 
 lat = d %>% 
   group_by(year) %>% 
   subset(z > 0 & depth > -1000) %>%
+  # subset(z > 0) %>%
   # summarise(z = mean(z)) %>%
   summarise(y_mean = sum(z*y)/sum(z))
 
 m = map %>% 
   subset(z > 0) %>%
   subset(year %in% c(1982:2019)) %>%
-  ggplot(aes(x, y, color = year)) +  
+  ggplot(aes(x, y)) +  
   geom_hline(data = subset(lat, year %in% c(1982:2019)), 
              aes(yintercept = y_mean, color = year), size = 2, alpha = 0.8) + 
   scale_color_viridis_c("") +
-  ggtitle("11.55 deg C thermocline latitudinal mean") + 
   borders(fill = "gray20") +
   coord_quickmap(xlim = c(-127, -115),
                  ylim = c(30, 45)) + 
   xlab("Longitude") + ylab("Latitude") +
-  theme_classic() + 
-  theme(legend.position = c(0.15, 0.18))
+  theme_classic()
 
 m
 
-pdf('cold_shoulder_3.pdf', height = 6, width = 4)
+pdf('cold_shoulder_3.pdf', height = 6, width = 6)
 print(m)
 dev.off()
 
 #time series
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/")
+setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/")
+
 load(paste0('cold_shoulder_', Sys.Date(), '.Rdata'))
 
 df = df %>% subset(z > 0 & depth > -1000)
-
 df$year = substr(as.character(df$time), 1, 4)
 df$month = substr(as.character(df$time), 6, 7)
 
@@ -145,14 +145,14 @@ pdf('cold_shoulder_time_series_1.pdf', height = 6, width = 10)
 pdf('cold_shoulder_time_series_2.pdf', height = 5, width = 10)
 
 ggplot(t1, aes(x = time, y = coldline, color = coldline)) +
-  geom_line(aes(y = rollmean(coldline, 10, na.pad = TRUE))) +
+  geom_line(aes(y = rollmean(coldline, 30, na.pad = TRUE))) +
   scale_color_viridis_c("") + 
   # stat_smooth(method = "loess",
   #             color = "gray60", 
   #             fill = "gray60") +
-  ylab("11.55 deg C thermocline latitudinal mean") + 
+  ylab("JWS coldshoulder latitudinal mean") + 
   xlab("") + 
-  # ggtitle("10-day running mean") + 
+  ggtitle("10-day running mean") +
   # ggtitle("10-day running mean, June-October") + 
   # theme_minimal(I(20)) +
   theme(legend.position = "none")
