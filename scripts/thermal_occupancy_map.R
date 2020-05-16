@@ -5,7 +5,7 @@ library(ggplot2)
 library(raster)
 
 dir = Sys.info()[7]
-setwd(paste0('/Users/', dir, '/jws_range/results/'))
+setwd(paste0('/Users/', dir, '/dropjws_range/results/'))
 load(paste0('thermal_occupancy_', Sys.Date(), '.Rdata'))
 
 df$month = substr(as.character(df$time), 6, 7)
@@ -25,7 +25,7 @@ df$period = ifelse(df$year %in% c(2017:2019), "2017-2019", df$period)
 
 map = df %>% 
   group_by(x, y, period) %>% 
-  summarise(p = mean(p)) 
+  summarise(p = mean(z)) 
 # mutate(y_mean = sum(z*y)/sum(z))
 
 xlims = range(map$x); ylims = range(map$y)
@@ -57,7 +57,15 @@ load('/Users/Kisei/jws_range/results/thermal_occupancy_2020-05-11.Rdata')
 # df = subset(df, month %in% c("06", "07", "08", "09", "10"))
 # table(df$month)
 
+lat = df %>%
+  group_by(time) %>%
+  summarise(
+    total = n(),
+    good = sum(z>0, na.rm = T),
+    prop = good/total)
+
 lat = df %>% group_by(time) %>% 
+  summarise(total_habitat = mean(z, na.rm = T))
   mutate(latm = sum(p*y)/sum(p)) %>% 
   summarise(thermal_occupancy = mean(latm))
 
