@@ -19,7 +19,7 @@ d = subset(d, month %in% c("06", "07", "08", "09", "10"
 table(d$month)
 
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/")
-setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/")
+setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/supplement/")
 
 map = d %>% 
   subset(year %in% c(1982:2019)) %>% 
@@ -32,30 +32,32 @@ map = d %>%
 m = map %>% 
   ggplot(aes(x, y)) + 
   geom_tile(aes(fill = z), alpha = 1) + 
-  geom_smooth(
-    data = subset(map, z > 0.01), aes(color = period, group = period),
-    method = "gam",
-    span = 0.1,
-    se = T) + 
+  # geom_smooth(
+  #   data = subset(map, z > 0.01), aes(color = period, group = period),
+  #   method = "gam",
+  #   span = 0.1,
+  #   se = T) +
   geom_smooth(
     data = subset(map, z > 0.01), aes(color = period, group = period),
     method = "loess",
     span = 0.1,
-    se = T) + 
-  geom_smooth(
-    data = subset(map, z > 0.01), aes(color = period, group = period),
-    method = "auto",
-    span = 0.1,
-    se = T) + 
+    se = F) +
+  # geom_smooth(
+  #   data = subset(map, z > 0.01), aes(color = period, group = period),
+  #   method = "auto",
+  #   span = 0.1,
+  #   se = T) + 
   scale_color_discrete("") +
   scale_fill_viridis_c("") + 
   borders(fill = "gray20") +
-  # coord_quickmap(xlim = c(-127, -115),
-  #                ylim = c(30, 45)) +
-  coord_quickmap(xlim = range(map$x),
-                 ylim = range(map$y)) +
-  facet_wrap(.~ period, scales = "fixed") +
+  coord_quickmap(xlim = c(-127, -115),
+                 ylim = c(30, 45)) +
+  # coord_quickmap(xlim = range(map$x),
+  #                ylim = range(map$y)) +
+  # facet_wrap(.~ period, scales = "fixed") +
   xlab("Longitude") + ylab("Latitude")
+
+m
 
 pdf('cold_shoulder_0.pdf', height = 6, width = 10)
 print(m)
