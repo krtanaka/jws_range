@@ -22,9 +22,8 @@ df$period = ifelse(df$year %in% c(2012:2016), "2012-2016", df$period)
 df$period = ifelse(df$year %in% c(2017:2019), "2017-2019", df$period)
 
 map = df %>% 
-  group_by(x, y, period) %>% 
-  summarise(p = mean(z)) 
-# mutate(y_mean = sum(z*y)/sum(z))
+  group_by(x, y, period, month) %>% 
+  summarise(p = mean(z, na.rm = T)) 
 
 df %>%
   group_by(x, y) %>% 
@@ -34,20 +33,20 @@ df %>%
 
 grid_cell_size = (521.9257+709.1729)/2
 
-xlims = range(map$x); ylims = range(map$y)
-
-m = map %>% 
+m = map %>%
   subset(period != "") %>%
   ggplot(aes(x, y, fill = p)) +
-  geom_tile() +
+  geom_raster() +
   scale_fill_viridis_c("") +
-  borders(fill = "gray10") +
-  coord_quickmap(xlim = xlims,
-                 ylim = ylims) +
-  facet_wrap(.~ period, nrow = 2) + 
-  theme_void()
+  # borders(fill = "gray10") +
+  # coord_quickmap(xlim = range(map$x),
+  #                ylim = range(map$y)) +
+  facet_grid(month~ period)
 
-m
+setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
+pdf('map_binary.pdf', height = 8, width = 10)
+print(m)
+dev.off()
 
 load("C:/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_breadth_2020-05-16.Rdata")
 
@@ -76,11 +75,21 @@ library(zoo)
 library(ggpubr)
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
-pdf('total_habitat_area_binary.pdf', height = 4, width = 8)
+pdf('habitat_binary_a.pdf', height = 4, width = 8)
 ggplot(t, aes(x = time, y = good, color = good)) +
-  # geom_line(aes(y = rollmean(good, 10, na.pad = TRUE))) +
+  geom_line(aes(y = rollmean(good, 10, na.pad = TRUE))) +
   scale_color_viridis_c("km^2") + 
   stat_smooth(method = "loess", span = 0.1) +
+  ylab("Total Habitat Area (km^2)") + 
+  ggtitle("10-day running mean") + 
+  theme_classic2() + 
+  facet_wrap(.~calender, ncol = 2, scales = "free_y")
+dev.off()
+
+pdf('habitat_binary_b.pdf', height = 4, width = 8)
+ggplot(t, aes(x = time, y = good, color = good)) +
+  scale_color_viridis_c("km^2") + 
+  geom_smooth(method = "loess", span = 0.1) +
   ylab("Total Habitat Area (km^2)") + 
   ggtitle("10-day running mean") + 
   theme_classic2() + 

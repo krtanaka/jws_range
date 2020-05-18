@@ -31,7 +31,7 @@ df %>%
   rasterFromXYZ() %>% 
   area()
 
-xlims = range(map$x); ylims = range(map$y)
+grid_cell_size = (521.9257+709.1729)/2
 
 m = map %>%
   subset(period != "") %>%
@@ -39,12 +39,12 @@ m = map %>%
   geom_raster() +
   scale_fill_viridis_c("") +
   # borders(fill = "gray10") +
-  # coord_quickmap(xlim = xlims,
-  #                ylim = ylims) +
+  # coord_quickmap(xlim = range(map$x),
+  #                ylim = range(map$y)) +
   facet_grid(month~ period)
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
-pdf('probabilistic_map.pdf', height = 8, width = 10)
+pdf('map_probabilistic.pdf', height = 8, width = 10)
 print(m)
 dev.off()
 
@@ -75,7 +75,6 @@ ggplot(t, aes(x = time, y = lat_m, color = lat_m)) +
   geom_line(aes(y = rollmean(lat_m, 10, na.pad = TRUE))) +
   scale_color_viridis_c("Lat (deg)") + 
   geom_smooth(method = "loess", span = 0.1) +
-  # geom_smooth(method = "lm", se = F) +
   ylab("Latitudinal mean of JWS thermal occupancy (deg)") + 
   ggtitle("10-day running mean") + 
   theme_classic2() + 
@@ -87,7 +86,6 @@ ggplot(t, aes(x = time, y = lat_m, color = lat_m)) +
   # geom_line(aes(y = rollmean(lat_m, 10, na.pad = TRUE))) +
   scale_color_viridis_c("Lat (deg)") + 
   geom_smooth(method = "loess", span = 0.1) +
-  geom_smooth(method = "lm", se = F) +
   ylab("Latitudinal mean of JWS thermal occupancy (deg)") + 
   ggtitle("10-day running mean") + 
   theme_classic2() + 
