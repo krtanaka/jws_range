@@ -153,7 +153,7 @@ d$weight_m1 = (d$pred_count_1 - min(d$pred_count_1))/(max(d$pred_count_1) - min(
 d$weight_m2 = (d$pred_count_2 - min(d$pred_count_2))/(max(d$pred_count_2) - min(d$pred_count_2))
 d$weight_m3 = (d$pred_count_3 - min(d$pred_count_3))/(max(d$pred_count_3) - min(d$pred_count_3))
 
-q = 90
+q = 95
 
 hq = 1-(1-q/100)/2
 lq = (1-q/100)/2
@@ -231,22 +231,28 @@ d$Depth_Range <- factor(d$Depth_Range, levels = c("0-20m", "0-2m"))
 
 setwd("C:/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 2 thermal niche profiling/")
 
-pdf(paste0("Fig.1_", Sys.Date(), ".pdf"), height = 5, width = 5)
-png(paste0("Fig.1_", Sys.Date(), ".png"), height = 5, width = 5, res = 500, units = "in")
+pdf(paste0("Fig.1_", Sys.Date(), ".pdf"), height = 4, width = 6)
+# png(paste0("Fig.1_", Sys.Date(), ".png"), height = 4, width = 6, res = 500, units = "in")
 
 d %>% 
   # subset(Depth_Range == "0-20m") %>% 
   ggplot(aes(Temperature, count)) + 
   geom_bar(aes(fill = Depth_Range), stat = "identity", position = "identity", width = 0.5, alpha = 0.8) +
   # geom_density(aes(fill = Depth_Range, color = Depth_Range), stat = "identity", position = "identity", alpha = 0.1) +
-  geom_segment(data = subset(d, Depth_Range == "0-2m"), aes(x = l, xend = h, y = 1.05, yend = 1.05, color = Depth_Range), size = 1.5, show.legend = F) + 
-  geom_segment(data = subset(d, Depth_Range == "0-20m"), aes(x = l, xend = h, y = 1.06, yend = 1.06, color = Depth_Range), size = 1.5, show.legend = F) + 
+  geom_segment(data = subset(d, Depth_Range == "0-2m"), aes(x = l, xend = h, y = 1.03, yend = 1.03, color = Depth_Range), show.legend = F) + 
+  geom_segment(data = subset(d, Depth_Range == "0-2m"), aes(x = l, xend = l, y = 1.00, yend = 1.03, color = Depth_Range), show.legend = F) + 
+  geom_segment(data = subset(d, Depth_Range == "0-2m"), aes(x = h, xend = h, y = 1.00, yend = 1.03, color = Depth_Range), show.legend = F) + 
+ 
+  geom_segment(data = subset(d, Depth_Range == "0-20m"), aes(x = l, xend = h, y = 1.05, yend = 1.05, color = Depth_Range), show.legend = F) + 
+  geom_segment(data = subset(d, Depth_Range == "0-20m"), aes(x = l, xend = l, y = 1.01, yend = 1.05, color = Depth_Range), show.legend = F) + 
+  geom_segment(data = subset(d, Depth_Range == "0-20m"), aes(x = h, xend = h, y = 1.01, yend = 1.05, color = Depth_Range), show.legend = F) + 
+  
   scale_color_viridis_d("Depth") + 
   scale_fill_viridis_d("Depth") + 
   theme_pubr() + 
-  annotate("text", label = "Core Thermal Habitat (90 IQR)", x = 17.96, y = 1.09) + 
+  annotate("text", label = "Core Thermal Habitat (95 IQR)", x = 17.96, y = 1.09) + 
   ylab("Normalized Thermal Occupancy") + xlab("Temperature (deg C)") + 
-  theme(legend.position = c(0.15, 0.9))
+  theme(legend.position = c(0.1, 0.9))
 
 dev.off()
   

@@ -3,6 +3,7 @@ rm(list = ls())
 library(dplyr)
 library(ggplot2)
 library(raster)
+
 library(doParallel)
 cores = detectCores()/2
 registerDoParallel(cores = cores)
@@ -38,6 +39,7 @@ occup = subset(occup, Depth_Range == "0-20m")
 occup = subset(occup, Bin_width == "0.5 deg C")
 s = occup[,c("Temperature", "count")]
 colnames(s) = c("z", "p")
+s$p = s$p/sum(s$p)
 plot(s)
 
 r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
@@ -50,7 +52,7 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
   
   for (day in 1:dim(df)[3]) {
     
-    # day = 180
+    # day = 200
     
     d = df[[day]]
     time = as.character(names(d))
@@ -94,5 +96,6 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
 }
 
 df = as.data.frame(r)
-save(df, file = paste0("/Users/ktanaka/jws_range/results/thermal_occupancy_", Sys.Date(), ".Rdata"))
+
+save(df, file = paste0("/Users/ktanaka/jws_range/results/thermal_occupancy.Rdata"))
 

@@ -5,9 +5,8 @@ library(ggplot2)
 library(raster)
 
 dir = Sys.info()[7]
-setwd(paste0('/Users/', dir, '/dropjws_range/results/'))
-load(paste0('thermal_occupancy_', Sys.Date(), '.Rdata'))
-
+load("C:/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/t_breadth_2020-05-16.Rdata")
+ 
 df$month = substr(as.character(df$time), 6, 7)
 df = subset(df, month %in% c("06", "07", "08", "09", "10"))
 table(df$month)
@@ -51,57 +50,35 @@ pdf('thermal_occupancy_map.pdf', height = 5, width = 5)
 print(m)
 dev.off()
 
-load('/Users/Kisei/jws_range/results/thermal_occupancy_2020-05-11.Rdata')
 
-# df$month = substr(as.character(df$time), 6, 7)
-# df = subset(df, month %in% c("06", "07", "08", "09", "10"))
-# table(df$month)
+load("C:/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/t_breadth_2020-05-16.Rdata")
 
-lat = df %>%
+df$month = substr(as.character(df$time), 6, 7)
+
+t = df %>%
   group_by(time) %>%
   summarise(
     total = n(),
     good = sum(z>0, na.rm = T),
-    prop = good/total)
+    prop = good/total) %>% 
+  mutate(time = as.Date(time),
+         month = substr(as.character(time), 6, 7)) %>% 
+  mutate(prop = ifelse(month %in% c("06", "07", "08", "09", "10"), prop, NA))
 
-lat = df %>% group_by(time) %>% 
-  summarise(total_habitat = mean(z, na.rm = T))
-  mutate(latm = sum(p*y)/sum(p)) %>% 
-  summarise(thermal_occupancy = mean(latm))
-
-lat$time = as.Date(lat$time)
-
-lat$month = substr(as.character(lat$time), 6, 7)
-lat$year = substr(as.character(lat$time), 1, 4)
-
-# ggplot(lat, aes(x = as.numeric(month), y = thermal_occupancy, fill = year)) +
-#   geom_line(alpha = 0.5) + 
-#   scale_color_viridis_c("Lat")
+# lat = df %>% group_by(time) %>% 
+#   # summarise(total_habitat = mean(z, na.rm = T))
+#   mutate(latm = sum(p*y)/sum(p)) %>% 
+#   summarise(thermal_occupancy = mean(latm))
 
 library(zoo)
 
-t = ggplot(lat, aes(x = time, y = thermal_occupancy, color = thermal_occupancy)) +
-  geom_line(aes(y=rollmean(thermal_occupancy, 30, na.pad = TRUE))) +
-  scale_color_viridis_c("Lat") + 
-  # stat_smooth(method = "loess", formula = y ~ x, size = 7) + 
-  ylab("Mean_Latitude") + 
-  ggtitle("Temporal changes in latitudinal mean of JWS thermal ocupancy, 30-day running mean") + 
+ggplot(t, aes(x = time, y = prop, color = prop)) +
+  geom_line(aes(y=rollmean(prop, 10, na.pad = TRUE))) +
+  scale_color_viridis_c("") + 
+  stat_smooth(method = "loess", span = 0.1) +
   theme_minimal() + 
   theme(legend.position = "none")
 
-# lat$time2 = substr(as.character(lat$time), 1, 4)
-# lat = lat %>% group_by(time2) %>% mutate(med_lat = median(thermal_occupancy))
-# 
-# t = ggplot(lat, aes(x = time2, y = thermal_occupancy)) +
-#   geom_boxplot(aes(fill = med_lat), outlier.shape = NA) + 
-#   scale_fill_viridis_c() + 
-#   stat_smooth(method = "loess", formula = y ~ x, size = 7) +
-#   ylab("Mean_Latitude") + 
-#   ggtitle("Temporal changes in latitudinal mean of shark thermal ocupancy, 30-day running mean") + 
-#   theme_classic() +
-#   theme(legend.position = "bottom")
-# 
-# t
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/')
 pdf('thermal_occupancy_lat_mean.pdf', height = 4, width = 10)
 print(t)
