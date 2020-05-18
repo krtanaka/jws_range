@@ -7,8 +7,85 @@ library(raster)
 load("C:/Users/Kisei/jws_range/results/thermal_occupancy.Rdata")
  
 df$month = substr(as.character(df$time), 6, 7)
-df = subset(df, month %in% c("06", "07", "08", "09", "10"))
-table(df$month)
+df$year = substr(as.character(df$time), 1, 4)
+df$time_step = substr(as.character(df$time), 1, 7)
+# df$time_step = df$year
+
+p1 = df %>%
+  subset(month %in% c("06", "07", "08", "09", "10")) %>% 
+  subset(year %in% c(1982:2019)) %>% 
+  group_by(x, y) %>% 
+  summarise(p = mean(p, na.rm = T)) %>% 
+  mutate(type = "mean") %>% 
+  ggplot(aes(x, y, fill = p)) +
+  geom_raster() +
+  scale_fill_viridis_c("Mean") +  
+  borders(fill = "gray10") +
+  coord_quickmap(xlim = range(df$x),
+                 ylim = range(df$y)) + 
+  theme(legend.position = c(0.1, 0.1))
+
+map = df %>%
+  subset(month %in% c("06", "07", "08", "09", "10")) %>% 
+  subset(year %in% c(1982:2019)) %>% 
+  group_by(x, y, time_step) %>% 
+  summarise(p = mean(p, na.rm = T))
+
+map = as.data.frame(map)
+
+time_list = unique(map$time_step)
+
+mm = NULL
+
+for (t in 1:length(time_list)) {
+  
+  # t = 1
+  
+  m = subset(map, time_step == time_list[[t]])
+  m = m[,c("p")]
+  mm = cbind(mm, m)
+  
+}
+
+mm = as.data.frame(mm)
+colnames(mm) = unique(map$time_step)
+
+xy = subset(map, time_step == time_list[[1]])
+xy = xy[,1:2]
+
+change = cbind(xy, mm)
+
+betaf = function(vec){
+  
+  n = length(vec)
+  
+  beta = lm(vec ~ seq(1:n))$coef[2] #this is for 1982-2011
+  
+  # p = summary(lm(vec ~ seq(1:36)))$ coefficients [2,4]
+  return(beta) # beta gives you a slope, if you want p-value, change it to p
+  #   return(p) # beta gives you a slope, if you want p-value, change it to p
+  
+}
+
+res = as.data.frame(apply(change[, 3:length(names(change))], 1, betaf)) 
+change = cbind(change[,1:2], res)
+colnames(change)[3] = "p"
+
+change$p = change$p*190
+
+p2 = change %>% 
+  ggplot(aes(x, y, fill = p)) +
+  geom_raster() +
+  scale_fill_viridis_c("linear trend", limit = c(max(change$p)*-1, max(change$p))) +  
+  borders(fill = "gray10") +
+  coord_quickmap(xlim = range(map$x),
+                 ylim = range(map$y)) + 
+  theme(legend.position = c(0.1, 0.1))
+
+setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
+pdf('map_probabilistic_a.pdf', height = 8, width = 10)
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+dev.off()
 
 df$period = ""
 
@@ -35,6 +112,7 @@ grid_cell_size = (521.9257+709.1729)/2
 
 m = map %>%
   subset(period != "") %>%
+  subset(month %in% c("06", "07", "08", "09", "10")) %>% 
   ggplot(aes(x, y, fill = p)) +
   geom_raster() +
   scale_fill_viridis_c("") +
@@ -44,7 +122,7 @@ m = map %>%
   facet_grid(month~ period)
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
-pdf('map_probabilistic.pdf', height = 8, width = 10)
+pdf('map_probabilistic_b.pdf', height = 8, width = 10)
 print(m)
 dev.off()
 
