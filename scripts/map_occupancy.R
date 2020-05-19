@@ -132,7 +132,18 @@ load("C:/Users/Kisei/jws_range/results/thermal_occupancy.Rdata")
 
 t = df %>%
   group_by(time) %>%
-  summarise(lat_m = sum(p*y)/sum(p)) %>% 
+  summarise(p = sum(p*y)/sum(p)) %>% 
+  mutate(time = as.Date(time))
+
+t = df %>%
+  group_by(time) %>%
+  summarise(p = sum(p)) %>% 
+  mutate(time = as.Date(time))
+
+t = df %>%
+  mutate(p = p*grid_cell_size) %>% 
+  group_by(time) %>% 
+  summarise(p = sum(p)) %>% 
   mutate(time = as.Date(time))
 
 t$month = substr(as.character(t$time), 6, 7)
@@ -141,7 +152,7 @@ t$year = substr(as.character(t$time), 1, 4)
 t1 = t; t1$calender = "Jan-Dec"
 t2 = t; t2$calender = "Jun-Oct"
 
-t2$lat_m = ifelse(t2$month %in% c("06", "07", "08", "09", "10"), t2$lat_m, NA)
+t2$p = ifelse(t2$month %in% c("06", "07", "08", "09", "10"), t2$p, NA)
 
 t = rbind(t1, t2)
 
@@ -150,22 +161,25 @@ library(ggpubr)
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
 pdf('habitat_probablistic_a.pdf', height = 4, width = 8)
-ggplot(t, aes(x = time, y = lat_m, color = lat_m)) +
-  geom_line(aes(y = rollmean(lat_m, 10, na.pad = TRUE))) +
-  scale_color_viridis_c("Lat (deg)") + 
+ggplot(t, aes(x = time, y = p, color = p)) +
+  geom_line(aes(y = rollmean(p, 10, na.pad = TRUE))) +
+  scale_color_viridis_c("") + 
   geom_smooth(method = "loess", span = 0.1) +
-  ylab("Latitudinal mean of JWS thermal occupancy (deg)") + 
+  # ylab("Latitudinal mean of JWS thermal occupancy (deg)") + 
+  ylab("Total Habitat Area (km^2)") +
+  # ylab("summed probability") +
   ggtitle("10-day running mean") + 
   theme_classic2() + 
   facet_wrap(.~calender, ncol = 2, scales = "free_y")
 dev.off()
 
 pdf('habitat_probablistic_b.pdf', height = 4, width = 8)
-ggplot(t, aes(x = time, y = lat_m, color = lat_m)) +
-  # geom_line(aes(y = rollmean(lat_m, 10, na.pad = TRUE))) +
+ggplot(t, aes(x = time, y = p, color = p)) +
+  # geom_line(aes(y = rollmean(p, 10, na.pad = TRUE))) +
   scale_color_viridis_c("Lat (deg)") + 
   geom_smooth(method = "loess", span = 0.1) +
-  ylab("Latitudinal mean of JWS thermal occupancy (deg)") + 
+  # ylab("Latitudinal mean of JWS thermal occupancy (deg)") + 
+  ylab("Total Habitat Area (km^2)") + 
   ggtitle("10-day running mean") + 
   theme_classic2() + 
   facet_wrap(.~calender, ncol = 2, scales = "free_y")

@@ -4,7 +4,7 @@ library(dplyr)
 library(ggplot2)
 library(raster)
 
-load("C:/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_breadth_2020-05-16.Rdata")
+load("C:/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_IQR.Rdata")
 
 df$month = substr(as.character(df$time), 6, 7)
 df$year = substr(as.character(df$time), 1, 4)
@@ -12,7 +12,7 @@ df$time_step = substr(as.character(df$time), 1, 7)
 # df$time_step = df$year
 
 p1 = df %>%
-subset(month %in% c("06", "07", "08", "09", "10")) %>% 
+  subset(month %in% c("06", "07", "08", "09", "10")) %>% 
   subset(year %in% c(1982:2019)) %>% 
   group_by(x, y) %>% 
   summarise(p = mean(z, na.rm = T)) %>% 
@@ -23,7 +23,9 @@ subset(month %in% c("06", "07", "08", "09", "10")) %>%
   borders(fill = "gray10") +
   coord_quickmap(xlim = range(df$x),
                  ylim = range(df$y)) + 
-  theme(legend.position = c(0.1, 0.1))
+  ylab("") + xlab("") + 
+  theme_classic() + 
+  theme(legend.position = c(0.2, 0.2))
 
 map = df %>%
   subset(month %in% c("06", "07", "08", "09", "10")) %>% 
@@ -110,7 +112,7 @@ df %>%
 
 grid_cell_size = (521.9257+709.1729)/2
 
-m = map %>%
+p3 = map %>%
   subset(period != "") %>%
   subset(month %in% c("06", "07", "08", "09", "10")) %>% 
   ggplot(aes(x, y, fill = p)) +
@@ -123,7 +125,7 @@ m = map %>%
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
 pdf('map_binary_b.pdf', height = 8, width = 10)
-print(m)
+print(p3)
 dev.off()
 
 load("C:/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_breadth_2020-05-16.Rdata")
@@ -151,10 +153,11 @@ t = rbind(t1, t2)
 
 library(zoo)
 library(ggpubr)
+library(gridExtra)
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
 pdf('habitat_binary_a.pdf', height = 4, width = 8)
-ggplot(t, aes(x = time, y = good, color = good)) +
+t1 = ggplot(t, aes(x = time, y = good, color = good)) +
   geom_line(aes(y = rollmean(good, 10, na.pad = TRUE))) +
   scale_color_viridis_c("km^2") + 
   stat_smooth(method = "loess", span = 0.1) +
@@ -162,15 +165,22 @@ ggplot(t, aes(x = time, y = good, color = good)) +
   ggtitle("10-day running mean") + 
   theme_classic2() + 
   facet_wrap(.~calender, ncol = 2, scales = "free_y")
+print(t1)
 dev.off()
 
 pdf('habitat_binary_b.pdf', height = 4, width = 8)
-ggplot(t, aes(x = time, y = good, color = good)) +
+t2 = t %>%
+  subset(calender == "Jun-Oct") %>% 
+  ggplot(aes(x = time, y = good, color = good)) +
   scale_color_viridis_c("km^2") + 
   geom_smooth(method = "loess", span = 0.1) +
   ylab("Total Habitat Area (km^2)") + 
   ggtitle("10-day running mean") + 
-  theme_classic2() + 
-  facet_wrap(.~calender, ncol = 2, scales = "free_y")
+  # facet_wrap(.~calender, ncol = 2, scales = "free_y") + 
+  theme_classic() 
+t2
 dev.off()
 
+png('/Users/Kisei/Desktop/fig.4_binary_draft.png', height = 5, width = 7, res = 100, units = "in")
+grid.arrange(p1, t2, ncol = 2)
+dev.off()
