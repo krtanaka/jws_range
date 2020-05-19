@@ -216,7 +216,7 @@ save(occup, file = "/Users/Kisei/jws_range/data/occupancy.RData")
 
 d = subset(occup, Bin_width == "0.5 deg C")
 
-q = 90
+q = 95
 
 hq = 1-(1-q/100)/2
 lq = (1-q/100)/2
@@ -237,6 +237,7 @@ pdf(paste0("Fig.1_", Sys.Date(), ".pdf"), height = 4, width = 6)
 d %>% 
   # subset(Depth_Range == "0-20m") %>% 
   ggplot(aes(Temperature, count)) + 
+  # geom_boxplot(aes(fill = Depth_Range))
   geom_bar(aes(fill = Depth_Range), stat = "identity", position = "identity", width = 0.5, alpha = 0.8) +
   # geom_density(aes(fill = Depth_Range, color = Depth_Range), stat = "identity", position = "identity", alpha = 0.1) +
   geom_segment(data = subset(d, Depth_Range == "0-2m"), aes(x = l, xend = h, y = 1.03, yend = 1.03, color = Depth_Range), show.legend = F) + 
