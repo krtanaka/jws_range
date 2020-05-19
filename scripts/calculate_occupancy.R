@@ -21,7 +21,9 @@ occup = subset(occup, Depth_Range == "0-20m")
 occup = subset(occup, Bin_width == "0.5 deg C")
 s = occup[,c("Temperature", "count")]
 colnames(s) = c("z", "p")
-s$p = s$p/sum(s$p)
+# s$p = s$p/sum(s$p)
+s$p = (s$p-min(s$p))/(max(s$p) - min(s$p))
+
 plot(s)
 
 r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
