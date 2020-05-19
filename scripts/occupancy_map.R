@@ -29,7 +29,8 @@ map = df %>%
   subset(month %in% c("06", "07", "08", "09", "10")) %>% 
   subset(year %in% c(1982:2019)) %>% 
   group_by(x, y, time_step) %>% 
-  summarise(p = mean(p, na.rm = T))
+  summarise(p = mean(p, na.rm = T)) 
+  summarise(p = sum(p, na.rm = T))
 
 map = as.data.frame(map)
 

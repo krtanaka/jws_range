@@ -258,11 +258,12 @@ d1 = d %>%
 
 d2 = d %>% 
   ggplot()  + 
-  geom_boxplot(aes("", Temperature, fill = Depth_Range, color = Depth_Range), position=position_dodge(0.1), alpha = 0.5) + 
+  geom_boxplot(aes(count, Temperature, fill = Depth_Range, color = Depth_Range), position=position_dodge(0.5), alpha = 0.8) + 
   scale_color_viridis_d("") + 
   scale_fill_viridis_d("") + 
   coord_flip() + 
-  theme_pubr()
+  theme_pubr() + 
+  theme(legend.position = "none")
 
 gridExtra::grid.arrange(d1,d2,nrow=2)
 
