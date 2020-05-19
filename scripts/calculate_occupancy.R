@@ -80,6 +80,5 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
 }
 
 df = as.data.frame(r)
-
-save(df, file = paste0("/Users/ktanaka/jws_range/results/thermal_occupancy.Rdata"))
+save(df, file = "/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/t_probablistic.Rdata")
 
