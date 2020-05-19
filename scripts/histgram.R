@@ -234,7 +234,7 @@ setwd("C:/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 2 t
 pdf(paste0("Fig.1_", Sys.Date(), ".pdf"), height = 4, width = 6)
 # png(paste0("Fig.1_", Sys.Date(), ".png"), height = 4, width = 6, res = 500, units = "in")
 
-d %>% 
+d1 = d %>% 
   # subset(Depth_Range == "0-20m") %>% 
   ggplot(aes(Temperature, count)) + 
   geom_bar(aes(fill = Depth_Range), stat = "identity", position = "identity", width = 0.5, alpha = 0.8) +
@@ -255,12 +255,16 @@ d %>%
   theme(legend.position = c(0.1, 0.9))
 
 
-ggplot(d)  + 
+d2 = d %>% 
+  ggplot()  + 
   geom_boxplot(aes("", Temperature, fill = Depth_Range, color = Depth_Range), position=position_dodge(0.1), alpha = 0.5) + 
-  scale_color_viridis_d("Depth") + 
-  scale_fill_viridis_d("Depth") + 
+  scale_color_viridis_d("") + 
+  scale_fill_viridis_d("") + 
   coord_flip() + 
   theme_pubr()
+
+grid.arrange(d1,d2,nrow=2)
+
 
 dev.off()
   
