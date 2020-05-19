@@ -11,25 +11,7 @@ registerDoParallel(cores = cores)
 dir = Sys.info()[7]
 setwd(paste0('/Users/', dir, '/jws_range/data/'))
 
-load('dummy.Rdata')
-
-d$temp = round(d$temp, 1)
-d$temp = d$temp + 5
-d = aggregate(count ~ temp, data = d, FUN = "sum")
-
-library(mgcv)
-g = gam(count~s(temp, k = 3), data = d, family = "tw(theta = NULL, link = 'log', a = 1.01, b = 1.99)", gamma = 1.4)
-d$pred_count = predict(g, d, se.fit = F, type = "response")
-d$pred_count = ifelse(d$pred_count < 0, 0, d$pred_count)
-range01 <- function(x){(x-min(x))/(max(x)-min(x))}
-d$pred_count = range01(d$pred_count)
-
-s = d[,c("temp", "pred_count")]
-colnames(s) = c("z", "p")
-s$p = s$p/sum(s$p)
-
 load('depth_0.25.Rdata')
-
 depth = d
 depth = rasterToPoints(depth)
 depth = as.data.frame(depth)
