@@ -216,7 +216,7 @@ save(occup, file = "/Users/Kisei/jws_range/data/occupancy.RData")
 
 d = subset(occup, Bin_width == "0.5 deg C")
 
-q = 90
+q = 95
 
 hq = 1-(1-q/100)/2
 lq = (1-q/100)/2
@@ -253,6 +253,14 @@ d %>%
   annotate("text", label = "Core Thermal Habitat (95 IQR)", x = 17.96, y = 1.09) + 
   ylab("Normalized Thermal Occupancy") + xlab("Temperature (deg C)") + 
   theme(legend.position = c(0.1, 0.9))
+
+
+ggplot(d)  + 
+  geom_boxplot(aes("", Temperature, fill = Depth_Range, color = Depth_Range), position=position_dodge(0.1), alpha = 0.5) + 
+  scale_color_viridis_d("Depth") + 
+  scale_fill_viridis_d("Depth") + 
+  coord_flip() + 
+  theme_pubr()
 
 dev.off()
   
