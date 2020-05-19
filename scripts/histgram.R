@@ -263,7 +263,7 @@ d2 = d %>%
   coord_flip() + 
   theme_pubr()
 
-grid.arrange(d1,d2,nrow=2)
+gridExtra::grid.arrange(d1,d2,nrow=2)
 
 
 dev.off()
