@@ -21,39 +21,39 @@ d$count = 1
 d = d %>% group_by(lat_pop, lon_pop, id, sex) %>% summarise(count = sum(count))
 d$id = as.factor(d$id)
 
-# setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/supplement/')
-# pdf("tag_locations.pdf", height = 10, width = 8)
-# d %>% 
-#   ggplot(aes(lon_pop, lat_pop, 
-#              color = id,
-#              label = id)) + 
-#   borders(xlim = range(d$lon_pop),
-#           ylim = range(d$lat_pop),
-#           fill = "gray10") +
-#   coord_map(xlim = range(pretty(d$lon_pop)),
-#             ylim = range(pretty(d$lat_pop))) +
-#   geom_point() +
-#   ggrepel::geom_text_repel(aes(color = id), box.padding = 3) +
-#   xlab("Longitude") + ylab("Latitude") +
-#   # theme_classic2() + 
-#   theme(legend.position = "none")
-# dev.off()
-# 
-# pdf("tag_counts.pdf", height = 5, width = 6)
-# d %>% 
-#   ggplot(aes(lon_pop, lat_pop, 
-#              color = log10(count))) +
-#   borders(xlim = range(d$lon_pop),
-#           ylim = range(d$lat_pop),
-#           fill = "gray10") +
-#   coord_map(xlim = range(pretty(d$lon_pop)),
-#             ylim = range(pretty(d$lat_pop))) +
-#   geom_point(size = 5, alpha = 0.8) +
-#   xlab("Longitude") + ylab("Latitude") +
-#   # theme_classic2() + 
-#   scale_color_viridis_c("log10(n)") + 
-#   theme(legend.position = c(0.15, 0.2))
-# dev.off()
+setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/supplement/')
+pdf("tag_locations.pdf", height = 10, width = 8)
+d %>%
+  ggplot(aes(lon_pop, lat_pop,
+             color = id,
+             label = id)) +
+  borders(xlim = range(d$lon_pop),
+          ylim = range(d$lat_pop),
+          fill = "gray10") +
+  coord_map(xlim = range(pretty(d$lon_pop)),
+            ylim = range(pretty(d$lat_pop))) +
+  geom_point() +
+  ggrepel::geom_text_repel(aes(color = id), box.padding = 3) +
+  xlab("Longitude") + ylab("Latitude") +
+  # theme_classic2() +
+  theme(legend.position = "none")
+dev.off()
+
+pdf("tag_counts.pdf", height = 5, width = 6)
+d %>%
+  ggplot(aes(lon_pop, lat_pop,
+             color = log10(count))) +
+  borders(xlim = range(d$lon_pop),
+          ylim = range(d$lat_pop),
+          fill = "gray10") +
+  coord_map(xlim = range(pretty(d$lon_pop)),
+            ylim = range(pretty(d$lat_pop))) +
+  geom_point(size = 5, alpha = 0.8) +
+  xlab("Longitude") + ylab("Latitude") +
+  # theme_classic2() +
+  scale_color_viridis_c("log10(n)") +
+  theme(legend.position = c(0.15, 0.2))
+dev.off()
 
 d1 = subset(JWS_Corrected, Depth <= 20); d1 = d1[,c("Temperature", "Depth", "id")]; d1$Depth_Range = "0-20m"; d1$count = 1
 d2 = subset(JWS_Corrected, Depth <= 2); d2 = d2[,c("Temperature", "Depth", "id")]; d2$Depth_Range = "0-2m"; d2$count = 1

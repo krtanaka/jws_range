@@ -7,7 +7,7 @@ library(raster)
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/")
 setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/")
 
-load("cold_shoulder_2020-05-14.Rdata")
+load("t_coldtail.Rdata")
 
 # d = df %>% sample_frac(0.01)
 d = df; rm(df)
