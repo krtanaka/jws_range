@@ -4,8 +4,8 @@ library(dplyr)
 library(ggplot2)
 library(raster)
 
-load("C:/Users/Kisei/jws_range/results/thermal_occupancy.Rdata")
- 
+load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/t_probablistic.Rdata")
+
 df$month = substr(as.character(df$time), 6, 7)
 df$year = substr(as.character(df$time), 1, 4)
 df$time_step = substr(as.character(df$time), 1, 7)
@@ -30,7 +30,7 @@ map = df %>%
   subset(year %in% c(1982:2019)) %>% 
   group_by(x, y, time_step) %>% 
   summarise(p = mean(p, na.rm = T)) 
-  summarise(p = sum(p, na.rm = T))
+  # summarise(p = sum(p, na.rm = T))
 
 map = as.data.frame(map)
 
@@ -161,7 +161,7 @@ library(ggpubr)
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
 pdf('habitat_probablistic_a.pdf', height = 4, width = 8)
-ggplot(t, aes(x = time, y = p, color = p)) +
+t1 = ggplot(t, aes(x = time, y = p, color = p)) +
   geom_line(aes(y = rollmean(p, 10, na.pad = TRUE))) +
   scale_color_viridis_c("") + 
   geom_smooth(method = "loess", span = 0.1) +
@@ -170,11 +170,13 @@ ggplot(t, aes(x = time, y = p, color = p)) +
   # ylab("summed probability") +
   ggtitle("10-day running mean") + 
   theme_classic2() + 
-  facet_wrap(.~calender, ncol = 2, scales = "free_y")
+  facet_wrap(.~calender, ncol = 2, scales = "free_y") + 
+  theme(legend.position = "none",
+        legend.justification = c(1,1))
 dev.off()
 
 pdf('habitat_probablistic_b.pdf', height = 4, width = 8)
-ggplot(t, aes(x = time, y = p, color = p)) +
+t2 = ggplot(t, aes(x = time, y = p, color = p)) +
   # geom_line(aes(y = rollmean(p, 10, na.pad = TRUE))) +
   scale_color_viridis_c("Lat (deg)") + 
   geom_smooth(method = "loess", span = 0.1) +
@@ -185,3 +187,6 @@ ggplot(t, aes(x = time, y = p, color = p)) +
   facet_wrap(.~calender, ncol = 2, scales = "free_y")
 dev.off()
 
+png('/Users/ktanaka/Desktop/fig.4_probablistic_draft.png', height = 5, width = 7, res = 100, units = "in")
+grid.arrange(t1, t2, ncol = 1)
+dev.off()
