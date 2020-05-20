@@ -39,7 +39,7 @@ library(ggpubr)
 library(gridExtra)
 
 ggplot(t, aes(x = time, y = area, color = area, fill = type)) +
-  geom_line(aes(y = rollmean(area, 10, na.pad = TRUE))) +
+  # geom_line(aes(y = rollmean(area, 10, na.pad = TRUE))) +
   scale_color_viridis_c("km^2") + 
   stat_smooth(method = "loess", span = 0.1) +
   ylab("Total Habitat Area (km^2)") + 
