@@ -39,26 +39,6 @@ t1 = df %>%
   summarise(area = sum(area)) %>% 
   mutate(time = as.Date(time))
 
-# t1 = df %>%
-#   mutate(month = substr(as.character(time), 6, 7),
-#          year = substr(as.character(time), 1, 4)) %>% 
-#   # subset(month %in% c("06", "07", "08", "09", "10")) %>% 
-#   # subset(year %in% c(1982:2019)) %>% 
-#   # subset(y <= 36.88 & y >= 30.54) %>% 
-#   # subset(x >= -122 & x <= -116) %>% 
-#   group_by(time) %>%
-#   summarise(
-#     total = n(),
-#     good = sum(z>0, na.rm = T),
-#     area = sum(area)
-#     # ,prop = good/total
-#     ) %>% 
-#   mutate(total = total*grid_cell_size,
-#          good = good*grid_cell_size,
-#          time = as.Date(time))
-
-# t1 = t1[,c("time", "good")]
-
 colnames(t1) = c("time", "area")
 t1$type = "binary"
 
@@ -74,19 +54,6 @@ t2 = df %>%
   summarise(area = sum(area)) %>% 
   mutate(time = as.Date(time))
 
-# t2 = df %>%
-#   mutate(month = substr(as.character(time), 6, 7),
-#          year = substr(as.character(time), 1, 4)) %>% 
-#   # subset(month %in% c("06", "07", "08", "09", "10")) %>% 
-#   subset(year %in% c(1982:2019)) %>% 
-#   subset(y <= 36.88 & y >= 30.54) %>% 
-#   subset(x >= -122 & x <= -116) %>% 
-#   mutate(p = p*grid_cell_size) %>% 
-#   group_by(time) %>% 
-#   summarise(p = sum(p)) %>% 
-#   mutate(time = as.Date(time))
-# 
-# t2 = t2[,c("time", "p")]
 colnames(t2) = c("time", "area")
 t2$type = "probablistic"
 
