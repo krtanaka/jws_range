@@ -8,7 +8,7 @@ library(reldist)
 range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 probs <- c(0, 0.025, 0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95, 0.975, 1)
 
-load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/JWS_Corrected.RData")
+load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/JWS_Corrected.RData")
 
 # JWS_Corrected$Temperature = round(JWS_Corrected$Temperature, 1)
@@ -187,25 +187,39 @@ d4 = d[,c("Temperature", "pred_count_3", "weight_m3")]; d4$g = "Model_C"; colnam
 d = rbind(d1, d2, d3, d4); rm(d1, d2, d3, d4)
 
 pdf('thermal_percentiles.pdf', height = 4, width = 6)
+png('thermal_percentiles.png', height = 3, width = 4, units = "in", res = 100)
 
 d$g <- factor(d$g, levels = c("Observation", "Model_A", "Model_B", "Model_C"))
 
+# d %>% 
+#   ggplot(aes(t, n, color = g)) + 
+#   geom_point(size = 2, alpha = 0.8) +
+#   geom_vline(data = t_opt, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
+#   geom_vline(data = t_h, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
+#   geom_vline(data = t_l, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
+#   xlim(9, 27) + 
+#   geom_text(data = t_opt, aes(x = 9, y = c(0.004, 0.0038, 0.0036, 0.0034), 
+#                               label = paste0("t_opt=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
+#   geom_text(data = t_l, aes(x = 9, y = c(0.003, 0.0028, 0.0026, 0.0024), 
+#                               label = paste0("0.05p=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
+#   geom_text(data = t_h, aes(x = 9, y = c(0.002, 0.0018, 0.0016, 0.0014), 
+#                               label = paste0("0.95p=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
+#   scale_color_viridis_d("") +
+#   ylab("JWS Thermal Occupancy") + xlab("Temperature (deg C)") + 
+#   theme(legend.position = c(0.75, 0.9))
+
 d %>% 
-  ggplot(aes(t, n, color = g)) + 
-  geom_point(size = 2, alpha = 0.8) +
-  geom_vline(data = t_opt, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
-  geom_vline(data = t_h, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
-  geom_vline(data = t_l, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
-  xlim(9, 27) + 
-  geom_text(data = t_opt, aes(x = 9, y = c(0.004, 0.0038, 0.0036, 0.0034), 
-                              label = paste0("t_opt=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
-  geom_text(data = t_l, aes(x = 9, y = c(0.003, 0.0028, 0.0026, 0.0024), 
-                              label = paste0("0.05p=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
-  geom_text(data = t_h, aes(x = 9, y = c(0.002, 0.0018, 0.0016, 0.0014), 
-                              label = paste0("0.95p=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
-  scale_color_viridis_d("") +
-  ylab("JWS Thermal Occupancy") + xlab("Temperature (deg C)") + 
-  theme(legend.position = c(0.75, 0.9))
+  subset(g == "Observation") %>% 
+  ggplot(aes(t,  w,  color = g)) + 
+  geom_point(size = 2, color = "#352A87", alpha = 0.8) +
+  geom_segment(aes(x = 10, xend = 15.13, y = 0, yend = 0), size = 2, color = "#33B7A0", alpha = 0.8) + 
+  geom_segment(aes(x = 15.13, xend = 15.13, y = 0, yend = 1), size = 2, color = "#33B7A0", alpha = 0.8) +  
+  geom_segment(aes(x = 15.13, xend = 21.9, y = 1, yend = 1), size = 2, color = "#33B7A0", alpha = 0.8) +  
+  geom_segment(aes(x = 21.9, xend = 21.9, y = 1, yend = 0), size = 2, color = "#33B7A0", alpha = 0.8) + 
+  geom_segment(aes(x = 21.9, xend = 25, y = 0, yend = 0), size = 2, color = "#33B7A0", alpha = 0.8) + 
+  annotate("text", x = 10, y = 1, label = "Binary", color = "#33B7A0", hjust = 0, size = 4) + 
+  annotate("text", x = 10, y = 0.9, label = "Probablistic", color = "#352A87", hjust = 0, size = 4) + 
+  ylab("JWS Thermal Occupancy") + xlab("Temperature (deg C)")
 
 
 dev.off()

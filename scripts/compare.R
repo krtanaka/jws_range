@@ -6,7 +6,7 @@ library(raster)
 
 load("/Users/Kisei/jws_range/data/lat_area.RData")
 
-load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_IQR.Rdata")
+load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_IQR.Rdata")
 
 df = merge(df, lat_area)
 
@@ -40,7 +40,7 @@ t1 = df %>%
 colnames(t1) = c("time", "area")
 t1$type = "binary"
 
-load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_probablistic.Rdata")
+load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
 df = merge(df, lat_area)
 
@@ -61,15 +61,16 @@ library(zoo)
 library(ggpubr)
 library(gridExtra)
 
-ggplot(t, aes(x = time, y = area, color = area, fill = type)) +
-  # geom_line(aes(y = rollmean(area, 10, na.pad = TRUE))) +
-  scale_color_viridis_c("km^2") + 
+ggplot(t, aes(x = time, y = area, color = area)) +
+  geom_line(aes(y = rollmean(area, 10, na.pad = TRUE))) +
+  scale_color_viridis_c("km^2") +
+  # scale_fill_viridis_d("km^2") + 
   stat_smooth(method = "loess", span = 0.1) +
   ylab("Total Habitat Area (km^2)") + 
   ggtitle("10-day running mean") + 
-  theme_classic2() 
+  facet_wrap(.~ type, ncol = 1)
 
-load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_probablistic.Rdata")
+load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
 df = merge(df, lat_area)
 df$month = substr(as.character(df$time), 6, 7)
@@ -130,7 +131,7 @@ ggplot(t, aes(x = time, y = area, color = type, fill = type)) +
   stat_smooth(method = "loess", span = 0.1, aes(color = type), show.legend = F) +
   ylab("Total Habitat Area (km^2)") + 
   ggtitle("10-day running mean. Based on probablistic model. Loess fit with span = 0.1") + 
-  facet_wrap(.~type, scales = "free_y")
+  facet_wrap(.~type, scales = "free_y", nrow = 1)
   theme_classic2() 
 
 
