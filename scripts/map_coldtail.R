@@ -4,7 +4,7 @@ library(dplyr)
 library(ggplot2)
 library(raster)
 
-setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/")
+setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/")
 setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
 
 load("t_coldtail.Rdata")
@@ -12,20 +12,16 @@ load("t_coldtail.Rdata")
 d = df %>% sample_frac(0.5); rm(df)
 # d = df; rm(df)
 
-setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/")
-setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/supplement/")
-
 map = d %>% 
   subset(year %in% c(1982:2019)) %>% 
   mutate(month = substr(as.character(time), 6, 7)) %>% 
-  # subset(month %in% c("06", "07", "08", "09", "10")) %>% 
+  # subset(month %in% c("06", "07", "08", "09", "10")) %>%
   mutate(period = case_when(year %in% c(1982:2013) ~ "1982-2013",
                             year %in% c(2014:2015) ~ "2014-2015",
                             year %in% c(2016:2019) ~ "2016-2019")) %>%
   group_by(x, y, period) %>%
   summarise(z = mean(z),
             d = mean(depth, na.rm = T))
-
 
 c1 = map %>% subset(period == "1982-2013") %>% group_by(x) %>% summarise(max_z = max(z, na.rm = T))
 c2 = map %>% subset(period == "2014-2015") %>% group_by(x) %>% summarise(max_z = max(z, na.rm = T))
@@ -46,21 +42,37 @@ lm = map %>%
   group_by(period) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))
 
+setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/")
+setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/")
+
+png("Fig.4.png", width = 6, height = 3, units = "in", res = 100)
+
 c %>% 
   ggplot(aes(x, y)) + 
-  geom_raster(aes(fill = z)) + 
-  geom_hline(data = lm, aes(yintercept = y, group = period, color = "red"), show.legend = F) + 
-  # geom_smooth(data = subset(c, zz > 0 & x < -121 & y > 35 & y < 42), 
-  #             aes(color = "red", group = period), 
-  #             method = "auto", span = 0.1, se = T, size = 3) + 
+  geom_tile(aes(fill = z)) + 
+  geom_hline(data = lm, aes(yintercept = y, group = period, color = "red"), show.legend = F, size = 2) + 
+  # geom_smooth(data = subset(c, zz > 0 
+  #                           # & x < -112
+  #                           # & y > 35 
+  #                           # & y < 42
+  #                           ),
+  #             aes(color = "red", group = period),
+  #             method = "loess", span = 0.1) +
   borders(fill = "gray20") +
   coord_quickmap(xlim = c(-127, -115),
                  ylim = c(30, 45)) +
+  # coord_quickmap(xlim = range(c$x),
+  #                ylim = range(c$y)) +
   facet_wrap(.~ period, scales = "fixed") +
   scale_color_discrete("") +
   scale_fill_viridis_c("") + 
   theme_classic() + 
-  xlab("Longitude") + ylab("Latitude")
+  scale_x_continuous(breaks = round(seq(min(c$x), max(c$x), by = 5),0)) + 
+  # ggtitle("June-October") +
+  ggtitle("January-December, depth unrestricted") +
+  xlab("") + ylab("")
+
+dev.off()
 
 # m = map %>% 
 #   ggplot(aes(x, y)) + 
