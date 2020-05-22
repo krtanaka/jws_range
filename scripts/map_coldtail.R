@@ -9,16 +9,95 @@ setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
 
 load("t_coldtail.Rdata")
 
-d = df %>% sample_frac(0.5); rm(df)
+# reduce file size
+d = df %>% sample_frac(0.1); rm(df)
 # d = df; rm(df)
+
+### time series ###
+
+t1 = d %>% 
+  mutate(month = substr(as.character(time), 6, 7)) %>% 
+  subset(year %in% c(1982:2019)) %>% 
+  # subset(depth > -1000) %>%
+  # subset(month %in% c("06", "07", "08", "09", "10")) %>%
+  group_by(year) %>% 
+  summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
+  mutate(group = "Jan-Dec")
+
+t2 = d %>% 
+  mutate(month = substr(as.character(time), 6, 7)) %>% 
+  subset(year %in% c(1982:2019)) %>% 
+  subset(depth > -1000) %>%
+  subset(y <= 41.6 & y >= 32.3) %>% 
+  # subset(month %in% c("06", "07", "08", "09", "10")) %>%
+  group_by(year) %>% 
+  summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
+  mutate(group = "Jan-Dec, Depth > 1000 m")
+
+t3 = d %>% 
+  mutate(month = substr(as.character(time), 6, 7)) %>% 
+  subset(year %in% c(1982:2019)) %>% 
+  # subset(depth > -1000) %>%
+  subset(month %in% c("06", "07", "08", "09", "10")) %>%
+  group_by(year) %>% 
+  summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T)) %>% 
+  mutate(group = "June-Oct")
+
+t4 = d %>% 
+  mutate(month = substr(as.character(time), 6, 7)) %>% 
+  subset(year %in% c(1982:2019)) %>% 
+  subset(depth > -1000) %>%
+  subset(month %in% c("06", "07", "08", "09", "10")) %>%
+  group_by(year) %>% 
+  summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T)) %>% 
+  mutate(group = "June-Oct, Depth > 1000 m")
+
+t = rbind(t1, t2, t3, t4)
+
+t %>% 
+  # subset(group == "Jan-Dec, Depth > 1000 m") %>% 
+  ggplot(aes(year, y, color = group)) + 
+  geom_point() + geom_line() + 
+  facet_wrap(.~ group, scales = "free_y") +
+  ylab("JWS coldtail latitudinal center of gravity (dec deg)") + 
+  theme_pubr() +
+  theme(legend.position = "none")
+
+t2 = d %>% 
+  mutate(month = substr(as.character(time), 6, 7)) %>% 
+  subset(year %in% c(1982:2019)) %>% 
+  subset(depth > -1000) %>%
+  subset(y <= 41.6 & y >= 32.3) %>% #CA
+  # subset(y <= 46.16) %>% #CA
+  group_by(year) %>% 
+  summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
+  mutate(group = "Jan-Dec, Depth > 1000 m")
+
+lat = t2 %>% 
+  mutate(period = case_when(year %in% c(1982:2013) ~ "1982-2013",
+                            year %in% c(2013:2019) ~ "2016-2019")) %>% 
+  group_by(period) %>%
+  summarise(z = mean(y))
+
+t2 %>%  
+  ggplot(aes(year, y, color = group)) + 
+  geom_point() + geom_line() + 
+  # facet_wrap(.~ group, scales = "free_y") + 
+  ylab("JWS coldtail latitudinal center of gravity (dec deg)") + 
+  geom_segment(aes(x = 1982, xend = 2013, y = lat$z[1], yend = lat$z[1]), size = 2, alpha = 0.8) + 
+  geom_segment(aes(x = 2013, xend = 2019, y = lat$z[2], yend = lat$z[2]), size = 2, alpha = 0.8) + 
+  theme_pubr() +
+  theme(legend.position = "none")
+
 
 map = d %>% 
   subset(year %in% c(1982:2019)) %>% 
+  subset(y < 42) %>% 
   mutate(month = substr(as.character(time), 6, 7)) %>% 
   # subset(month %in% c("06", "07", "08", "09", "10")) %>%
   mutate(period = case_when(year %in% c(1982:2013) ~ "1982-2013",
-                            year %in% c(2014:2015) ~ "2014-2015",
-                            year %in% c(2016:2019) ~ "2016-2019")) %>%
+                            # year %in% c(2014:2015) ~ "2014-2015",
+                            year %in% c(2014:2019) ~ "2016-2019")) %>%
   group_by(x, y, period) %>%
   summarise(z = mean(z),
             d = mean(depth, na.rm = T))
