@@ -1,8 +1,9 @@
 rm(list = ls())
 
 library(dplyr)
-library(ggplot2)
+library(ggpubr)
 library(raster)
+library(gridExtra)
 
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/")
 setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
@@ -14,12 +15,9 @@ d = df %>% sample_frac(0.1); rm(df)
 # d = df; rm(df)
 
 ### time series ###
-
 t1 = d %>% 
   mutate(month = substr(as.character(time), 6, 7)) %>% 
   subset(year %in% c(1982:2019)) %>% 
-  # subset(depth > -1000) %>%
-  # subset(month %in% c("06", "07", "08", "09", "10")) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
   mutate(group = "Jan-Dec")
@@ -28,16 +26,13 @@ t2 = d %>%
   mutate(month = substr(as.character(time), 6, 7)) %>% 
   subset(year %in% c(1982:2019)) %>% 
   subset(depth > -1000) %>%
-  subset(y <= 41.6 & y >= 32.3) %>% 
-  # subset(month %in% c("06", "07", "08", "09", "10")) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
-  mutate(group = "Jan-Dec, Depth > 1000 m")
+  mutate(group = "Jan-Dec, Depth < 1000 m")
 
 t3 = d %>% 
   mutate(month = substr(as.character(time), 6, 7)) %>% 
   subset(year %in% c(1982:2019)) %>% 
-  # subset(depth > -1000) %>%
   subset(month %in% c("06", "07", "08", "09", "10")) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T)) %>% 
@@ -50,12 +45,11 @@ t4 = d %>%
   subset(month %in% c("06", "07", "08", "09", "10")) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T)) %>% 
-  mutate(group = "June-Oct, Depth > 1000 m")
+  mutate(group = "June-Oct, Depth < 1000 m")
 
 t = rbind(t1, t2, t3, t4)
 
 t %>% 
-  # subset(group == "Jan-Dec, Depth > 1000 m") %>% 
   ggplot(aes(year, y, color = group)) + 
   geom_point() + geom_line() + 
   facet_wrap(.~ group, scales = "free_y") +
@@ -63,31 +57,94 @@ t %>%
   theme_pubr() +
   theme(legend.position = "none")
 
-t2 = d %>% 
-  mutate(month = substr(as.character(time), 6, 7)) %>% 
+t = d %>% 
   subset(year %in% c(1982:2019)) %>% 
   subset(depth > -1000) %>%
-  subset(y <= 41.6 & y >= 32.3) %>% #CA
-  # subset(y <= 46.16) %>% #CA
+  # subset(y <= 41.6 & y >= 32.3) %>% #CA
+  subset(y <= 46.16) %>% #no WA
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
-  mutate(group = "Jan-Dec, Depth > 1000 m")
+  mutate(period = case_when(year %in% c(1982:2014) ~ "1982-2014",
+                            year %in% c(2014:2019) ~ "2014-2019"))
 
-lat = t2 %>% 
-  mutate(period = case_when(year %in% c(1982:2013) ~ "1982-2013",
-                            year %in% c(2013:2019) ~ "2016-2019")) %>% 
-  group_by(period) %>%
-  summarise(z = mean(y))
-
-t2 %>%  
-  ggplot(aes(year, y, color = group)) + 
+lat = t %>% group_by(period) %>% summarise(z = mean(y))
+  
+p1 = t %>%  
+  ggplot(aes(year, y)) + 
   geom_point() + geom_line() + 
-  # facet_wrap(.~ group, scales = "free_y") + 
-  ylab("JWS coldtail latitudinal center of gravity (dec deg)") + 
-  geom_segment(aes(x = 1982, xend = 2013, y = lat$z[1], yend = lat$z[1]), size = 2, alpha = 0.8) + 
-  geom_segment(aes(x = 2013, xend = 2019, y = lat$z[2], yend = lat$z[2]), size = 2, alpha = 0.8) + 
-  theme_pubr() +
-  theme(legend.position = "none")
+  ylab("JWS coldtail latitudinal center of gravity (dec deg)") + xlab("") + 
+  geom_segment(aes(x = 1982, xend = 2014, y = lat$z[1], yend = lat$z[1], color = "1982-2014"), show.legend = F) + 
+  geom_segment(aes(x = 2014, xend = 2019, y = lat$z[2], yend = lat$z[2], color = "2014-2019")) + 
+  theme_pubr(I(15)) + 
+  theme(legend.position = c(0.2, 0.9), 
+        legend.title = element_blank())
+
+### map ###
+p2 = d %>% 
+  subset(year %in% c(1982:2019)) %>% 
+  subset(y <= 46.16) %>% #no WA
+  mutate(period = case_when(year %in% c(1982:2014) ~ "1982-2014",
+                            year %in% c(2014:2019) ~ "2014-2019")) %>%
+  group_by(x, y, period) %>%
+  summarise(z = mean(z),
+            d = mean(depth, na.rm = T))%>% 
+  ggplot(aes(x, y)) + 
+  geom_tile(aes(fill = z)) + 
+  # geom_hline(data = lat, aes(yintercept = z, group = period, color = "red"),
+  #            show.legend = F, size = 2) +
+  borders(fill = "gray20") +
+  ylab("") + xlab("") + 
+  coord_quickmap(xlim = c(-130, -115),
+                 ylim = c(28, 46.16)) +
+  # coord_quickmap(xlim = range(d$x),
+  #                ylim = range(d$y)) +
+  facet_wrap(.~ period, scales = "fixed") +
+  scale_color_discrete("") +
+  scale_fill_viridis_c("") + 
+  scale_x_continuous(breaks = round(seq(min(c$x), max(c$x), by = 10),0)) + 
+  theme_pubr(I(15)) + 
+  theme(legend.position = "right", 
+        legend.justification = c(1,1))
+
+setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/figure 3 poleward migr of tail/")
+setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/")
+
+png("Fig.3a.png", width = 5, height = 6, units = "in", res = 100)
+p1
+dev.off()
+
+png("Fig.3b.png", width = 7, height = 5, units = "in", res = 100)
+p2
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 map = d %>% 
