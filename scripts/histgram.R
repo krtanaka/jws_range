@@ -211,7 +211,8 @@ d$g <- factor(d$g, levels = c("Observation", "Model_A", "Model_B", "Model_C"))
 d %>% 
   subset(g == "Observation") %>% 
   ggplot(aes(t,  w,  color = g)) + 
-  geom_point(size = 2, color = "#352A87", alpha = 0.8) +
+  # geom_point(size = 2, color = "#352A87", alpha = 0.8) +
+  geom_bar(color = "#352A87", fill = "#352A87", stat = "identity", position = "identity", width = 0.5, alpha = 0.8) +
   geom_segment(aes(x = 10, xend = 15.13, y = 0, yend = 0), size = 2, color = "#33B7A0", alpha = 0.8) + 
   geom_segment(aes(x = 15.13, xend = 15.13, y = 0, yend = 1), size = 2, color = "#33B7A0", alpha = 0.8) +  
   geom_segment(aes(x = 15.13, xend = 21.9, y = 1, yend = 1), size = 2, color = "#33B7A0", alpha = 0.8) +  
