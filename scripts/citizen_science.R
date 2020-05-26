@@ -1,4 +1,8 @@
-setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/citizen science/iNat/")
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+setwd("/Users/kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/citizen science/iNat/")
 
 i <- read_csv("iNat_observs-90879_21May2020.csv")
 # i <- read_csv("observations-79116.csv")
@@ -8,8 +12,6 @@ i = i %>%
   subset(latitude < 37.2) %>% 
   mutate(year = substr(as.character(observed_on), 1, 4))
 
-library(dplyr)
-library(ggplot2)
 
 i.n <- plyr::ddply(.data=i, 
                  .(year), 
@@ -20,10 +22,10 @@ png('/Users/Kisei/Desktop/Fig.1.draft.png', height = 5, width = 9, units = 'in',
 
 i %>% ggplot(aes(longitude, latitude, color = species_guess)) + 
   scale_color_viridis_d("") + 
-  annotation_map(map_data("usa"))+ #Add the map as a base layer before the points
+  annotation_map(map_data("usa")) + #Add the map as a base layer before the points
   # borders(fill = "gray50") +
-  # coord_quickmap(xlim = range(pretty(i$longitude)),
-  #                ylim = range(pretty(i$latitude))) +
+  coord_quickmap(xlim = range(pretty(i$longitude)),
+                 ylim = range(pretty(i$latitude))) +
   geom_point(size = 5, alpha = 0.5) + 
   scale_x_continuous(breaks = round(seq(min(i$longitude), max(i$latitude), by = 0.5),0)) + 
   facet_wrap(.~ year, scales = "fixed", ncol = 7) +

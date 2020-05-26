@@ -73,67 +73,63 @@ ggplot(t, aes(x = time, y = area, color = area)) +
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
 df = merge(df, lat_area)
-df$month = substr(as.character(df$time), 6, 7)
+df = df %>% subset(depth > -1000)
 
 t3 = df %>% 
   group_by(time) %>% 
-  subset(y <= 40 & y >= 30) %>%
-  subset(x >= -125 & x <= -116) %>%
+  subset(y <= 42) %>%
+  # subset(x >= -125 & x <= -116) %>%
   mutate(area = area * p) %>% 
   summarise(area = sum(area)) %>% 
   mutate(time = as.Date(time),
-         type = "30-40° N")
+         type = "22.9° N - 42° N (No WA)")
 
 t4 = df %>% 
   group_by(time) %>% 
   mutate(area = area * p) %>% 
   summarise(area = sum(area)) %>% 
   mutate(time = as.Date(time),
-         month = substr(as.character(time), 6, 7),
-         type = "June-October")
+         type = "22.9° N - 47.4° N (California CC LME)")
 
-t4 = t4 %>% 
-  mutate(month = substr(as.character(time), 6, 7))
+t = rbind(t3, t4)
 
-t4$area = ifelse(t4$month %in% c("06", "07", "08", "09", "10"), t4$area, NA)
-
-t4 = t4[,c("time", "area", "type")]
-
-t5 = df %>% 
-  group_by(time) %>% 
-  subset(y <= 40 & y >= 30) %>%
-  subset(x >= -125 & x <= -116) %>%
-  mutate(area = area * p) %>% 
-  summarise(area = sum(area)) %>% 
-  mutate(time = as.Date(time),
-         type = "30-40° N & June-October")
-
-t5 = t5 %>% 
-  mutate(month = substr(as.character(time), 6, 7))
-
-t5$area = ifelse(t5$month %in% c("06", "07", "08", "09", "10"), t5$area, NA)
-
-t5 = t5[,c("time", "area", "type")]
-
-t6 = df %>% 
-  group_by(time) %>% 
-  mutate(area = area * p) %>% 
-  summarise(area = sum(area)) %>% 
-  mutate(time = as.Date(time),
-         type = "Untrimmed")
-
-t = rbind(t3, t4, t5, t6)
-
-ggplot(t, aes(x = time, y = area, color = type, fill = type)) +
-  # geom_line(aes(y = rollmean(area, 10, na.pad = TRUE))) +
-  # scale_color_viridis_c("km^2") +
-  # scale_fill_viridis_c() + 
-  stat_smooth(method = "loess", span = 0.1, aes(color = type), show.legend = F) +
-  ylab("Total Habitat Area (km^2)") + 
-  ggtitle("10-day running mean. Based on probablistic model. Loess fit with span = 0.1") + 
-  facet_wrap(.~type, scales = "free_y", nrow = 1)
+p1 = ggplot(t, aes(x = time, y = area, color = area)) +
+  geom_line(aes(y = rollmean(area, 10, na.pad = TRUE))) +
+  scale_colour_viridis_c("km^2") + 
+  ylab("Total Thermal Habitat (km^2)") + 
+  ggtitle("10-day running mean. Based on probablistic model") + 
+  facet_wrap(.~type, scales = "free_y", nrow = 1) + 
   theme_classic2() 
+  
+p2 = ggplot(t, aes(x = time, y = area, color = type, fill = type)) +
+  scale_fill_viridis_d("") + 
+  scale_colour_viridis_d("") + 
+  stat_smooth(method = "loess", span = 0.1, aes(color = type), show.legend = T) +
+  ylab("Total Thermal Habitat (km^2)") + 
+  ggtitle("Loess fit with span = 0.1. Based on probablistic model.") + 
+  # facet_wrap(.~type, scales = "free_y", nrow = 1)
+  theme_classic2() + 
+  theme(legend.position = c(0.2, 0.9))
 
+png(paste0("/Users/Kisei/Desktop/Fig.4_", Sys.Date(), ".png"), height = 10, width = 10, res = 500, units = 'in')
+grid.arrange(p1, p2, ncol = 1)
+dev.off()
+
+df %>%
+  subset(year %in% c(1982:2019)) %>%
+  subset(y <= 42) %>%
+  group_by(x, y) %>% 
+  summarise(p = mean(z, na.rm = T)) %>% 
+  mutate(type = "mean") %>% 
+  ggplot(aes(x, y, fill = p)) +
+  geom_raster() +
+  scale_fill_viridis_c("Mean") +  
+  borders(fill = "gray10") +
+  coord_quickmap(xlim = range(df$x),
+                 ylim = range(df$y)) + 
+  ylab("") + xlab("") + 
+  theme_classic() + 
+  theme(legend.position = c(0.2, 0.2))
 
 
 
