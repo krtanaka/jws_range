@@ -1,6 +1,11 @@
-library(dplyr)
+rm(list = ls())
+
 library(ggplot2)
 library(readr)
+library(plyr)
+library(mapdata)
+library(maptools)
+library(dplyr) 
 
 setwd("/Users/kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/citizen science/iNat/")
 
@@ -27,16 +32,19 @@ i.n <- plyr::ddply(.data=i,
 i.2013 = data.frame(year = 2013, n = "n=0")
 i.n = rbind(i.n, i.2013)
 
+w <- map_data("worldHires", ylim = c(35,40), xlim = c(-125,-120), resolution = 0)
+
 png('/Users/Kisei/Desktop/Fig.1.draft.png', height = 5, width = 9, units = 'in', res = 500)
 
-ii %>% ggplot(aes(longitude, latitude, color = species_guess)) + 
+ggplot() + 
+  coord_fixed(xlim = range(pretty(i$longitude)),
+              ylim = range(pretty(i$latitude))) +
+  geom_polygon(data = w, aes(x=long, y = lat)) +
+  geom_point(data = ii, aes(longitude, latitude, color = species_guess), size = 5, alpha = 0.9) + 
   scale_color_viridis_d("") + 
-  annotation_map(map_data("usa")) + #Add the map as a base layer before the points
-  # borders(fill = "gray50") +
-  coord_quickmap(xlim = range(pretty(i$longitude)),
-                 ylim = range(pretty(i$latitude))) +
-  geom_point(size = 5, alpha = 0.8) + 
-  scale_x_continuous(breaks = round(seq(min(i$longitude), max(i$latitude), by = 0.5),0)) + 
+  # annotation_map(map_data("usa")) + #Add the map as a base layer before the points
+  # borders("usa", fill = "gray50") +
+  scale_x_continuous(breaks = round(seq(min(i$longitude), max(i$latitude), by = 0.5), 1)) + 
   facet_wrap(.~ year, scales = "fixed", ncol = 8) +
   geom_text(data = i.n, aes(x = -Inf, y = -Inf, label = n, vjust = -1, hjust = -0.5), 
             colour = "black", inherit.aes = FALSE, parse = FALSE) + 
