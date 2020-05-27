@@ -68,13 +68,21 @@ t = d %>%
                             year %in% c(2014:2019) ~ "2014-2019"))
 
 lat = t %>% group_by(period) %>% summarise(z = mean(y))
-  
+
+forecast = data.frame(year = 2020, 
+                      y = (37.02439 + 37.03631)/2,
+                      period = "forecast")
+
+t = rbind(t, forecast)
+
 p1 = t %>%  
   ggplot(aes(year, y)) + 
-  geom_point() + geom_line() + 
+  geom_point() + 
+  geom_point(data = forecast, aes(year, y, color = period), size = 5) + 
+  geom_line() +
   ylab("JWS coldtail latitudinal center of gravity (dec deg)") + xlab("") + 
-  geom_segment(aes(x = 1982, xend = 2014, y = lat$z[1], yend = lat$z[1], color = "1982-2014"), show.legend = F) + 
-  geom_segment(aes(x = 2014, xend = 2019, y = lat$z[2], yend = lat$z[2], color = "2014-2019")) + 
+  geom_segment(aes(x = 1982, xend = 2014, y = lat$z[1], yend = lat$z[1], color = "1982-2014"), show.legend = F, size = 2) + 
+  geom_segment(aes(x = 2014, xend = 2019, y = lat$z[2], yend = lat$z[2], color = "2014-2019"), show.legend = F, size = 2) + 
   theme_pubr(I(15)) + 
   theme(legend.position = c(0.2, 0.9), 
         legend.title = element_blank())
@@ -106,8 +114,8 @@ p2 = d %>%
   theme(legend.position = "right", 
         legend.justification = c(1,1))
 
-setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/figure 3 poleward migr of tail/")
-setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/")
+setwd("/Users/ktanaka/Desktop/")
+setwd("/Users/Kisei/Desktop/")
 
 png("Fig.3a.png", width = 5, height = 6, units = "in", res = 100)
 p1
