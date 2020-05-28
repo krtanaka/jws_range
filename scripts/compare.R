@@ -94,23 +94,28 @@ t4 = df %>%
          type = "22.9° N - 47.4° N (California CC LME)")
 
 t = rbind(t3, t4)
+d$type <- factor(d$type, levels = c("22.9° N - 47.4° N (California CC LME)", "22.9° N - 42° N (No WA)"))
 
 p1 = ggplot(t, aes(x = time, y = area, color = area)) +
-  geom_line(aes(y = rollmean(area, 10, na.pad = TRUE))) +
+  geom_line(aes(y = rollmean(area, 10, na.pad = TRUE)), alpha = 0.5) +
+  stat_smooth(method = "loess", span = 0.1) +
   scale_colour_viridis_c("km^2") + 
-  ylab("Total Thermal Habitat (km^2)") + 
+  ylab("JWS Thermal Habitat (sq.km)") + 
   ggtitle("10-day running mean. Based on probablistic model") + 
   facet_wrap(.~type, scales = "free_y", nrow = 1) + 
-  theme_classic2() 
-  
+  scale_y_continuous(labels = scientific) + 
+  theme_pubr(I(20)) + 
+  theme(legend.position = "none")
+
 p2 = ggplot(t, aes(x = time, y = area, color = type, fill = type)) +
   scale_fill_viridis_d("") + 
   scale_colour_viridis_d("") + 
   stat_smooth(method = "loess", span = 0.1, aes(color = type), show.legend = T) +
-  ylab("Total Thermal Habitat (km^2)") + 
-  ggtitle("Loess fit with span = 0.1. Based on probablistic model.") + 
+  ylab("JWS Thermal Habitat (sq.km)") + 
+  scale_y_continuous(labels = scientific) + 
+  # ggtitle("Loess fit with span = 0.1. Based on probablistic model.") + 
   # facet_wrap(.~type, scales = "free_y", nrow = 1)
-  theme_classic() + 
+  theme_pubr(I(20)) + 
   theme(legend.position = c(0.2, 0.9))
 
 time = subset(t, type == "22.9° N - 42° N (No WA)")
@@ -120,6 +125,7 @@ d1$step = seq(1, dim(d1)[1], by = 1)
 d1 = predict(loess(area~step, d1, span = 0.1), d1$step)
 d1 = as.data.frame(d1)
 d1$type = "22.9° N - 42° N (No WA)"
+d1$type = "22.9° N - 47.4° N (California CC LME)"
 d1 = cbind(time$time, d1)
 colnames(d1) = c("time", "area", "type")
 
@@ -128,21 +134,36 @@ d2$step = seq(1, dim(d2)[1], by = 1)
 d2 = predict(loess(area~step, d2, span = 0.1), d2$step)
 d2 = as.data.frame(d2)
 d2$type = "22.9° N - 47.4° N (California CC LME)"
+d2$type = "22.9° N - 42° N (No WA)"
 d2 = cbind(time$time, d2)
 colnames(d2) = c("time", "area", "type")
 
+# d2$area = d2$area - d1$area
+
 d = rbind(d1, d2)
 
-d %>% ggplot(aes(x =time, y=area, fill=rev(type))) + 
-  # geom_area(aes(y = rollmean(area, 300, na.pad = TRUE))) + 
-  geom_area(position = "identity", alpha = 0.8) + 
-  # scale_y_continuous(limits=c(0,300000)) +
-  ylab("Total Thermal Habitat (km^2)") + 
-  scale_fill_viridis_d("") + 
-  theme_pubr()
+d$type <- factor(d$type, levels = c("22.9° N - 47.4° N (California CC LME)", "22.9° N - 42° N (No WA)"))
 
-png(paste0("/Users/Kisei/Desktop/Fig.4_", Sys.Date(), ".png"), height = 10, width = 10, res = 500, units = 'in')
-grid.arrange(p1, p2, ncol = 1)
+p3 = d %>% ggplot(aes(x =time, y=area, fill=rev(type))) + 
+  geom_area(position = "identity", alpha = 0.8) +
+  ylab("JWS Thermal Habitat (sq.km)") + 
+  scale_fill_viridis_d("") + 
+  theme_pubr(I(20)) + 
+  scale_y_continuous(labels = scientific) + 
+  theme(legend.position = c(0.25, 0.95))
+
+png(paste0("/Users/Kisei/Desktop/Fig.4_1", Sys.Date(), ".png"), height = 7, width = 10, res = 500, units = 'in')
+p1
+dev.off()
+
+png(paste0("/Users/Kisei/Desktop/Fig.4_2", Sys.Date(), ".png"), height = 7, width = 10, res = 500, units = 'in')
+# grid.arrange(p1, p2, ncol = 1)
+p2
+dev.off()
+
+png(paste0("/Users/Kisei/Desktop/Fig.4_3", Sys.Date(), ".png"), height = 7, width = 10, res = 500, units = 'in')
+# grid.arrange(p1, p2, ncol = 1)
+p3
 dev.off()
 
 df %>%
