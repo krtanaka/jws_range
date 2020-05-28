@@ -11,7 +11,7 @@ load("t_coldtail.Rdata")
 
 # reduce file size
 d = df %>% 
-  sample_frac(0.01)%>% 
+  sample_frac(1)%>% 
   subset(y <= 42) %>%
   subset(depth > -1000) %>%
   mutate(year = substr(as.character(time), 1, 4),

@@ -5,6 +5,7 @@ library(ggplot2)
 library(raster)
 
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_probablistic.Rdata")
+load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
 df$month = substr(as.character(df$time), 6, 7)
 df$year = substr(as.character(df$time), 1, 4)
@@ -128,7 +129,8 @@ print(m)
 dev.off()
 
 
-load("C:/Users/Kisei/jws_range/results/thermal_occupancy.Rdata")
+load("/Users/Kisei/jws_range/results/thermal_occupancy.Rdata")
+load("/Users/ktanaka/jws_range/results/thermal_occupancy.Rdata")
 
 t = df %>%
   group_by(time) %>%

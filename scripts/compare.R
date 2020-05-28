@@ -5,6 +5,7 @@ library(ggplot2)
 library(raster)
 
 load("/Users/Kisei/jws_range/data/lat_area.RData")
+load("/Users/ktanaka/jws_range/data/lat_area.RData")
 
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_IQR.Rdata")
 
@@ -71,6 +72,7 @@ ggplot(t, aes(x = time, y = area, color = area)) +
   facet_wrap(.~ type, ncol = 1)
 
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
+load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
 df = merge(df, lat_area)
 df = df %>% subset(depth > -1000)
@@ -108,8 +110,36 @@ p2 = ggplot(t, aes(x = time, y = area, color = type, fill = type)) +
   ylab("Total Thermal Habitat (km^2)") + 
   ggtitle("Loess fit with span = 0.1. Based on probablistic model.") + 
   # facet_wrap(.~type, scales = "free_y", nrow = 1)
-  theme_classic2() + 
+  theme_classic() + 
   theme(legend.position = c(0.2, 0.9))
+
+time = subset(t, type == "22.9° N - 42° N (No WA)")
+
+d1 = subset(t, type == "22.9° N - 42° N (No WA)")
+d1$step = seq(1, dim(d1)[1], by = 1)
+d1 = predict(loess(area~step, d1, span = 0.1), d1$step)
+d1 = as.data.frame(d1)
+d1$type = "22.9° N - 42° N (No WA)"
+d1 = cbind(time$time, d1)
+colnames(d1) = c("time", "area", "type")
+
+d2 = subset(t, type == "22.9° N - 47.4° N (California CC LME)")
+d2$step = seq(1, dim(d2)[1], by = 1)
+d2 = predict(loess(area~step, d2, span = 0.1), d2$step)
+d2 = as.data.frame(d2)
+d2$type = "22.9° N - 47.4° N (California CC LME)"
+d2 = cbind(time$time, d2)
+colnames(d2) = c("time", "area", "type")
+
+d = rbind(d1, d2)
+
+d %>% ggplot(aes(x =time, y=area, fill=rev(type))) + 
+  # geom_area(aes(y = rollmean(area, 300, na.pad = TRUE))) + 
+  geom_area(position = "identity", alpha = 0.8) + 
+  # scale_y_continuous(limits=c(0,300000)) +
+  ylab("Total Thermal Habitat (km^2)") + 
+  scale_fill_viridis_d("") + 
+  theme_pubr()
 
 png(paste0("/Users/Kisei/Desktop/Fig.4_", Sys.Date(), ".png"), height = 10, width = 10, res = 500, units = 'in')
 grid.arrange(p1, p2, ncol = 1)
