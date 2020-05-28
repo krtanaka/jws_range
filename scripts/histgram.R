@@ -12,18 +12,21 @@ load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/JWS_Correct
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 
 # JWS_Corrected$Temperature = round(JWS_Corrected$Temperature, 1)
+JWS_Corrected$id = substr(as.character(JWS_Corrected$id), 1, 9)
 
 d = JWS_Corrected
 d$month = substr(as.character(d$Time_s), 6, 7)
 plot(table(d$month))
+
+# d$id = substr(as.character(d$id), 1, 9)
 
 d$count = 1
 d = d %>% group_by(lat_pop, lon_pop, id, sex) %>% summarise(count = sum(count))
 d$id = as.factor(d$id)
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/supplement/')
-pdf("tag_locations.pdf", height = 10, width = 8)
-d %>%
+pdf("tag_locations.pdf", height = 7, width = 10)
+p1 = d %>%
   ggplot(aes(lon_pop, lat_pop,
              color = id,
              label = id)) +
@@ -37,10 +40,8 @@ d %>%
   xlab("Longitude") + ylab("Latitude") +
   # theme_classic2() +
   theme(legend.position = "none")
-dev.off()
 
-pdf("tag_counts.pdf", height = 5, width = 6)
-d %>%
+p2 = d %>%
   ggplot(aes(lon_pop, lat_pop,
              color = log10(count))) +
   borders(xlim = range(d$lon_pop),
@@ -52,21 +53,23 @@ d %>%
   xlab("Longitude") + ylab("Latitude") +
   # theme_classic2() +
   scale_color_viridis_c("log10(n)") +
-  theme(legend.position = c(0.15, 0.2))
+  theme(legend.position = c(0.05, 0.15))
+
+cowplot::plot_grid(p1, p2)
 dev.off()
 
 d1 = subset(JWS_Corrected, Depth <= 20); d1 = d1[,c("Temperature", "Depth", "id")]; d1$Depth_Range = "0-20m"; d1$count = 1
 d2 = subset(JWS_Corrected, Depth <= 2); d2 = d2[,c("Temperature", "Depth", "id")]; d2$Depth_Range = "0-2m"; d2$count = 1
 
-setwd("C:/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/supplement/")
-
-pdf("thermal_profile_tag_raw.pdf", height = 5, width = 10)
+pdf("thermal_profile_tag_raw.pdf", height = 10, width = 10)
 
 rbind(d1, d2) %>% 
   sample_frac(1) %>%
   ggplot(aes(x=Temperature, fill = Depth_Range, color = Depth_Range)) +
-  geom_density(alpha = 0.5) +
-  facet_wrap(.~id, scale = "free")
+  geom_density(alpha = 0.8) +
+  scale_fill_viridis_d() + 
+  scale_color_viridis_d() + 
+  facet_wrap(.~id, scale = "free_y")
 
 dev.off()
 
@@ -84,20 +87,17 @@ d2 = d2 %>%
 
 d = rbind(d1, d2) 
 
-pdf("thermal_profile_tag.pdf", height = 5, width = 10)
-
+pdf("thermal_profile_tag_normalized.pdf", height = 10, width = 10)
 p = d %>% ggplot(aes(Temperature, count, color = Depth_Range, fill = Depth_Range)) + 
   # geom_bar(stat="identity", position = position_dodge(width = 0.5)) +
-  geom_density(stat = "identity", alpha = 0.5) +
+  geom_density(stat = "identity", alpha = 0.8) +
   facet_wrap(.~id) +
-  # scale_color_viridis_d() +
-  # scale_fill_viridis_d() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
   # theme_minimal() + 
   ylab("Freq") + 
   theme(legend.position = "right")
-
 p
-
 dev.off()
 
 t = d
@@ -186,8 +186,9 @@ d4 = d[,c("Temperature", "pred_count_3", "weight_m3")]; d4$g = "Model_C"; colnam
 
 d = rbind(d1, d2, d3, d4); rm(d1, d2, d3, d4)
 
-pdf('thermal_percentiles.pdf', height = 4, width = 6)
-png('thermal_percentiles.png', height = 3, width = 4, units = "in", res = 100)
+setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 2 thermal niche profiling")
+pdf(paste0('Fig.1_', Sys.Date(), '.pdf'), height = 4, width = 6)
+# png('thermal_percentiles.png', height = 3, width = 4, units = "in", res = 100)
 
 d$g <- factor(d$g, levels = c("Observation", "Model_A", "Model_B", "Model_C"))
 

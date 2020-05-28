@@ -11,7 +11,9 @@ load("t_coldtail.Rdata")
 
 # reduce file size
 d = df %>% 
-  sample_frac(1)%>% 
+  sample_frac(0.01)%>% 
+  subset(y <= 42) %>%
+  subset(depth > -1000) %>%
   mutate(year = substr(as.character(time), 1, 4),
          month = substr(as.character(time), 6, 7),
          day = substr(as.character(time), 9, 10))
@@ -31,7 +33,9 @@ d = merge(d1, d2, all = T)
 
 #2020 Jan-Apr
 d_2020 = df %>% 
-  sample_frac(1)%>% 
+  sample_frac(0.01)%>% 
+  subset(y <= 42) %>%
+  subset(depth > -1000) %>%
   mutate(year = substr(as.character(time), 1, 4),
          month = substr(as.character(time), 6, 7),
          day = substr(as.character(time), 9, 10)) %>% 
