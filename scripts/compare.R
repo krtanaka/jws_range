@@ -1,13 +1,16 @@
 rm(list = ls())
 
 library(dplyr)
-library(ggplot2)
+library(ggpubr)
 library(raster)
+library(scales)
+library(zoo)
 
 load("/Users/Kisei/jws_range/data/lat_area.RData")
 load("/Users/ktanaka/jws_range/data/lat_area.RData")
 
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_IQR.Rdata")
+load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_IQR.Rdata")
 
 df = merge(df, lat_area)
 
@@ -57,10 +60,6 @@ colnames(t2) = c("time", "area")
 t2$type = "probablistic"
 
 t = rbind(t1, t2)
-
-library(zoo)
-library(ggpubr)
-library(gridExtra)
 
 ggplot(t, aes(x = time, y = area, color = area)) +
   geom_line(aes(y = rollmean(area, 10, na.pad = TRUE))) +
@@ -116,7 +115,7 @@ p2 = ggplot(t, aes(x = time, y = area, color = type, fill = type)) +
   # ggtitle("Loess fit with span = 0.1. Based on probablistic model.") + 
   # facet_wrap(.~type, scales = "free_y", nrow = 1)
   theme_pubr(I(20)) + 
-  theme(legend.position = c(0.2, 0.9))
+  theme(legend.position = c(0.3, 0.9))
 
 time = subset(t, type == "22.9° N - 42° N (No WA)")
 
@@ -152,16 +151,18 @@ p3 = d %>% ggplot(aes(x =time, y=area, fill=rev(type))) +
   scale_y_continuous(labels = scientific) + 
   theme(legend.position = c(0.25, 0.95))
 
-png(paste0("/Users/Kisei/Desktop/Fig.4_1", Sys.Date(), ".png"), height = 7, width = 10, res = 500, units = 'in')
+setwd("/Users/ktanaka/Desktop")
+
+png(paste0("Fig.4_1_", Sys.Date(), ".png"), height = 7, width = 12, res = 100, units = 'in')
 p1
 dev.off()
 
-png(paste0("/Users/Kisei/Desktop/Fig.4_2", Sys.Date(), ".png"), height = 7, width = 10, res = 500, units = 'in')
+png(paste0("Fig.4_2_", Sys.Date(), ".png"), height = 7, width = 10, res = 100, units = 'in')
 # grid.arrange(p1, p2, ncol = 1)
 p2
 dev.off()
 
-png(paste0("/Users/Kisei/Desktop/Fig.4_3", Sys.Date(), ".png"), height = 7, width = 10, res = 500, units = 'in')
+png(paste0("Fig.4_3_", Sys.Date(), ".png"), height = 7, width = 10, res = 100, units = 'in')
 # grid.arrange(p1, p2, ncol = 1)
 p3
 dev.off()

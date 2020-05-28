@@ -11,7 +11,7 @@ setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
 load("t_coldtail.Rdata")
 
 # reduce file size
-d = df %>% sample_frac(0.01); rm(df)
+d = df %>% sample_frac(1); rm(df)
 # d = df; rm(df)
 
 ### time series ###
@@ -92,8 +92,12 @@ t2 = d %>%
 l1 = t1 %>% group_by(period) %>% summarise(z = mean(y)); l1
 l2 = t2 %>% group_by(period) %>% summarise(z = mean(y)); l2
 
-forecast = data.frame(year = 2020, 
+forecast_1 = data.frame(year = 2020, 
                       y = (37.02439 + 37.03631)/2,
+                      period = "forecast")
+
+forecast_2 = data.frame(year = 2020, 
+                      y = (33.61341 + 33.81032)/2,
                       period = "forecast")
 
 t = rbind(t, forecast)
@@ -101,7 +105,7 @@ t = rbind(t, forecast)
 p1 = t1 %>%  
   ggplot(aes(year, y)) + 
   geom_point() + 
-  geom_point(data = forecast, aes(year, y, color = period), size = 5) +
+  geom_point(data = forecast_1, aes(year, y, color = period), size = 5) +
   geom_line() +
   ylab("JWS coldtail latitudinal center of gravity (dec deg)") + xlab("") + 
   geom_segment(aes(x = 1982, xend = 2014, y = l1$z[1], yend = l1$z[1], color = "1982-2014"), show.legend = T, size = 2) + 
@@ -114,7 +118,7 @@ p1 = t1 %>%
 p2 = t2 %>%  
   ggplot(aes(year, y)) + 
   geom_point() + 
-  geom_point(data = forecast, aes(year, y, color = period), size = 5) +
+  geom_point(data = forecast_2, aes(year, y, color = period), size = 5) +
   geom_line() +
   ylab("JWS coldtail latitudinal center of gravity (dec deg)") + xlab("") + 
   geom_segment(aes(x = 1982, xend = 2014, y = l2$z[1], yend = l2$z[1], color = "1982-2014"), show.legend = T, size = 2) + 

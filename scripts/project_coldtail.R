@@ -33,7 +33,7 @@ d = merge(d1, d2, all = T)
 
 #2020 Jan-Apr
 d_2020 = df %>% 
-  sample_frac(0.01)%>% 
+  sample_frac(1)%>% 
   subset(y <= 42) %>%
   subset(depth > -1000) %>%
   mutate(year = substr(as.character(time), 1, 4),
@@ -63,3 +63,4 @@ lm$coefficients[2]*d_2020 + lm$coefficients[1]
 d$ratio = d$y_jfma/d$y_all
 avg_ratio = mean(d$ratio)
 d_2020/avg_ratio
+
