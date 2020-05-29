@@ -11,7 +11,7 @@ setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
 load("t_coldtail.Rdata")
 
 # reduce file size
-d = df %>% sample_frac(1); rm(df)
+d = df %>% sample_frac(0.01); rm(df)
 # d = df; rm(df)
 
 ### time series ###
