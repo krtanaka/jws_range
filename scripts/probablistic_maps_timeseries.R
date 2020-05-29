@@ -85,6 +85,8 @@ t3_missing_days$time = as.Date(t3_missing_days$time)
 
 t3 = rbind(t3, t3_missing_days)
 
+t3 <- t3[order(t3$time),]
+
 t = rbind(
   # t0,
   t1, t2, t3)
@@ -168,16 +170,16 @@ d = rbind(d1, d2, d3)
 
 d$type <- factor(d$type, levels = c(
   # "22.9° N - 47.4° N (S.boundary Cali CC LME - N.boundary Cali CC LME)",
-  "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)",
+  "22.9° N - 33.4° N (S.boundary Cali CC LME - Point Conception)",
   "33.4° N - 37.4° N (Point Conception - San Francisco)",
-  "22.9° N - 33.4° N (S.boundary Cali CC LME - Point Conception)"))
+  "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)"))
 
 p3 = d %>% ggplot(aes(x =time, y=area, fill=rev(type))) + 
   geom_area(position = "identity", alpha = 0.8) +
   ylab("JWS Thermal Habitat (sq.km)") + 
   scale_fill_viridis_d("") + 
   theme_pubr(I(15)) + 
-  scale_y_continuous(labels = scientific) + 
+  scale_y_continuous(labels = scientific) +
   theme(legend.position = c(0.4, 0.95))
 
 setwd("/Users/Kisei/Desktop")
