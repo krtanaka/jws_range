@@ -130,6 +130,37 @@ p2 = t2 %>%
 
 cowplot::plot_grid(p1, p2)
 
+t1 = d %>% 
+  subset(year %in% c(1982:2019)) %>% 
+  subset(depth > -1000) %>%
+  group_by(year) %>% 
+  summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
+  mutate(period = case_when(year %in% c(1982:2014) ~ "1982-2014",
+                            year %in% c(2014:2019) ~ "2014-2020"))
+
+forecast_1 = data.frame(year = 2020, 
+                        y = (37.02439 + 37.03631)/2,
+                        period = "2014-2020")
+
+t = rbind(t1, forecast_1)
+
+
+l = t %>% group_by(period) %>% summarise(z = mean(y)); l
+
+t %>%  
+  ggplot(aes(year, y)) + 
+  geom_point() + 
+  geom_point(data = forecast_1, aes(year, y), size = 5, shape = 1) +
+  geom_line() +
+  ylab("JWS coldtail latitudinal center of gravity (dec deg)") + xlab("") + 
+  geom_segment(aes(x = 1982, xend = 2014, y = l$z[1], yend = l$z[1]), color = "blue",show.legend = T, size = 2) + 
+  geom_segment(aes(x = 2014, xend = 2020, y = l$z[2], yend = l$z[2]), color = "red", show.legend = F, size = 2) + 
+  theme_pubr(I(15)) + 
+  theme(legend.position = c(0.2, 0.9), 
+        legend.title = element_blank())
+
+
+
 ### map ###
 p2 = d %>% 
   subset(year %in% c(1982:2019)) %>% 
