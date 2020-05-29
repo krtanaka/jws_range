@@ -21,7 +21,6 @@ df$month = substr(df$time, 6, 7)
 #################################
 
 setwd("/Users/Kisei/Desktop")
-
 png(paste0("Fig.4_probabilistic_maps_", Sys.Date(), ".png"), res = 500, height = 10, width = 10, units = "in")
 
 df %>%
@@ -78,10 +77,13 @@ t3 = df %>%
   mutate(time = as.Date(time),
          type = "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)")
 
-full_time_series = t0$time
+t3_missing_days = data.frame(time = setdiff(as.character(t0$time), as.character(t3$time)),
+                             area = NA, 
+                             type = "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)")
 
-t3 = merge(t0$time, t3, all = T)
+t3_missing_days$time = as.Date(t3_missing_days$time)
 
+t3 = rbind(t3, t3_missing_days)
 
 t = rbind(
   # t0,
@@ -122,6 +124,7 @@ p2 = ggplot(t, aes(x = time, y = area, color = type, fill = type)) +
   theme_pubr(I(10)) + 
   theme(legend.position = "none")
 
+setwd("/Users/Kisei/Desktop")
 png(paste0("Fig.4_binned_lat_timeseries_", Sys.Date(), ".png"), height = 7, width = 10, res = 300, units = 'in')
 cowplot::plot_grid(p1, p2, ncol = 2)
 dev.off()
@@ -140,6 +143,7 @@ d1$step = seq(1, dim(d1)[1], by = 1)
 d1 = predict(loess(area~step, d1, span = 0.1), d1$step)
 d1 = as.data.frame(d1)
 d1$type = "22.9° N - 33.4° N (S.boundary Cali CC LME - Point Conception)"
+d1$type = "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)"
 d1 = cbind(time$time, d1)
 colnames(d1) = c("time", "area", "type")
 
@@ -156,53 +160,28 @@ d3$step = seq(1, dim(d3)[1], by = 1)
 d3 = predict(loess(area~step, d3, span = 0.1), d3$step)
 d3 = as.data.frame(d3)
 d3$type = "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)"
+d3$type = "22.9° N - 33.4° N (S.boundary Cali CC LME - Point Conception)"
 d3 = cbind(time$time, d3)
 colnames(d3) = c("time", "area", "type")
 
-# d2$area = d2$area - d1$area
+d = rbind(d1, d2, d3)
 
-d = rbind(d1, d2)
-
-d$type <- factor(d$type, levels = c("22.9° N - 47.4° N (California CC LME)", "22.9° N - 42° N (No WA)"))
+d$type <- factor(d$type, levels = c(
+  # "22.9° N - 47.4° N (S.boundary Cali CC LME - N.boundary Cali CC LME)",
+  "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)",
+  "33.4° N - 37.4° N (Point Conception - San Francisco)",
+  "22.9° N - 33.4° N (S.boundary Cali CC LME - Point Conception)"))
 
 p3 = d %>% ggplot(aes(x =time, y=area, fill=rev(type))) + 
   geom_area(position = "identity", alpha = 0.8) +
   ylab("JWS Thermal Habitat (sq.km)") + 
   scale_fill_viridis_d("") + 
-  theme_pubr(I(20)) + 
+  theme_pubr(I(15)) + 
   scale_y_continuous(labels = scientific) + 
-  theme(legend.position = c(0.25, 0.95))
+  theme(legend.position = c(0.4, 0.95))
 
 setwd("/Users/Kisei/Desktop")
 
-png(paste0("Fig.4_1_", Sys.Date(), ".png"), height = 7, width = 12, res = 100, units = 'in')
-p1
-dev.off()
-
-png(paste0("Fig.4_2_", Sys.Date(), ".png"), height = 10, width = 10, res = 300, units = 'in')
-p2
-dev.off()
-
-png(paste0("Fig.4_3_", Sys.Date(), ".png"), height = 7, width = 10, res = 100, units = 'in')
-# grid.arrange(p1, p2, ncol = 1)
+png(paste0("Fig.4_stacked_area_plots_", Sys.Date(), ".png"), height = 7, width = 10, res = 300, units = 'in')
 p3
 dev.off()
-
-df %>%
-  subset(year %in% c(1982:2019)) %>%
-  subset(y <= 42) %>%
-  group_by(x, y) %>% 
-  summarise(p = mean(z, na.rm = T)) %>% 
-  mutate(type = "mean") %>% 
-  ggplot(aes(x, y, fill = p)) +
-  geom_raster() +
-  scale_fill_viridis_c("Mean") +  
-  borders(fill = "gray10") +
-  coord_quickmap(xlim = range(df$x),
-                 ylim = range(df$y)) + 
-  ylab("") + xlab("") + 
-  theme_classic() + 
-  theme(legend.position = c(0.2, 0.2))
-
-
-
