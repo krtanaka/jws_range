@@ -5,7 +5,7 @@ library(ggplot2)
 library(raster)
 
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/")
-setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/")
+setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
 
 load("t_coldtail.Rdata")
 

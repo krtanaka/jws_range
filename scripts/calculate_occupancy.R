@@ -3,12 +3,14 @@ rm(list = ls())
 library(dplyr)
 library(ggplot2)
 library(raster)
-
 library(doParallel)
+library(sp)
+library(maptools)
 cores = detectCores()/2
 registerDoParallel(cores = cores)
 
 dir = Sys.info()[7]
+
 setwd(paste0('/Users/', dir, '/jws_range/data/'))
 
 load('depth_0.25.Rdata')
@@ -26,17 +28,22 @@ s$p = (s$p-min(s$p))/(max(s$p) - min(s$p))
 
 plot(s)
 
+#add lme
+lme <- readOGR("/Users/kisei/Google Drive/Research/GIS/LME66/LMEs66.shp")
+CRS.new <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0+datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0") #EPSG:102003
+proj4string(lme) <- CRS.new
+
 r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
   
   # year = 2019
   
-  load(paste0("/Users/ktanaka/jws_range/data/sst.day.mean.", year , ".RData"))
+  load(paste0("/Users/Kisei/jws_range/data/sst.day.mean.", year , ".RData"))
 
   year_sum = NULL
   
   for (day in 1:dim(df)[3]) {
     
-    # day = 200
+    # day = 1
     
     d = df[[day]]
     time = as.character(names(d))
@@ -51,17 +58,19 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     d = merge(d, depth)
     d$time = time
     
-    # xlims = range(d$x); ylims = range(d$y)
+    #add lme layer
+    latlon = d[,c("x", "y")]
+    coordinates(latlon) = ~x+y
+    proj4string(latlon) <- CRS.new
+    area <- over(latlon, lme)
+    colnames(area)[1] = "lme"
+    d = cbind(d, area[2])
+    d = d %>% subset(LME_NUMBER == "3")
+    
     # d %>% ggplot(aes(x, y, fill = p)) +
     #   geom_tile() +
-    #   scale_fill_viridis_c("") +
-    #   borders(xlim = xlims,
-    #           ylim = ylims,
-    #           fill = "gray20") +
-    #   coord_quickmap(xlim = xlims,
-    #                  ylim = ylims) +
-    #   theme_minimal()
-    
+    #   scale_fill_viridis_c("")
+
     year_sum = rbind(year_sum, d)
     
   }
@@ -80,5 +89,5 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
 }
 
 df = as.data.frame(r)
-save(df, file = "/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/t_probablistic.Rdata")
+save(df, file = "/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/t_probablistic_lme.Rdata")
 
