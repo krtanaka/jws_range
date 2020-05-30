@@ -6,6 +6,8 @@ library(raster)
 library(doParallel)
 library(sp)
 library(maptools)
+library(rgdal)
+
 cores = detectCores()/2
 registerDoParallel(cores = cores)
 
@@ -17,14 +19,14 @@ depth = d
 depth = rasterToPoints(depth)
 depth = as.data.frame(depth)
 
-mode = c("coldtail", "IQR")[2]
+mode = c("coldtail", "IQR")[1]
 
 #add lme
-lme <- readOGR("/Users/kisei/Google Drive/Research/GIS/LME66/LMEs66.shp")
+lme <- readOGR(paste0("/Users/", dir, "/Google Drive/Research/GIS/LME66/LMEs66.shp"))
 CRS.new <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0+datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0") #EPSG:102003
 proj4string(lme) <- CRS.new
 
-r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
+r = foreach(year = 1981:2020, .combine = rbind, .packages = 'dplyr') %dopar% {
   
   # year = 2019
   
@@ -89,5 +91,5 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
 }
 
 df = as.data.frame(r)
-save(df, file = paste0("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/t_", mode,"_lme.Rdata"))
+save(df, file = paste0("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_", mode,"_lme.Rdata"))
 
