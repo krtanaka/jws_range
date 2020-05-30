@@ -147,19 +147,24 @@ t = rbind(t1, forecast_1)
 
 l = t %>% group_by(period) %>% summarise(z = mean(y)); l
 
+l$year = c(1998, 2017)
+
 t %>%  
   ggplot(aes(year, y)) + 
   geom_point() + 
-  geom_point(data = forecast_1, aes(year, y), size = 5, shape = 1) +
+  geom_point(data = forecast_1, aes(year, y), size = 10, shape = 1) +
   geom_line() +
   ylab("JWS coldtail latitudinal center of gravity (dec deg)") + xlab("") + 
   geom_segment(aes(x = 1982, xend = 2014, y = l$z[1], yend = l$z[1]), color = "blue",show.legend = T, size = 2) + 
   geom_segment(aes(x = 2014, xend = 2020, y = l$z[2], yend = l$z[2]), color = "red", show.legend = F, size = 2) + 
-  theme_pubr(I(15)) + 
-  theme(legend.position = c(0.2, 0.9), 
+  geom_label(data=l, 
+             aes(y = z, x = year, 
+                 label = period),
+             nudge_x = c(0, 0),
+             nudge_y = c(0, 0)) +
+  theme_pubr(I(15)) +
+  theme(legend.position = c(0.2, 0.9),
         legend.title = element_blank())
-
-
 
 ### map ###
 p2 = d %>% 

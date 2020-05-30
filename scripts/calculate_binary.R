@@ -4,6 +4,8 @@ library(dplyr)
 library(ggplot2)
 library(raster)
 library(doParallel)
+library(sp)
+library(maptools)
 cores = detectCores()/2
 registerDoParallel(cores = cores)
 
@@ -16,6 +18,11 @@ depth = rasterToPoints(depth)
 depth = as.data.frame(depth)
 
 mode = c("coldtail", "IQR")[2]
+
+#add lme
+lme <- readOGR("/Users/kisei/Google Drive/Research/GIS/LME66/LMEs66.shp")
+CRS.new <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0+datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0") #EPSG:102003
+proj4string(lme) <- CRS.new
 
 r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
   
@@ -37,6 +44,15 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     d = as.data.frame(d)
     colnames(d) = c("x", "y", "z")
     
+    #add lme layer
+    latlon = d[,c("x", "y")]
+    coordinates(latlon) = ~x+y
+    proj4string(latlon) <- CRS.new
+    area <- over(latlon, lme)
+    colnames(area)[1] = "lme"
+    d = cbind(d, area[2])
+    d = d %>% subset(LME_NUMBER == "3")
+    
     if (mode == "coldtail") {
       
       d = merge(d, depth, all = T)
@@ -57,12 +73,11 @@ r = foreach(year = 1981:2020, .combine = rbind) %dopar% {
     #   geom_tile() +
     #   stat_smooth(data = subset(d, z > 0), method = "auto") +
     #   borders(fill = "gray20") +
-    #   coord_quickmap(xlim = range(d$x),
-    #                  ylim = range(d$y)) + 
-    #   # scale_fill_viridis_c() + 
-    #   theme_void() + 
+    #   coord_quickmap(xlim = range(d$x), ylim = range(d$y)) +
+    #   scale_fill_viridis_c() +
+    #   theme_void() +
     #   theme(legend.position = "none")
-    
+
     year_sum = rbind(year_sum, d)
     
   }
