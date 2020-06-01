@@ -11,10 +11,18 @@ d1 <- read_csv("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/citize
 
 d1$trips = 1
 
+d1$juv_juv = ifelse(d1$min_stage == "juvenile" & d1$max_stage == "juvenile", d1$n_sharks, NA)
+d1$juv_sub = ifelse(d1$min_stage == "juvenile" & d1$max_stage == "subadult", d1$n_sharks, NA)
+d1$sub_sub = ifelse(d1$min_stage == "subadult" & d1$max_stage == "subadult", d1$n_sharks, NA)
+d1$na_na = 0
+
 d1 = d1 %>% group_by(year) %>% 
   summarise(trips = sum(trips, na.rm = T),
-            sharks = sum(n_sharks, na.rm = T)) %>% 
-  mutate(sharks_per_trip = sharks/trips, 
+            juv_juv = sum(juv_juv, na.rm = T),
+            juv_sub = sum(juv_sub, na.rm = T)*0.8,
+            sub_sub = sum(sub_sub, na.rm = T),
+            na_na = sum(na_na, na.rm = T)) %>% 
+  mutate(sharks_per_trip = (na_na + juv_juv + juv_sub)/trips, 
          cpue = scales::rescale(sharks_per_trip, to = c(0,1)),
          category = "boat & drone") %>% 
   select(year, cpue, category)
