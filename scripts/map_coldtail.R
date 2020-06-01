@@ -8,7 +8,7 @@ library(gridExtra)
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/")
 setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
 
-load("t_coldtail.Rdata")
+load("t_coldtail_lme.Rdata")
 
 # reduce file size
 d = df %>% sample_frac(0.01); rm(df)
