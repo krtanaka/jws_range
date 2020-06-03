@@ -23,7 +23,8 @@ d1 = d1 %>% group_by(year) %>%
             sub_sub = sum(sub_sub, na.rm = T),
             na_na = sum(na_na, na.rm = T)) %>% 
   mutate(sharks_per_trip = (na_na + juv_juv + juv_sub)/trips, 
-         cpue = scales::rescale(sharks_per_trip, to = c(0,1)),
+         # cpue = scales::rescale(sharks_per_trip, to = c(0,1)),
+         cpue = sharks_per_trip/max(sharks_per_trip),
          category = "boat & drone") %>% 
   select(year, cpue, category)
 
@@ -39,18 +40,20 @@ d2$sharks = 1
 
 d2 = d2 %>% group_by(year) %>% 
   summarise(sharks = sum(sharks, na.rm = T)) %>% 
-  mutate(cpue = scales::rescale(sharks, to = c(0,1)),
-         category = "iNat") %>% 
+  mutate(cpue = sharks/max(sharks),
+         # cpue = scales::rescale(sharks, to = c(0,1)),
+         category = "iNat") %>%
   select(year, cpue, category)
 
 d_2013 = data.frame(year = 2013, 
                     cpue = 0, 
                     category = "iNat")
+
 d2 = rbind(d2, d_2013)
 
 setwd("/Users/Kisei/Desktop")
-png(paste0("Fig.1_", Sys.Date(), ".png"), res = 300, height = 3, width = 5, units = "in")
-# pdf(paste0("Fig.1_", Sys.Date(), ".pdf"), height = 4, width = 5)
+# png(paste0("Fig.1c_", Sys.Date(), ".png"), res = 300, height = 3, width = 5, units = "in")
+pdf(paste0("Fig.1c_", Sys.Date(), ".pdf"), height = 4, width = 5)
 rbind(d1, d2) %>% 
   ggplot(aes(year, cpue, color = category, group = category)) +
   geom_point(size = 3, alpha = 0.8) + 

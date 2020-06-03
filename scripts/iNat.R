@@ -34,7 +34,9 @@ i.n = rbind(i.n, i.2013)
 
 w <- map_data("worldHires", ylim = c(35,40), xlim = c(-125,-120), resolution = 0)
 
-png('/Users/Kisei/Desktop/Fig.1.draft.png', height = 5, width = 9, units = 'in', res = 500)
+setwd("/Users/Kisei/Desktop")
+# png(paste0("Fig.1b_", Sys.Date(), ".png"), res = 300, height = 3, width = 5, units = "in")
+pdf(paste0("Fig.1b_", Sys.Date(), ".pdf"), height = 5, width = 9)
 
 ggplot() + 
   coord_fixed(xlim = range(pretty(i$longitude)),
