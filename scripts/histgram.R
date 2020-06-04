@@ -11,67 +11,13 @@ probs <- c(0, 0.025, 0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95, 0.975, 1)
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 
+JWS_Corrected = JWS_Corrected %>% as.data.frame %>% sample_frac(0.001)
+
 # JWS_Corrected$Temperature = round(JWS_Corrected$Temperature, 1)
 JWS_Corrected$id = substr(as.character(JWS_Corrected$id), 1, 9)
 
-d = JWS_Corrected
-d$month = substr(as.character(d$Time_s), 6, 7)
-plot(table(d$month))
-
-# d$id = substr(as.character(d$id), 1, 9)
-
-d$count = 1
-d = d %>% group_by(lat_pop, lon_pop, id, sex) %>% summarise(count = sum(count))
-d$id = as.factor(d$id)
-
-setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/supplement/')
-pdf("tag_locations.pdf", height = 7, width = 10)
-p1 = d %>%
-  ggplot(aes(lon_pop, lat_pop,
-             color = id,
-             label = id)) +
-  borders(xlim = range(d$lon_pop),
-          ylim = range(d$lat_pop),
-          fill = "gray10") +
-  coord_map(xlim = range(pretty(d$lon_pop)),
-            ylim = range(pretty(d$lat_pop))) +
-  geom_point() +
-  ggrepel::geom_text_repel(aes(color = id), box.padding = 3) +
-  xlab("Longitude") + ylab("Latitude") +
-  # theme_classic2() +
-  theme(legend.position = "none")
-
-p2 = d %>%
-  ggplot(aes(lon_pop, lat_pop,
-             color = log10(count))) +
-  borders(xlim = range(d$lon_pop),
-          ylim = range(d$lat_pop),
-          fill = "gray10") +
-  coord_map(xlim = range(pretty(d$lon_pop)),
-            ylim = range(pretty(d$lat_pop))) +
-  geom_point(size = 5, alpha = 0.8) +
-  xlab("Longitude") + ylab("Latitude") +
-  # theme_classic2() +
-  scale_color_viridis_c("log10(n)") +
-  theme(legend.position = c(0.05, 0.15))
-
-cowplot::plot_grid(p1, p2)
-dev.off()
-
 d1 = subset(JWS_Corrected, Depth <= 20); d1 = d1[,c("Temperature", "Depth", "id")]; d1$Depth_Range = "0-20m"; d1$count = 1
 d2 = subset(JWS_Corrected, Depth <= 2); d2 = d2[,c("Temperature", "Depth", "id")]; d2$Depth_Range = "0-2m"; d2$count = 1
-
-pdf("thermal_profile_tag_raw.pdf", height = 10, width = 10)
-
-rbind(d1, d2) %>% 
-  sample_frac(1) %>%
-  ggplot(aes(x=Temperature, fill = Depth_Range, color = Depth_Range)) +
-  geom_density(alpha = 0.8) +
-  scale_fill_viridis_d() + 
-  scale_color_viridis_d() + 
-  facet_wrap(.~id, scale = "free_y")
-
-dev.off()
 
 d1 = d1 %>%
   group_by(id, Temperature) %>%
@@ -86,19 +32,6 @@ d2 = d2 %>%
          Depth_Range = "0-2m")
 
 d = rbind(d1, d2) 
-
-pdf("thermal_profile_tag_normalized.pdf", height = 10, width = 10)
-p = d %>% ggplot(aes(Temperature, count, color = Depth_Range, fill = Depth_Range)) + 
-  # geom_bar(stat="identity", position = position_dodge(width = 0.5)) +
-  geom_density(stat = "identity", alpha = 0.8) +
-  facet_wrap(.~id) +
-  scale_color_viridis_d() +
-  scale_fill_viridis_d() +
-  # theme_minimal() + 
-  ylab("Freq") + 
-  theme(legend.position = "right")
-p
-dev.off()
 
 t = d
 
@@ -120,19 +53,19 @@ t3$Bin_width = "0.5 deg C"
 
 t = rbind(t1, t2, t3)
 
-pdf("thermal_profile.pdf", height = 3, width = 10)
-
-t %>% 
-  ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
-  # geom_bar(stat="identity", position = position_dodge(width = 0.5)) +
-  geom_density(stat = "identity", alpha = 0.5) +
-  # scale_color_viridis_d() +
-  # scale_fill_viridis_d() +
-  ylab("Freq") +  
-  facet_wrap(.~ Bin_width, scales = "free", ncol = 3)+ 
-  theme_cowplot() 
-  
-dev.off()
+# pdf("thermal_profile.pdf", height = 3, width = 10)
+# 
+# t %>% 
+#   ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
+#   # geom_bar(stat="identity", position = position_dodge(width = 0.5)) +
+#   geom_density(stat = "identity", alpha = 0.5) +
+#   # scale_color_viridis_d() +
+#   # scale_fill_viridis_d() +
+#   ylab("Freq") +  
+#   facet_wrap(.~ Bin_width, scales = "free", ncol = 3)+ 
+#   theme_cowplot() 
+#   
+# dev.off()
 
 occup = t %>% 
   group_by(Depth_Range, Bin_width) %>% 
@@ -187,29 +120,57 @@ d4 = d[,c("Temperature", "pred_count_3", "weight_m3")]; d4$g = "Model_C"; colnam
 d = rbind(d1, d2, d3, d4); rm(d1, d2, d3, d4)
 
 setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 2 thermal niche profiling")
-pdf(paste0('Fig.1_', Sys.Date(), '.pdf'), height = 4, width = 6)
-# png('thermal_percentiles.png', height = 3, width = 4, units = "in", res = 100)
+pdf(paste0('Fig.2a_', Sys.Date(), '.pdf'), height = 8, width = 6)
+# png(paste0('Fig.2a_', Sys.Date(), '.png'), height = 5, width = 4, units = "in", res = 100)
 
-d$g <- factor(d$g, levels = c("Observation", "Model_A", "Model_B", "Model_C"))
-
-# d %>% 
-#   ggplot(aes(t, n, color = g)) + 
+# d$g <- factor(d$g, levels = c("Observation", "Model_A", "Model_B", "Model_C"))
+# d %>%
+#   ggplot(aes(t, n, color = g)) +
 #   geom_point(size = 2, alpha = 0.8) +
-#   geom_vline(data = t_opt, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
-#   geom_vline(data = t_h, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
-#   geom_vline(data = t_l, mapping = aes(xintercept = t, color = g), show.legend = FALSE) + 
-#   xlim(9, 27) + 
-#   geom_text(data = t_opt, aes(x = 9, y = c(0.004, 0.0038, 0.0036, 0.0034), 
-#                               label = paste0("t_opt=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
-#   geom_text(data = t_l, aes(x = 9, y = c(0.003, 0.0028, 0.0026, 0.0024), 
-#                               label = paste0("0.05p=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
-#   geom_text(data = t_h, aes(x = 9, y = c(0.002, 0.0018, 0.0016, 0.0014), 
-#                               label = paste0("0.95p=", round(t, 1))), hjust = 0, show.legend = FALSE) + 
+#   geom_vline(data = t_opt, mapping = aes(xintercept = t, color = g), show.legend = FALSE) +
+#   geom_vline(data = t_h, mapping = aes(xintercept = t, color = g), show.legend = FALSE) +
+#   geom_vline(data = t_l, mapping = aes(xintercept = t, color = g), show.legend = FALSE) +
+#   xlim(9, 27) +
+#   geom_text(data = t_opt, aes(x = 9, y = c(0.004, 0.0038, 0.0036, 0.0034),
+#                               label = paste0("t_opt=", round(t, 1))), hjust = 0, show.legend = FALSE) +
+#   geom_text(data = t_l, aes(x = 9, y = c(0.003, 0.0028, 0.0026, 0.0024),
+#                               label = paste0("0.05p=", round(t, 1))), hjust = 0, show.legend = FALSE) +
+#   geom_text(data = t_h, aes(x = 9, y = c(0.002, 0.0018, 0.0016, 0.0014),
+#                               label = paste0("0.95p=", round(t, 1))), hjust = 0, show.legend = FALSE) +
 #   scale_color_viridis_d("") +
-#   ylab("JWS Thermal Occupancy") + xlab("Temperature (deg C)") + 
+#   ylab("JWS Thermal Occupancy") + xlab("Temperature (deg C)") +
 #   theme(legend.position = c(0.75, 0.9))
 
-d %>% 
+library(Hmisc)
+library(plyr)
+
+box = d %>% subset(g == "Observation")
+
+df.wm = ddply(box, .(g), summarize, wmean = round(wtd.mean(t, w, na.rm = T), 2))
+
+d1 = d %>% 
+  subset(g == "Observation") %>% 
+  ggplot(aes(x = g, y = t, weight = w)) + 
+  geom_boxplot(width = 0.1, fatten = NULL, color = "#352A87", fill = "#352A87", alpha = 0.8) + 
+  # geom_point(data = df.wm, aes(x = g, y = wmean), size = 3, inherit.aes = FALSE) + 
+  coord_flip() + 
+  theme_pubr() + 
+  ylab("Temperature (deg C)") + xlab("") + 
+  theme(legend.position = "none",
+        axis.line = element_blank(),
+        # axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank(),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        plot.background=element_blank(),
+        plot.margin = unit(c(0.5, 0.4, 0.5, 2),"cm")) #top, right, bottom, left
+
+d2 = d %>% 
   subset(g == "Observation") %>% 
   ggplot(aes(t,  w,  color = g)) + 
   # geom_point(size = 2, color = "#352A87", alpha = 0.8) +
@@ -223,12 +184,13 @@ d %>%
   annotate("text", x = 10, y = 0.9, label = "Probablistic", color = "#352A87", hjust = 0, size = 4) + 
   ylab("JWS Thermal Occupancy") + xlab("Temperature (deg C)")
 
+cowplot::plot_grid(d1, d2, cols = 1)
 
 dev.off()
 
 occup = as.data.frame(occup)
 
-save(occup, file = "/Users/Kisei/jws_range/data/occupancy.RData")
+# save(occup, file = "/Users/Kisei/jws_range/data/occupancy.RData")
 
 d = subset(occup, Bin_width == "0.5 deg C")
 
@@ -281,10 +243,26 @@ d2 = d %>%
   theme_pubr() + 
   theme(legend.position = "none")
 
+library(Hmisc)
+library(plyr)
+df.wm = ddply(d, .(Depth_Range), summarize, wmean = round(wtd.mean(Temperature, count, na.rm = T), 2))
+
+d2 = d %>% 
+  ggplot(aes(x = Depth_Range, y = Temperature, weight = count, fill = Depth_Range, color = Depth_Range,)) + 
+  geom_boxplot(width = 0.1, fatten = NULL) + 
+  geom_point(data = df.wm, aes(x = Depth_Range, y = wmean), size = 3, inherit.aes = FALSE) + 
+  scale_fill_viridis_d("") + 
+  scale_color_viridis_d("") + 
+  coord_flip() + 
+  theme_pubr() + 
+  theme(legend.position = "none")
+
 gridExtra::grid.arrange(d1,d2,nrow=2)
 
 
 dev.off()
+
+
   
 
 
