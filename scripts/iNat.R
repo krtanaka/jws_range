@@ -11,7 +11,10 @@ setwd("/Users/kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/citizen science
 
 i <- read_csv("iNat_observs-90879_21May2020.csv")
 # i <- read_csv("observations-79116.csv")
-i$year = substr(as.character(i$observed_on), 1, 4)
+# i$year = substr(as.character(i$observed_on), 1, 4)
+
+i.n <- i %>% group_by(year) %>% 
+  summarise(n = sum(eligible))
 
 i = i %>% 
   subset(latitude < 37.2) %>% 
@@ -23,7 +26,6 @@ i_dummy$latitude = 37.99
 i_dummy$longitude = -121.8
   
 ii = rbind(i, i_dummy)
-
 
 i.n <- plyr::ddply(.data=i, 
                  .(year), 
