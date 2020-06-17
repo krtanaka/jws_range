@@ -3,6 +3,9 @@ from scipy.interpolate import PchipInterpolator, interp1d
 import matplotlib.pyplot as plt
 import pandas, datetime, os
 
+#Hi Kisei, Here is the important file directory with the scripts for tag data corrections.
+#C:\A_MBAq\PAPER Climate refugia\CR_databases\124\JWS_PAT_Data\WCH_Exported
+
 
 # def get_dy(y):
 #     return min([dyi for dyi in np.diff(y) if dyi > 0.])
