@@ -59,6 +59,39 @@ legend("topleft", legend = c(paste0("slope=", round(b, 2)),
 
 lm$coefficients[2]*d_2020 + lm$coefficients[1]
 
+scale_x_longitude <- function(xmin=-180, xmax=180, step=1, ...) {
+  xbreaks <- seq(xmin,xmax,step)
+  xlabels <- unlist(lapply(xbreaks, function(x) ifelse(x < 0, parse(text=paste0(x,"^o", "*W")), ifelse(x > 0, parse(text=paste0(x,"^o", "*E")),x))))
+  return(scale_x_continuous("Longitude", breaks = xbreaks, labels = xlabels, expand = c(0, 0), ...))
+}
+scale_x_longitude <- function(xmin=-90, xmax=90, step=0.5, ...) {
+  xbreaks <- seq(xmin,xmax,step)
+  xlabels <- unlist(lapply(xbreaks, function(x) ifelse(x < 0, parse(text=paste0(x,"^o", "*S")), ifelse(x > 0, parse(text=paste0(x,"^o", "*N")),x))))
+  return(scale_x_continuous("January-April", breaks = xbreaks, labels = xlabels, ...))
+}    
+scale_y_latitude <- function(ymin=-90, ymax=90, step=0.5, ...) {
+  ybreaks <- seq(ymin,ymax,step)
+  ylabels <- unlist(lapply(ybreaks, function(x) ifelse(x < 0, parse(text=paste0(x,"^o", "*S")), ifelse(x > 0, parse(text=paste0(x,"^o", "*N")),x))))
+  return(scale_y_continuous("January-December", breaks = ybreaks, labels = ylabels, ...))
+}    
+
+d %>% 
+  ggplot(aes(y_jfma, y_all, color = as.numeric(year))) +
+  geom_point(size = 5, alpha = 0.9) +
+  geom_smooth(method = "lm", se = F, color = "gray40") + 
+  scale_color_viridis_c("") + 
+  scale_x_longitude(xmin=-30, xmax=38, step=1) +
+  scale_y_latitude(ymin=-30, ymax=38, step=1) +
+  theme_pubr() + 
+  coord_fixed() + 
+  theme(legend.position = c(0.1, 0.9)) + 
+  annotate("text", 
+           x = Inf, y = -Inf, 
+           vjust = -1, hjust = 1,
+           label = paste0("slope = ", round(b, 2), "\n  adj.R2 = ", round(r, 2)))
+
+  
+
 # method 2
 d$ratio = d$y_jfma/d$y_all
 avg_ratio = mean(d$ratio)
