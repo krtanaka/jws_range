@@ -77,7 +77,7 @@ scale_y_latitude <- function(ymin=-90, ymax=90, step=0.5, ...) {
 
 d %>% 
   ggplot(aes(y_jfma, y_all, 
-             color = as.numeric(year),
+             # color = as.numeric(year),
              )) +
   geom_point(size = 5, shape = 1, stroke = 2) +
   geom_smooth(method = "lm", se = F, color = "gray40") + 
