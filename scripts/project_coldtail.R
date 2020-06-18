@@ -12,7 +12,7 @@ load("t_coldtail.Rdata")
 # reduce file size
 d = df %>% 
   sample_frac(1)%>% 
-  subset(y <= 42) %>%
+  # subset(y <= 42) %>%
   subset(depth > -1000) %>%
   mutate(year = substr(as.character(time), 1, 4),
          month = substr(as.character(time), 6, 7),
@@ -34,7 +34,7 @@ d = merge(d1, d2, all = T)
 #2020 Jan-Apr
 d_2020 = df %>% 
   sample_frac(1)%>% 
-  subset(y <= 42) %>%
+  # subset(y <= 42) %>%
   subset(depth > -1000) %>%
   mutate(year = substr(as.character(time), 1, 4),
          month = substr(as.character(time), 6, 7),
@@ -76,19 +76,26 @@ scale_y_latitude <- function(ymin=-90, ymax=90, step=0.5, ...) {
 }    
 
 d %>% 
-  ggplot(aes(y_jfma, y_all, color = as.numeric(year))) +
+  ggplot(aes(y_jfma, y_all, 
+             color = as.numeric(year),
+             )) +
   geom_point(size = 5, alpha = 0.9) +
   geom_smooth(method = "lm", se = F, color = "gray40") + 
   scale_color_viridis_c("") + 
   scale_x_longitude(xmin=-30, xmax=38, step=1) +
   scale_y_latitude(ymin=-30, ymax=38, step=1) +
-  theme_pubr() + 
+  theme_classic() + 
   coord_fixed() + 
   theme(legend.position = c(0.1, 0.9)) + 
+  # annotate("text", 
+  #          x = Inf, y = -Inf, 
+  #          vjust = -1, hjust = 1,
+  #          label = paste0("slope = ", round(b, 2), "\n  adj.R2 = ", round(r, 2))) + 
   annotate("text", 
            x = Inf, y = -Inf, 
            vjust = -1, hjust = 1,
-           label = paste0("slope = ", round(b, 2), "\n  adj.R2 = ", round(r, 2)))
+           label = paste0("adj.R2 = ", round(r, 2))) 
+  
 
   
 
