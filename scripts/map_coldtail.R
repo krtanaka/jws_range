@@ -8,7 +8,7 @@ library(gridExtra)
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/")
 setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
 
-load("t_coldtail_lme.Rdata")
+load("t_coldtail.Rdata")
 
 # reduce file size
 d = df %>% sample_frac(0.01); rm(df)
@@ -49,14 +49,14 @@ d = df %>% sample_frac(0.01); rm(df)
 
 t1 = d %>% 
   subset(year %in% c(1982:2019)) %>% 
-  subset(depth > -1000) %>%
+  # subset(depth > -1000) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T)) %>% 
   mutate(group = "22.9° N - 47.4° N")
 
 t2 = d %>% 
   subset(year %in% c(1982:2019)) %>% 
-  subset(depth > -1000) %>%
+  # subset(depth > -1000) %>%
   subset(y <= 42) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T)) %>% 
@@ -72,7 +72,7 @@ rbind(t1, t2) %>%
 
 t1 = d %>% 
   subset(year %in% c(1982:2019)) %>% 
-  subset(depth > -1000) %>%
+  # subset(depth > -1000) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
   mutate(period = case_when(year %in% c(1982:2014) ~ "1982-2014",
@@ -81,8 +81,8 @@ t1 = d %>%
 
 t2 = d %>% 
   subset(year %in% c(1982:2019)) %>% 
-  subset(depth > -1000) %>%
-  subset(y <= 42) %>%
+  # subset(depth > -1000) %>%
+  # subset(y <= 42) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
   mutate(period = case_when(year %in% c(1982:2014) ~ "1982-2014",
@@ -132,7 +132,7 @@ cowplot::plot_grid(p1, p2)
 
 t1 = d %>% 
   subset(year %in% c(1982:2019)) %>% 
-  subset(depth > -1000) %>%
+  # subset(depth > -1000) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
   mutate(period = case_when(year %in% c(1982:2014) ~ "1982-2014",
