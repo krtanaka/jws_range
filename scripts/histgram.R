@@ -55,15 +55,15 @@ t = rbind(t1, t2, t3)
 
 # pdf("thermal_profile.pdf", height = 3, width = 10)
 # 
-# t %>% 
-#   ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
-#   # geom_bar(stat="identity", position = position_dodge(width = 0.5)) +
-#   geom_density(stat = "identity", alpha = 0.5) +
-#   # scale_color_viridis_d() +
-#   # scale_fill_viridis_d() +
-#   ylab("Freq") +  
-#   facet_wrap(.~ Bin_width, scales = "free", ncol = 3)+ 
-#   theme_cowplot() 
+t %>%
+  ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
+  # geom_bar(stat="identity", position = position_dodge(width = 0.5)) +
+  geom_density(stat = "identity", alpha = 0.5) +
+  # scale_color_viridis_d() +
+  # scale_fill_viridis_d() +
+  ylab("Freq") +
+  facet_wrap(.~ Bin_width, scales = "free", ncol = 3)+
+  theme_cowplot()
 #   
 # dev.off()
 
