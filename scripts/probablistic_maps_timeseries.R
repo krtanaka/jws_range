@@ -26,13 +26,13 @@ pdf(paste0("Probabilistic_maps_", Sys.Date(), ".pdf"), height = 5, width = 5)
 
 df %>%
   # subset(month %in% c("06", "07", "08")) %>%
-  # subset(year %in% c(1984, 2019)) %>%
+  subset(year %in% c(1982:2019)) %>%
   group_by(x, y, year, month) %>% 
   summarise(p = mean(p, na.rm = T)) %>% 
   ggplot(aes(x, y, fill = p)) +
   geom_tile() +
   scale_fill_viridis_c("") +  
-  annotation_map(map_data("world")) +
+  annotation_map(map_data("world"), col = "gray50") +
   coord_fixed() + 
   # borders(fill = "gray10") +
   # coord_quickmap(xlim = range(df$x),
@@ -42,7 +42,8 @@ df %>%
   # facet_grid(month~year) + 
   # facet_wrap(~year) +
   scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10),0)) + 
-  theme(legend.position = c(0.15,0.2))
+  # theme(legend.position = c(0.15,0.2)) + 
+  theme(legend.position = "right")
 
 dev.off()
 
