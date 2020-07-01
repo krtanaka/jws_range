@@ -9,7 +9,7 @@ setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
 
 load("t_coldtail.Rdata")
 
-# reduce file size
+# reduce file size if you want to
 d = df %>% 
   sample_frac(1)%>% 
   # subset(y <= 42) %>%
