@@ -18,48 +18,39 @@ d$count = 1
 d = d %>% group_by(lat_pop, lon_pop, id, sex) %>% summarise(count = sum(count))
 d$id = as.factor(d$id)
 
-setwd('/Users/Kisei/Desktop/')
-pdf("tag_locations.pdf", height = 8, width = 8)
+d$year = substr(as.character(d$Time_s), 1, 4)
+plot(table(d$year))
 
-# p1 = 
-  d %>%
+setwd('/Users/Kisei/Desktop/')
+pdf("tag_locations.pdf", height = 6, width = 8)
+
+p1 =  d %>%
   ggplot(aes(lon_pop, lat_pop,
              color = id,
              label = id)) +
-  # borders(xlim = range(d$lon_pop),
-  #         ylim = range(d$lat_pop),
-  #         fill = "gray10") +
-  # coord_map(xlim = range(pretty(d$lon_pop)),
-  #           ylim = range(pretty(d$lat_pop))) +
   ylim(c(22.9, 47.4)) + 
-  xlim(c(-128, -110)) + 
-  geom_point() +
+  xlim(c(-126, -110)) + 
   annotation_map(map_data("world")) +
-  ggrepel::geom_text_repel(aes(color = id), box.padding = 5) +
+  geom_point(size = 5, alpha = 0.8) +
+  ggrepel::geom_text_repel(aes(color = id), box.padding = 1, point.padding = 3) +
   xlab("Longitude") + ylab("Latitude") +
   theme_pubr() +
   coord_fixed() + 
   theme(legend.position = "none")
 
-# p2 = d %>%
-#   ggplot(aes(lon_pop, lat_pop,
-#              color = log10(count))) +
-#   # borders(xlim = range(d$lon_pop),
-#   #         ylim = range(d$lat_pop),
-#   #         fill = "gray10") +
-#   # coord_map(xlim = range(pretty(d$lon_pop)),
-#   #           ylim = range(pretty(d$lat_pop))) +
-#   ylim(c(22.9, 47.4)) + 
-#   xlim(c(-128, -110)) + 
-#   geom_point(size = 5, alpha = 0.8) +
-#   xlab("Longitude") + ylab("Latitude") +
-#   annotation_map(map_data("world")) +
-#   theme_pubr() +
-#   coord_fixed() + 
-#   scale_color_viridis_c("log10(n)") +
-#   theme(legend.position = c(0.05, 0.15))
+p2 = d %>%
+  ggplot(aes(lon_pop, lat_pop,
+             color = log10(count))) +
+  ylim(c(22.9, 47.4)) +
+  xlim(c(-126, -110)) +
+  xlab("Longitude") + ylab("Latitude") +
+  annotation_map(map_data("world")) +
+  geom_point(size = 5, alpha = 0.8) +
+  theme_pubr() +
+  coord_fixed() +
+  scale_color_viridis_c("log10(n)") +
+  theme(legend.position = c(0.15, 0.2))
 
-# cowplot::plot_grid(p1, p2)
+cowplot::plot_grid(p1, p2)
 
-  
 dev.off()

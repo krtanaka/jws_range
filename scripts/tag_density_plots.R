@@ -10,7 +10,7 @@ range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 
-JWS_Corrected = JWS_Corrected %>% as.data.frame %>% sample_frac(0.001)
+JWS_Corrected = JWS_Corrected %>% as.data.frame %>% sample_frac(1)
 
 JWS_Corrected$Temperature = round(JWS_Corrected$Temperature, 1)
 JWS_Corrected$id = substr(as.character(JWS_Corrected$id), 1, 9)
@@ -18,7 +18,7 @@ JWS_Corrected$id = substr(as.character(JWS_Corrected$id), 1, 9)
 d1 = subset(JWS_Corrected, Depth <= 20); d1 = d1[,c("Temperature", "Depth", "id")]; d1$Depth_Range = "0-20m"; d1$count = 1
 d2 = subset(JWS_Corrected, Depth <= 2); d2 = d2[,c("Temperature", "Depth", "id")]; d2$Depth_Range = "0-2m"; d2$count = 1
 
-pdf("thermal_profile_tag_raw.pdf", height = 6, width = 6)
+pdf("thermal_profile_tag_raw.pdf", height = 6, width = 8)
 
 # rbind(d1, d2) %>% 
 #   sample_frac(1) %>%
@@ -28,16 +28,19 @@ pdf("thermal_profile_tag_raw.pdf", height = 6, width = 6)
 #   scale_color_viridis_d() + 
 #   facet_wrap(.~id, scale = "free_y")
 
+n <- ddply(.data = d1, .(id), summarize, n=paste("n =", formatC(length(count),format="e", digits = 1)))
+
 d1 %>% 
   sample_frac(1) %>%
   ggplot(aes(x = Temperature, fill = id, color = id)) +
-  geom_density(alpha = 0.5) +
+  geom_density(alpha = 0.9) +
   scale_fill_viridis_d("") + 
   scale_color_viridis_d("") + 
   theme_pubr() + 
-  xlab("Temperature (deg C)") + 
-  theme(legend.position = "right")
-  facet_wrap(.~id, scale = "free_y")
+  xlab("Temperature (deg C)") + ylab("Proportion of time spent") + 
+  theme(legend.position = "none") + 
+  facet_wrap(.~id, scale = "free_y") + 
+  geom_text(data = n, aes(x = -Inf, y = Inf, label = n), colour="black", hjust = -0.1, vjust = 1)
 
 dev.off()
 
