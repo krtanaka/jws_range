@@ -22,7 +22,7 @@ df$month = substr(df$time, 6, 7)
 
 setwd("/Users/Kisei/Desktop")
 # png(paste0("Fig.4_probabilistic_maps_", Sys.Date(), ".png"), res = 500, height = 10, width = 10, units = "in")
-pdf(paste0("Probabilistic_maps_", Sys.Date(), ".pdf"), height = 5, width = 5)
+pdf(paste0("Probabilistic_maps_", Sys.Date(), ".pdf"), height = 8, width = 17)
 
 df %>%
   # subset(month %in% c("06", "07", "08")) %>%
@@ -30,17 +30,14 @@ df %>%
   group_by(x, y, year, month) %>% 
   summarise(p = mean(p, na.rm = T)) %>% 
   ggplot(aes(x, y, fill = p)) +
-  geom_tile() +
+  geom_raster() +
   scale_fill_viridis_c("") +  
-  annotation_map(map_data("world"), col = "gray50") +
+  annotation_map(map_data("world")) +
   coord_fixed() + 
-  # borders(fill = "gray10") +
-  # coord_quickmap(xlim = range(df$x),
-  #                ylim = range(df$y)) + 
-  ylab("") + xlab("") + 
-  theme_pubr() +
+  xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
+  cowplot::theme_cowplot() +
   # facet_grid(month~year) + 
-  # facet_wrap(~year) +
+  facet_wrap(~year, ncol = 15) +
   scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10),0)) + 
   # theme(legend.position = c(0.15,0.2)) + 
   theme(legend.position = "right")
