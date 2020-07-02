@@ -43,7 +43,7 @@ p2 = d %>%
              color = log10(count))) +
   ylim(c(22.9, 47.4)) +
   xlim(c(-126, -110)) +
-  xlab("Longitude") + ylab("Latitude") +
+  xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
   annotation_map(map_data("world")) +
   geom_point(size = 5, alpha = 0.8) +
   theme_pubr() +
