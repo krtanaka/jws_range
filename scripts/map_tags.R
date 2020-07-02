@@ -33,7 +33,7 @@ p1 =  d %>%
   annotation_map(map_data("world")) +
   geom_point(size = 5, alpha = 0.8) +
   ggrepel::geom_text_repel(aes(color = id), box.padding = 1, point.padding = 3) +
-  xlab("Longitude") + ylab("Latitude") +
+  xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
   theme_pubr() +
   coord_fixed() + 
   theme(legend.position = "none")
