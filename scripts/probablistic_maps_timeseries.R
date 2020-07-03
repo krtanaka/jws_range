@@ -25,9 +25,9 @@ setwd("/Users/Kisei/Desktop")
 pdf(paste0("Probabilistic_maps_", Sys.Date(), ".pdf"), height = 8, width = 17)
 
 df %>%
-  # subset(month %in% c("06", "07", "08")) %>%
-  subset(year %in% c(1982:2019)) %>%
-  group_by(x, y, year, month) %>% 
+  # subset(year %in% c(1982:2019)) %>%
+  subset(time %in% c("2015-09-15", "2005-03-16")) %>%
+  group_by(x, y, year, month) %>%
   summarise(p = mean(p, na.rm = T)) %>% 
   ggplot(aes(x, y, fill = p)) +
   geom_raster() +
@@ -35,9 +35,9 @@ df %>%
   annotation_map(map_data("world")) +
   coord_fixed() + 
   xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
-  cowplot::theme_cowplot() +
-  # facet_grid(month~year) + 
-  facet_wrap(~year, ncol = 15) +
+  # cowplot::theme_cowplot() +
+  # facet_grid(month~year) +
+  facet_wrap(~year) +
   scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10),0)) + 
   # theme(legend.position = c(0.15,0.2)) + 
   theme(legend.position = "right")
@@ -54,11 +54,34 @@ area = df %>%
   mutate(area = area * p) %>% 
   summarise(area = sum(area))
 
-summary(area$area)
+summary(area$area) #daily average
 
-summary(lm(area ~ year, data = subset(area, year %in% c(1982:2015))))
+area$year = substr(area$time, 1, 4)
 
-summary(lm(area ~ year, data = subset(area, year %in% c(2015:2019))))
+area_year = area %>% 
+  group_by(year) %>% 
+  summarise(area = mean(area)) %>% 
+  mutate(year = as.numeric(year))
+  
+summary(area_year$area) #annual average
+
+#daily trend 1982-2019
+area$t_step = seq(1, 13879, by = 1)
+summary(lm(area ~ t_step, data = area))
+
+#annual trend 1982-2019
+summary(lm(area ~ year, data = area_year))
+
+par(mfrow = c(1,2))
+#annual trend between 1982-2019
+plot(area_year, tyle = "b")
+summary(lm(area ~ year, data = area_year))
+abline(lm(area ~ year, data = area_year))
+
+#annual trend between 2014-2019
+plot(area_year %>% subset(year %in% c(2014:2019)), tyle = "b")
+summary(lm(area ~ year, data = area_year %>% subset(year %in% c(2014:2019))))
+abline(summary(lm(area ~ year, data = area_year %>% subset(year %in% c(2014:2019)))))
 
 ####################################
 ### lat-bin specific time series ###
