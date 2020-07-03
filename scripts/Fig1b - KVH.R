@@ -66,3 +66,13 @@ ggplot(GWSlength_long_saleric, aes(x = length_m, group = source, color = source)
   scale_color_manual(values = c("#56B4E9", "#E7B800")) +
   scale_fill_manual(values = c("#56B4E9", "#E7B800")) +
   geom_vline(aes(xintercept = mean(length_m)), color = "#56B4E9", linetype="dashed")
+
+d1 = subset(GWSlength_long_saleric, source == "eric")
+d2 = subset(GWSlength_long_saleric, source == "sal")
+
+d1$juv = ifelse(d1$length_m >= 1.75 & d1$length_m <= 3, 1, 0)
+d2$juv = ifelse(d2$length_m >= 1.75 & d2$length_m <= 3, 1, 0)
+
+sum(d1$juv)/dim(d1)[1]
+sum(d2$juv)/dim(d2)[1]
+
