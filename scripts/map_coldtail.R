@@ -205,6 +205,7 @@ setwd("/Users/ktanaka/Desktop/")
 setwd("/Users/Kisei/Desktop/")
 
 png("Fig.3a.png", width = 5, height = 6, units = "in", res = 100)
+pdf("Fig.3a.pdf", width = 5, height = 6)
 p1
 dev.off()
 

@@ -11,7 +11,8 @@ probs <- c(0, 0.025, 0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95, 0.975, 1)
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 
-JWS_Corrected = JWS_Corrected %>% as.data.frame %>% sample_frac(0.001)
+JWS_Corrected = JWS_Corrected %>% as.data.frame 
+# %>% sample_frac(0.001)
 
 # JWS_Corrected$Temperature = round(JWS_Corrected$Temperature, 1)
 JWS_Corrected$id = substr(as.character(JWS_Corrected$id), 1, 9)
@@ -53,21 +54,37 @@ t3$Bin_width = "0.5 deg C"
 
 t = rbind(t1, t2, t3)
 
-# pdf("thermal_profile.pdf", height = 3, width = 10)
-# 
-# t %>% 
+pdf("thermal_profile.pdf", height = 3, width = 4)
+
+# t %>%
 #   ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
-#   # geom_bar(stat="identity", position = position_dodge(width = 0.5)) +
-#   geom_density(stat = "identity", alpha = 0.5) +
+#   geom_bar(stat = "identity", position = position_dodge(width = 0.5)) +
+#   # geom_density(stat = "identity", alpha = 0.5) +
 #   # scale_color_viridis_d() +
 #   # scale_fill_viridis_d() +
-#   ylab("Freq") +  
-#   facet_wrap(.~ Bin_width, scales = "free", ncol = 3)+ 
-#   theme_cowplot() 
-#   
-# dev.off()
+#   ylab("Freq") +
+#   facet_wrap(.~ Bin_width, scales = "free", ncol = 3) +
+#   theme_cowplot()
 
-occup = t %>% 
+t = t %>%
+  subset(Bin_width == "0.5 deg C") %>% 
+  subset(Depth_Range == "0-20m")
+
+t$count = t$count / sum(t$count)
+  
+t %>%
+  ggplot(aes(x = Temperature, y = count, color = Temperature, fill = Temperature)) +
+  geom_bar(stat = "identity") +
+  scale_color_viridis_c("deg C") +
+  scale_fill_viridis_c("deg C") +
+  ylab("Time spent (%)") +
+  xlab("Temperature (deg C)") + 
+  theme_cowplot() + 
+  theme(legend.position = "none")
+
+dev.off()
+
+occup = t %>%
   group_by(Depth_Range, Bin_width) %>% 
   mutate(sum = colSums(.[3]),
          count = count/sum)
