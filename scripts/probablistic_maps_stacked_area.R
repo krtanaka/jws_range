@@ -17,25 +17,9 @@ df = merge(df, lat_area)
 df = df %>% subset(depth > -1000)
 df$month = substr(df$time, 6, 7)
 
-df %>%
-  # subset(year %in% c(1982:2019)) %>%
-  subset(time %in% c("2015-09-15", "2005-03-16")) %>%
-  group_by(x, y, year, month, time) %>%
-  summarise(p = mean(z, na.rm = T)) %>% 
-  ggplot(aes(x, y, fill = p)) +
-  geom_tile() +
-  scale_fill_viridis_c("") +  
-  annotation_map(map_data("world")) +
-  coord_fixed() + 
-  xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
-  cowplot::theme_cowplot() +
-  facet_wrap(.~time) +
-  scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10),0)) + 
-  theme(legend.position = "right")
-
-########################################################
-### lat-bin specific time series (daily or annually) ###
-########################################################
+############################################
+### lat-bin specific time series (daily) ###
+############################################
 
 t0 = df %>% 
   group_by(time) %>% 
@@ -44,26 +28,12 @@ t0 = df %>%
   mutate(time = as.Date(time),
          type = "22.9° N - 47.4° N (Cali CC LME)")
 
-t0_year = t0 %>% 
-  mutate(year = substr(time, 1, 4)) %>% 
-  group_by(year) %>% 
-  summarise(area = mean(area)) %>% 
-  mutate(year = as.numeric(year),
-         type = "22.9° N - 47.4° N (Cali CC LME)")
-  
 t1 = df %>% 
   group_by(time) %>% 
   subset(y >= 22.9 & y <= 34.4) %>%
   mutate(area = area * p) %>% 
   summarise(area = sum(area)) %>% 
   mutate(time = as.Date(time),
-         type = "22.9° N - 34.4° N (S.boundary Cali CC LME - Point Conception)")
-
-t1_year = t1 %>% 
-  mutate(year = substr(time, 1, 4)) %>% 
-  group_by(year) %>% 
-  summarise(area = mean(area)) %>% 
-  mutate(year = as.numeric(year),
          type = "22.9° N - 34.4° N (S.boundary Cali CC LME - Point Conception)")
 
 t2 = df %>% 
@@ -74,13 +44,6 @@ t2 = df %>%
   mutate(time = as.Date(time),
          type = "34.4° N - 37.8° N (Point Conception - San Francisco)")
 
-t2_year = t2 %>% 
-  mutate(year = substr(time, 1, 4)) %>% 
-  group_by(year) %>% 
-  summarise(area = mean(area)) %>% 
-  mutate(year = as.numeric(year),
-         type = "34.4° N - 37.8° N (Point Conception - San Francisco)")
-
 t3 = df %>% 
   group_by(time) %>% 
   subset(y >= 37.8) %>%
@@ -89,31 +52,22 @@ t3 = df %>%
   mutate(time = as.Date(time),
          type = "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)")
 
-t3_year = t3 %>% 
-  mutate(year = substr(time, 1, 4)) %>% 
-  group_by(year) %>% 
-  summarise(area = mean(area)) %>% 
-  mutate(year = as.numeric(year),
-         type = "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)")
-
 t3_missing_days = data.frame(time = setdiff(as.character(t0$time), as.character(t3$time)),
                              area = NA, 
                              type = "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)")
 
 t3_missing_days$time = as.Date(t3_missing_days$time)
+
 t3 = rbind(t3, t3_missing_days)
+
 t3 <- t3[order(t3$time),]
 
-t = rbind(t1, t2, t3)
+t = rbind(
+  # t0,
+  t1, t2, t3)
 
 t$type <- factor(t$type, levels = c(
-  "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)",
-  "34.4° N - 37.8° N (Point Conception - San Francisco)",
-  "22.9° N - 34.4° N (S.boundary Cali CC LME - Point Conception)"))
-
-t_year = rbind(t1_year, t2_year, t3_year)
-
-t_year$type <- factor(t_year$type, levels = c(
+  # "22.9° N - 47.4° N (S.boundary Cali CC LME - N.boundary Cali CC LME)",
   "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)",
   "34.4° N - 37.8° N (Point Conception - San Francisco)",
   "22.9° N - 34.4° N (S.boundary Cali CC LME - Point Conception)"))
@@ -128,18 +82,12 @@ t_year$type <- factor(t_year$type, levels = c(
 #   scale_y_continuous(labels = scientific) +
 #   theme_pubr(I(20)) +
 #   theme(legend.position = "none")
-   
+
 p1 = ggplot(t0, aes(x = time, y = area/10000, color = "type", fill = "type")) +
   stat_smooth(method = "loess", span = 0.1, aes(color = "type"), show.legend = T) +
-  ylab(bquote('Available Habitat ( '*10^4~km^2*')')) +  xlab("") +
-  facet_wrap(.~type, scales = "free_y", ncol = 1) +
-  theme_few(I(12)) + 
-  theme(legend.position = "none")
-
-p1_year = ggplot(t0_year, aes(x = year, y = area/10000, color = "type", fill = "type")) +
-  geom_point() + 
-  stat_smooth(method = "loess", span = 0.15, aes(color = "type"), show.legend = T) +
-  ylab(bquote('Available Habitat ( '*10^4~km^2*')')) +  xlab("") +
+  # scale_y_continuous(labels = scientific) + 
+  # scale_y_continuous(labels = scales::comma) + 
+  ylab(bquote('Available Habitat ( '*10^4~km^2*')')) +  xlab("") + 
   facet_wrap(.~type, scales = "free_y", ncol = 1) +
   theme_few(I(12)) + 
   theme(legend.position = "none")
@@ -153,26 +101,67 @@ p2 = ggplot(t, aes(x = time, y = area/10000, color = type, fill = type)) +
   theme_few(I(12)) + 
   theme(legend.position = "none")
 
-p2_year = ggplot(t_year, aes(x = year, y = area/10000, color = type, fill = type)) +
-  geom_point() + 
-  scale_fill_viridis_d("") +
-  scale_colour_viridis_d("") +
-  stat_smooth(method = "loess", span = 0.15, aes(color = type), show.legend = T) +
-  ylab("") + xlab("") + 
-  facet_wrap(.~type, scales = "free_y", ncol = 1) + 
-  theme_few(I(12)) +
-  theme(legend.position = "none")
-
 setwd("/Users/Kisei/Desktop")
-setwd("/Users/ktanaka/Desktop")
-
 # png(paste0("Fig.4_binned_lat_timeseries_", Sys.Date(), ".png"), height = 7, width = 10, res = 300, units = 'in')
 # cowplot::plot_grid(p1, p2, ncol = 2)
 # dev.off()
 
 pdf(paste0("Fig.4_", Sys.Date(), ".pdf"), height = 7, width = 10)
-# cowplot::plot_grid(p1, p2, ncol = 2)
-cowplot::plot_grid(p1_year, p2_year, ncol = 2)
-
+cowplot::plot_grid(p1, p2, ncol = 2)
 dev.off()
 
+#########################
+### stacked area plot ###
+#########################
+
+t = rbind(t0, t1, t2, t3)
+
+time = subset(t, type == "22.9° N - 47.4° N (Cali CC LME)")
+
+d1 = subset(t, type == "22.9° N - 33.4° N (S.boundary Cali CC LME - Point Conception)")
+d1$step = seq(1, dim(d1)[1], by = 1)
+d1 = predict(loess(area~step, d1, span = 0.1), d1$step)
+d1 = as.data.frame(d1)
+d1$type = "22.9° N - 33.4° N (S.boundary Cali CC LME - Point Conception)"
+d1$type = "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)"
+d1 = cbind(time$time, d1)
+colnames(d1) = c("time", "area", "type")
+
+d2 = subset(t, type == "33.4° N - 37.4° N (Point Conception - San Francisco)")
+d2$step = seq(1, dim(d2)[1], by = 1)
+d2 = predict(loess(area~step, d2, span = 0.1), d2$step)
+d2 = as.data.frame(d2)
+d2$type = "33.4° N - 37.4° N (Point Conception - San Francisco)"
+d2 = cbind(time$time, d2)
+colnames(d2) = c("time", "area", "type")
+
+d3 = subset(t, type == "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)")
+d3$step = seq(1, dim(d3)[1], by = 1)
+d3 = predict(loess(area~step, d3, span = 0.1), d3$step)
+d3 = as.data.frame(d3)
+d3$type = "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)"
+d3$type = "22.9° N - 33.4° N (S.boundary Cali CC LME - Point Conception)"
+d3 = cbind(time$time, d3)
+colnames(d3) = c("time", "area", "type")
+
+d = rbind(d1, d2, d3)
+
+d$type <- factor(d$type, levels = c(
+  # "22.9° N - 47.4° N (S.boundary Cali CC LME - N.boundary Cali CC LME)",
+  "22.9° N - 33.4° N (S.boundary Cali CC LME - Point Conception)",
+  "33.4° N - 37.4° N (Point Conception - San Francisco)",
+  "37.4° N - 47.4° N (San Francisco - N.boundary Cali CC LME)"))
+
+p3 = d %>% ggplot(aes(x =time, y=area, fill=rev(type))) + 
+  geom_area(position = "identity", alpha = 0.8) +
+  ylab("JWS Thermal Habitat (sq.km)") + 
+  scale_fill_viridis_d("") + 
+  theme_pubr(I(15)) + 
+  scale_y_continuous(labels = scientific) +
+  theme(legend.position = c(0.4, 0.95))
+
+setwd("/Users/Kisei/Desktop")
+
+png(paste0("Fig.4_stacked_area_plots_", Sys.Date(), ".png"), height = 7, width = 10, res = 300, units = 'in')
+p3
+dev.off()
