@@ -10,6 +10,11 @@ library(zoo)
 load("/Users/Kisei/jws_range/data/lat_area.RData")
 load("/Users/ktanaka/jws_range/data/lat_area.RData")
 
+load("/Users/Kisei/jws_range/data/temp_depth_1000m.RData")
+load("/Users/ktanaka/jws_range/data/temp_depth_1000m.RData")
+
+temp = df
+
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
@@ -17,10 +22,14 @@ df = merge(df, lat_area)
 df = df %>% subset(depth > -1000)
 df$month = substr(df$time, 6, 7)
 
-df %>%
-  # subset(year %in% c(1982:2019)) %>%
+#####################
+### temp analysis ###
+#####################
+
+temp %>%
+  subset(year %in% c(1982:2019)) %>%
   subset(time %in% c("2015-09-15", "2005-03-16")) %>%
-  group_by(x, y, year, month, time) %>%
+  group_by(x, y, year, time) %>%
   summarise(p = mean(z, na.rm = T)) %>% 
   ggplot(aes(x, y, fill = p)) +
   geom_tile() +
@@ -28,14 +37,34 @@ df %>%
   annotation_map(map_data("world")) +
   coord_fixed() + 
   xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
-  cowplot::theme_cowplot() +
   facet_wrap(.~time) +
   scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10),0)) + 
   theme(legend.position = "right")
 
+sst = temp %>% 
+  subset(year %in% c(1982:2019)) %>%
+  group_by(year) %>% 
+  summarise(sst = mean(z)) %>% 
+  mutate(year = as.numeric(year)) %>% 
+  ggplot(aes(x = year, y = sst, fill = sst, color = sst)) +
+  geom_point() + 
+  stat_smooth(method = "loess", span = 0.2) 
+sst
+
+sst = temp %>% 
+  subset(year %in% c(1982:2019)) %>%
+  group_by(time) %>% 
+  summarise(sst = mean(z)) %>% 
+  mutate(time = as.Date(time)) %>% 
+  ggplot(aes(x = time, y = sst, fill = sst, color = sst)) +
+  stat_smooth(method = "loess", span = 0.1) 
+sst
+
 ########################################################
 ### lat-bin specific time series (daily or annually) ###
 ########################################################
+
+df = df %>% subset(year %in% c(1982:2019))
 
 t0 = df %>% 
   group_by(time) %>% 
@@ -129,25 +158,38 @@ t_year$type <- factor(t_year$type, levels = c(
 #   theme_pubr(I(20)) +
 #   theme(legend.position = "none")
    
+summary(lm(area ~ time, data = t0))
+summary(lm(area ~ time, data = t1))
+summary(lm(area ~ time, data = t2))
+summary(lm(area ~ time, data = t3))
+
+summary(lm(area ~ year, data = t0_year))
+summary(lm(area ~ year, data = t1_year))
+summary(lm(area ~ year, data = t2_year))
+summary(lm(area ~ year, data = t3_year))
+
 p1 = ggplot(t0, aes(x = time, y = area/10000, color = "type", fill = "type")) +
   stat_smooth(method = "loess", span = 0.1, aes(color = "type"), show.legend = T) +
-  ylab(bquote('Available Habitat ( '*10^4~km^2*')')) +  xlab("") +
-  facet_wrap(.~type, scales = "free_y", ncol = 1) +
+  stat_smooth(method = "lm", linetype = "dashed", se = F) +
+  ylab(bquote('Available Habitat ('*10^4~km^2*')')) +  xlab("") +
+  facet_wrap(.~type) + 
   theme_few(I(12)) + 
   theme(legend.position = "none")
 
 p1_year = ggplot(t0_year, aes(x = year, y = area/10000, color = "type", fill = "type")) +
   geom_point() + 
-  stat_smooth(method = "loess", span = 0.15, aes(color = "type"), show.legend = T) +
-  ylab(bquote('Available Habitat ( '*10^4~km^2*')')) +  xlab("") +
-  facet_wrap(.~type, scales = "free_y", ncol = 1) +
+  stat_smooth(method = "loess", span = 0.2, aes(color = "type")) +
+  stat_smooth(method = "lm", linetype = "dashed", se = F) +
+  ylab(bquote('Available Habitat ('*10^4~km^2*')')) +  xlab("") +
+  facet_wrap(.~type) + 
   theme_few(I(12)) + 
   theme(legend.position = "none")
 
 p2 = ggplot(t, aes(x = time, y = area/10000, color = type, fill = type)) +
   scale_fill_viridis_d("") +
   scale_colour_viridis_d("") +
-  stat_smooth(method = "loess", span = 0.1, aes(color = type), show.legend = T) +
+  stat_smooth(method = "loess", span = 0.1, aes(color = type)) +
+  stat_smooth(method = "lm", linetype = "dashed", se = F) +
   ylab("") + xlab("") + 
   facet_wrap(.~type, scales = "free_y", ncol = 1) + 
   theme_few(I(12)) + 
@@ -157,7 +199,8 @@ p2_year = ggplot(t_year, aes(x = year, y = area/10000, color = type, fill = type
   geom_point() + 
   scale_fill_viridis_d("") +
   scale_colour_viridis_d("") +
-  stat_smooth(method = "loess", span = 0.15, aes(color = type), show.legend = T) +
+  stat_smooth(method = "loess", span = 0.2, aes(color = type)) +
+  stat_smooth(method = "lm", linetype = "dashed", se = F) +
   ylab("") + xlab("") + 
   facet_wrap(.~type, scales = "free_y", ncol = 1) + 
   theme_few(I(12)) +
@@ -166,13 +209,8 @@ p2_year = ggplot(t_year, aes(x = year, y = area/10000, color = type, fill = type
 setwd("/Users/Kisei/Desktop")
 setwd("/Users/ktanaka/Desktop")
 
-# png(paste0("Fig.4_binned_lat_timeseries_", Sys.Date(), ".png"), height = 7, width = 10, res = 300, units = 'in')
-# cowplot::plot_grid(p1, p2, ncol = 2)
-# dev.off()
-
 pdf(paste0("Fig.4_", Sys.Date(), ".pdf"), height = 7, width = 10)
 # cowplot::plot_grid(p1, p2, ncol = 2)
 cowplot::plot_grid(p1_year, p2_year, ncol = 2)
-
 dev.off()
 
