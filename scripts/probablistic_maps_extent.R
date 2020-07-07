@@ -47,7 +47,7 @@ d3 %>%
   xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
   cowplot::theme_cowplot() +
   facet_wrap(.~time, ncol = 3) +
-  scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10),0)) + 
+  scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10), 0)) + 
   theme(legend.position = "right")
 
 dev.off()
