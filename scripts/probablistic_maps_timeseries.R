@@ -28,8 +28,9 @@ df$month = substr(df$time, 6, 7)
 
 temp %>%
   subset(year %in% c(1982:2019)) %>%
-  subset(time %in% c("2015-09-15", "2005-03-16")) %>%
-  group_by(x, y, year, time) %>%
+  # subset(time %in% c("2015-09-15", "2005-03-16")) %>%
+  # group_by(x, y, year, time) %>%
+  group_by(x, y, year) %>%
   summarise(p = mean(z, na.rm = T)) %>% 
   ggplot(aes(x, y, fill = p)) +
   geom_tile() +
@@ -37,28 +38,38 @@ temp %>%
   annotation_map(map_data("world")) +
   coord_fixed() + 
   xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
-  facet_wrap(.~time) +
+  # facet_wrap(.~time) +
   scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10),0)) + 
   theme(legend.position = "right")
 
-sst = temp %>% 
+sst_ts = temp %>% 
   subset(year %in% c(1982:2019)) %>%
   group_by(year) %>% 
   summarise(sst = mean(z)) %>% 
-  mutate(year = as.numeric(year)) %>% 
-  ggplot(aes(x = year, y = sst, fill = sst, color = sst)) +
-  geom_point() + 
-  stat_smooth(method = "loess", span = 0.2) 
+  mutate(year = as.numeric(year),
+         sst = sst-mean(sst))
+
+summary(lm(sst ~ year, data = sst_ts))
+
+sst = sst_ts %>% 
+  ggplot(aes(x = year, y = sst)) +
+  geom_point(size = 3, alpha = 0.8) + 
+  geom_line() +
+  # scale_fill_viridis_c("") +  
+  # scale_color_viridis_c("") +  
+  cowplot::theme_cowplot() + 
+  scale_x_continuous(breaks = seq(1982, 2019, 5)) + 
+  xlab("") + ylab("SST (deg C)") +
+  stat_smooth(method = "lm", linetype = "dashed", color = "gray20", se = F) 
 sst
 
-sst = temp %>% 
-  subset(year %in% c(1982:2019)) %>%
-  group_by(time) %>% 
-  summarise(sst = mean(z)) %>% 
-  mutate(time = as.Date(time)) %>% 
-  ggplot(aes(x = time, y = sst, fill = sst, color = sst)) +
-  stat_smooth(method = "loess", span = 0.1) 
+setwd("/Users/Kisei/Desktop")
+setwd("/Users/ktanaka/Desktop")
+
+pdf(paste0("S5_", Sys.Date(), ".pdf"), height = 5, width = 5)
 sst
+dev.off()
+
 
 ########################################################
 ### lat-bin specific time series (daily or annually) ###
@@ -214,3 +225,27 @@ pdf(paste0("Fig.4_", Sys.Date(), ".pdf"), height = 7, width = 10)
 cowplot::plot_grid(p1_year, p2_year, ncol = 2)
 dev.off()
 
+##############################
+### compare with sst trend ###
+##############################
+
+c1 = t_year %>% 
+  group_by(type) %>% 
+  mutate(area = scale(area, center = T)) 
+
+c2 = sst_ts %>% 
+  mutate(year = year, 
+         area = sst, 
+         type = "SST") %>% 
+  dplyr::select(year, area, type)
+
+c1 = as.data.frame(c1)
+c2 = as.data.frame(c2)
+
+c = rbind(c1, c2)
+
+ggplot(c, aes(x = year, y = area, color = type, fill = type)) +
+  scale_fill_viridis_d("") +
+  scale_colour_viridis_d("") +
+  stat_smooth(method = "loess", span = 0.2, se = F) +
+  ylab("") + xlab("") 
