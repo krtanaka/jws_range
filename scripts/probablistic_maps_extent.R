@@ -21,15 +21,32 @@ df$month = substr(df$time, 6, 7)
 ### probablistic habitat maps ###
 #################################
 
-setwd("/Users/Kisei/Desktop")
+setwd("/Users/ktanaka//Desktop")
 # png(paste0("Fig.4_probabilistic_maps_", Sys.Date(), ".png"), res = 500, height = 10, width = 10, units = "in")
-pdf(paste0("Probabilistic_maps_", Sys.Date(), ".pdf"), height = 5, width = 8)
+pdf(paste0("Probabilistic_maps_", Sys.Date(), ".pdf"), height = 8, width = 10)
 
 df %>%
-  # subset(year %in% c(1982:2019)) %>%
   subset(time %in% c("2015-09-15", "2005-03-16")) %>%
-  # group_by(x, y, year, month) %>%
   group_by(x, y, year, month, time) %>%
+  summarise(p = mean(p, na.rm = T)) %>% 
+  ggplot(aes(x, y, fill = p)) +
+  geom_tile() +
+  scale_fill_viridis_c("") +  
+  annotation_map(map_data("world")) +
+  coord_fixed() + 
+  xlab("Longitude (dec deg)") + ylab("") +
+  cowplot::theme_cowplot() +
+  facet_wrap(.~time, ncol = 1) +
+  scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10),0)) + 
+  theme(legend.position = "none")
+
+dev.off()
+
+pdf(paste0("Probabilistic_maps_", Sys.Date(), ".pdf"), height = 5, width = 5)
+
+df %>%
+  subset(year %in% c(1982:2019)) %>%
+  group_by(x, y, year) %>%
   summarise(p = mean(p, na.rm = T)) %>% 
   ggplot(aes(x, y, fill = p)) +
   geom_tile() +
@@ -38,11 +55,9 @@ df %>%
   coord_fixed() + 
   xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
   cowplot::theme_cowplot() +
-  # facet_grid(month~year) +
-  facet_wrap(.~time, ncol = 7) +
+  ggtitle("1982-2019") + 
   scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10),0)) + 
-  # theme(legend.position = c(0.15,0.2)) +
-  theme(legend.position = "right")
+  theme(legend.position = c(0.1,0.2))
 
 dev.off()
 
