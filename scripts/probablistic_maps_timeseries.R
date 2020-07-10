@@ -16,7 +16,7 @@ load("/Users/ktanaka/jws_range/data/temp_depth_1000m.RData")
 temp = df
 
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
-load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
+load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic_lme.Rdata")
 
 df = merge(df, lat_area)
 df = df %>% subset(depth > -1000)
@@ -188,7 +188,7 @@ p1 = ggplot(t0, aes(x = time, y = area/10000, color = "type", fill = "type")) +
   theme(legend.position = "none")
 
 p1_year = ggplot(t0_year, aes(x = year, y = area/10000, color = "type", fill = "type")) +
-  geom_point(shape = 1) + 
+  # geom_point(shape = 1) + 
   stat_smooth(method = "loess", span = 0.2, aes(color = "type")) +
   stat_smooth(method = "lm", linetype = "dashed", se = F) +
   ylab(bquote('Available Habitat ('*10^4~km^2*')')) +  xlab("") +
@@ -207,7 +207,7 @@ p2 = ggplot(t, aes(x = time, y = area/10000, color = type, fill = type)) +
   theme(legend.position = "none")
 
 p2_year = ggplot(t_year, aes(x = year, y = area/10000, color = type, fill = type)) +
-  geom_point(shape = 1) + 
+  # geom_point(shape = 1) + 
   scale_fill_viridis_d("") +
   scale_colour_viridis_d("") +
   stat_smooth(method = "loess", span = 0.2, aes(color = type)) +
