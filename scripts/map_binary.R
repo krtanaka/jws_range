@@ -5,6 +5,7 @@ library(ggplot2)
 library(raster)
 
 load("C:/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_IQR.Rdata")
+load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_IQR.Rdata")
 
 df$month = substr(as.character(df$time), 6, 7)
 df$year = substr(as.character(df$time), 1, 4)

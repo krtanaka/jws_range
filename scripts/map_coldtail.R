@@ -12,7 +12,7 @@ load("t_coldtail.Rdata")
 
 # reduce file size
 d = df %>% sample_frac(0.01); rm(df)
-# d = df; rm(df)
+d = df; rm(df)
 
 ### time series ###
 # t1 = d %>% 
@@ -135,7 +135,7 @@ t1 = d %>%
   subset(depth > -1000) %>%
   group_by(year) %>% 
   summarise(y = sum(z*y, na.rm = T)/sum(z, na.rm = T))%>% 
-  mutate(period = case_when(year %in% c(1982:2014) ~ "1982-2014",
+  mutate(period = case_when(year %in% c(1982:2013) ~ "1982-2013",
                             year %in% c(2014:2019) ~ "2014-2020"))
 
 forecast_1 = data.frame(year = 2020, 
@@ -163,7 +163,7 @@ t %>%
   geom_line() +
   ylab("Latitude (dec deg)") + xlab("") + 
   scale_y_latitude(ymin=-30, ymax=40, step=1) +
-  geom_segment(aes(x = 1982, xend = 2014, y = l$z[1], yend = l$z[1]), color = "blue",show.legend = T, size = 2) + 
+  geom_segment(aes(x = 1982, xend = 2013, y = l$z[1], yend = l$z[1]), color = "blue",show.legend = T, size = 2) + 
   geom_segment(aes(x = 2014, xend = 2020, y = l$z[2], yend = l$z[2]), color = "red", show.legend = F, size = 2) + 
   geom_label(data=l, 
              aes(y = z, x = year, 
