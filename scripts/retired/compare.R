@@ -15,8 +15,6 @@ load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_I
 df = merge(df, lat_area)
 
 df %>%
-  # subset(month %in% c("06", "07", "08", "09", "10")) %>% 
-  # subset(year %in% c(1982:2019)) %>% 
   subset(y <= 40 & y >= 30) %>% 
   subset(x >= -125 & x <= -116) %>% 
   group_by(x, y) %>% 
@@ -45,6 +43,7 @@ colnames(t1) = c("time", "area")
 t1$type = "binary"
 
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
+load("/Users/ktanaka//Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
 df = merge(df, lat_area)
 

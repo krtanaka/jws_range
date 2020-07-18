@@ -2,10 +2,13 @@ library(raster)
 
 # d = stack("/Users/ktanaka/Dropbox (MBA)/Data/oisst/gebco_2020_n50.0_s20.0_w-130.0_e-110.0.nc")
 load("/Users/Kisei/jws_range/data/gebco_2020_n50.0_s20.0_w-130.0_e-110.0.RData") 
+load("/Users/ktanaka/jws_range/data/gebco_2020_n50.0_s20.0_w-130.0_e-110.0.RData") 
+
 e = extent(-140, -100, 22.50, 47.50)
 d = crop(d, e); rm(e)
 
 load("/Users/Kisei/jws_range/data/sst.day.mean.1984.RData")
+load("/Users/ktanaka/jws_range/data/sst.day.mean.1984.RData")
 
 d = rasterToPoints(d)
 d = as.data.frame(d)

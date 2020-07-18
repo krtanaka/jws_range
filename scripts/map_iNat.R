@@ -8,6 +8,7 @@ library(maptools)
 library(dplyr) 
 
 setwd("/Users/kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/citizen science/iNat/")
+setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/community science/iNat/")
 
 i <- read_csv("iNat_observs-90879_21May2020.csv")
 # i <- read_csv("observations-79116.csv")
@@ -37,7 +38,6 @@ i.n = rbind(i.n, i.2013)
 w <- map_data("worldHires", ylim = c(35,40), xlim = c(-125,-120), resolution = 0)
 
 setwd("/Users/Kisei/Desktop")
-# png(paste0("Fig.1b_", Sys.Date(), ".png"), res = 300, height = 3, width = 5, units = "in")
 pdf(paste0("Fig.1b_", Sys.Date(), ".pdf"), height = 5, width = 9)
 
 ggplot() + 

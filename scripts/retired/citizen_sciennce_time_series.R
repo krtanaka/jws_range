@@ -8,6 +8,7 @@ library(maptools)
 library(dplyr) 
 
 d1 <- read_csv("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/citizen science/Eric/EricMailander_Observations.csv")
+d1 <- read_csv("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/community science/Eric/EricMailander_Observations.csv")
 
 d1$trips = 1
 
@@ -34,6 +35,7 @@ d1 = d1 %>% group_by(year) %>%
 # d1 = rbind(d1, d_2013)
 
 d2 <- read_csv("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/citizen science/iNat/iNat_observs-90879_21May2020.csv")
+d2 <- read_csv("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/community science/iNat/iNat_observs-90879_21May2020.csv")
 
 # d2$year = substr(as.character(d2$observed_on), 1, 4)
 # d2$sharks = 1
