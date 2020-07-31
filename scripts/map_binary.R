@@ -13,14 +13,14 @@ df$time_step = substr(as.character(df$time), 1, 7)
 # df$time_step = df$year
 
 p1 = df %>%
-  subset(month %in% c("06", "07", "08", "09", "10")) %>% 
+  # subset(month %in% c("06", "07", "08", "09", "10")) %>% 
   subset(year %in% c(1982:2019)) %>% 
   group_by(x, y) %>% 
   summarise(p = mean(z, na.rm = T)) %>% 
   mutate(type = "mean") %>% 
   ggplot(aes(x, y, fill = p)) +
   geom_raster() +
-  scale_fill_viridis_c("Mean") +  
+  scale_fill_viridis_c("") +  
   borders(fill = "gray10") +
   coord_quickmap(xlim = range(df$x),
                  ylim = range(df$y)) + 
@@ -29,7 +29,7 @@ p1 = df %>%
   theme(legend.position = c(0.2, 0.2))
 
 map = df %>%
-  subset(month %in% c("06", "07", "08", "09", "10")) %>% 
+  # subset(month %in% c("06", "07", "08", "09", "10")) %>% 
   subset(year %in% c(1982:2019)) %>% 
   group_by(x, y, time_step) %>% 
   summarise(p = mean(z, na.rm = T))

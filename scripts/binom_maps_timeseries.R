@@ -10,8 +10,8 @@ library(zoo)
 load("/Users/Kisei/jws_range/data/lat_area.RData")
 load("/Users/ktanaka/jws_range/data/lat_area.RData")
 
-load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
-load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
+load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_IQR.Rdata")
+load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_IQR.Rdata")
 
 df = merge(df, lat_area)
 df = df %>% subset(depth > -1000)
@@ -25,7 +25,7 @@ df = df %>% subset(year %in% c(1982:2019))
 
 t0 = df %>% 
   group_by(time) %>% 
-  mutate(area = area * p) %>% 
+  mutate(area = area * z) %>% 
   summarise(area = sum(area)) %>% 
   mutate(time = as.Date(time),
          type = "22.9° N - 47.4° N (Cali CC LME)")
@@ -36,11 +36,11 @@ t0_year = t0 %>%
   summarise(area = mean(area)) %>% 
   mutate(year = as.numeric(year),
          type = "22.9° N - 47.4° N (Cali CC LME)")
-  
+
 t1 = df %>% 
   group_by(time) %>% 
   subset(y >= 22.9 & y <= 34.4) %>%
-  mutate(area = area * p) %>% 
+  mutate(area = area * z) %>% 
   summarise(area = sum(area)) %>% 
   mutate(time = as.Date(time),
          type = "22.9° N - 34.4° N (S.boundary Cali CC LME - Point Conception)")
@@ -55,7 +55,7 @@ t1_year = t1 %>%
 t2 = df %>% 
   group_by(time) %>% 
   subset(y >= 34.4 & y <= 37.8) %>%
-  mutate(area = area * p) %>% 
+  mutate(area = area * z) %>% 
   summarise(area = sum(area)) %>% 
   mutate(time = as.Date(time),
          type = "34.4° N - 37.8° N (Point Conception - San Francisco)")
@@ -70,7 +70,7 @@ t2_year = t2 %>%
 t3 = df %>% 
   group_by(time) %>% 
   subset(y >= 37.8) %>%
-  mutate(area = area * p) %>% 
+  mutate(area = area * z) %>% 
   summarise(area = sum(area)) %>% 
   mutate(time = as.Date(time),
          type = "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)")
@@ -114,7 +114,7 @@ t_year$type <- factor(t_year$type, levels = c(
 #   scale_y_continuous(labels = scientific) +
 #   theme_pubr(I(20)) +
 #   theme(legend.position = "none")
-   
+
 summary(lm(area ~ time, data = t0))
 summary(lm(area ~ time, data = t1))
 summary(lm(area ~ time, data = t2))
@@ -171,27 +171,3 @@ pdf(paste0("Fig.4_", Sys.Date(), ".pdf"), height = 7, width = 10)
 cowplot::plot_grid(p1_year, p2_year, ncol = 2)
 dev.off()
 
-##############################
-### compare with sst trend ###
-##############################
-
-c1 = t_year %>% 
-  group_by(type) %>% 
-  mutate(area = scale(area, center = T)) 
-
-c2 = sst_ts %>% 
-  mutate(year = year, 
-         area = sst, 
-         type = "SST") %>% 
-  dplyr::select(year, area, type)
-
-c1 = as.data.frame(c1)
-c2 = as.data.frame(c2)
-
-c = rbind(c1, c2)
-
-ggplot(c, aes(x = year, y = area, color = type, fill = type)) +
-  scale_fill_viridis_d("") +
-  scale_colour_viridis_d("") +
-  stat_smooth(method = "loess", span = 0.2, se = F) +
-  ylab("") + xlab("") 
