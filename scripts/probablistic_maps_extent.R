@@ -58,11 +58,37 @@ rm(d1, d2, d3)
 ### calculate area extent ###
 #############################
 
+top = df %>% 
+  subset(year %in% c(1982:2019)) %>%
+  group_by(time) %>% 
+  mutate(area = area * p) %>% 
+  summarise(area = sum(area),
+            sst = mean(z)) %>% 
+  top_n(20, area)
+
+
+bottom = df %>% 
+  subset(year %in% c(1982:2019)) %>%
+  group_by(time) %>% 
+  mutate(area = area * p) %>% 
+  summarise(area = sum(area),
+            sst = mean(z), 
+            year = unique(year)) %>% 
+  top_n(-20, area)
+
+readr::write_csv(bottom, "~/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/supplement/TableS2_habitat_area_time.csv")
+
 area = df %>% 
   subset(year %in% c(1982:2019)) %>%
   group_by(time) %>% 
   mutate(area = area * p) %>% 
-  summarise(area = sum(area))
+  summarise(area = sum(area),
+            sst = mean(z)) %>% 
+  top_n(-20, area)
+
+
+
+  
 
 summary(area$area) #daily average
 
