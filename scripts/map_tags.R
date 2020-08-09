@@ -14,6 +14,8 @@ plot(table(JWS_Corrected$month))
 
 JWS_Corrected$count = 1
 JWS_Corrected$year = substr(as.character(JWS_Corrected$Time_s), 1, 4)
+JWS_Corrected$year = as.numeric(JWS_Corrected$year)
+JWS_Corrected %>% group_by(id) %>% summarise(y = mean(year))
 plot(table(JWS_Corrected$year))
 
 d = JWS_Corrected %>% group_by(lat_pop, lon_pop, id, sex) %>% summarise(count = sum(count))
