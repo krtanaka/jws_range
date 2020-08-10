@@ -11,8 +11,8 @@ probs <- c(0, 0.025, 0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95, 0.975, 1)
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 
-JWS_Corrected = JWS_Corrected %>% as.data.frame 
-# %>% sample_frac(0.001)
+JWS_Corrected = JWS_Corrected %>% as.data.frame  
+# %>% sample_frac(0.1)
 
 # JWS_Corrected$Temperature = round(JWS_Corrected$Temperature, 1)
 JWS_Corrected$id = substr(as.character(JWS_Corrected$id), 1, 9)
@@ -34,6 +34,8 @@ d2 = d2 %>%
 
 d = rbind(d1, d2) 
 
+d = subset(d, id != c("JWS_14_07"))
+
 t = d
 
 t1 = t
@@ -54,7 +56,7 @@ t3$Bin_width = "0.5 deg C"
 
 t = rbind(t1, t2, t3)
 
-pdf("thermal_profile.pdf", height = 3, width = 4)
+# pdf("thermal_profile.pdf", height = 3, width = 4)
 
 # t %>%
 #   ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
