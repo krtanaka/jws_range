@@ -115,14 +115,15 @@ grid_cell_size = (521.9257+709.1729)/2
 
 p3 = map %>%
   subset(period != "") %>%
-  subset(month %in% c("06", "07", "08", "09", "10")) %>% 
+  # subset(month %in% c("06", "07", "08", "09", "10")) %>% 
   ggplot(aes(x, y, fill = p)) +
   geom_raster() +
   scale_fill_viridis_c("") +
   # borders(fill = "gray10") +
   # coord_quickmap(xlim = range(map$x),
   #                ylim = range(map$y)) +
-  facet_grid(month~ period)
+  facet_grid(month~ period) + 
+  theme_minimal()
 
 setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
 pdf('map_binary_b.pdf', height = 8, width = 10)

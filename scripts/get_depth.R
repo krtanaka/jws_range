@@ -1,5 +1,7 @@
 library(raster)
 
+rm(list = ls())
+
 # d = stack("/Users/ktanaka/Dropbox (MBA)/Data/oisst/gebco_2020_n50.0_s20.0_w-130.0_e-110.0.nc")
 load("/Users/Kisei/jws_range/data/gebco_2020_n50.0_s20.0_w-130.0_e-110.0.RData") 
 load("/Users/ktanaka/jws_range/data/gebco_2020_n50.0_s20.0_w-130.0_e-110.0.RData") 
