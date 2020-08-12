@@ -17,6 +17,17 @@ df = merge(df, lat_area)
 df = df %>% subset(depth > -1000)
 df$month = substr(df$time, 6, 7)
 
+scale_x_longitude <- function(xmin=-180, xmax=180, step=1, ...) {
+  xbreaks <- seq(xmin,xmax,step)
+  xlabels <- unlist(lapply(xbreaks, function(x) ifelse(x < 0, parse(text=paste0(abs(x),"^o", "*W")), ifelse(x > 0, parse(text=paste0(abs(x),"^o", "*E")),x))))
+  return(scale_x_continuous("", breaks = xbreaks, labels = xlabels, expand = c(0, 0), ...))
+}
+scale_y_latitude <- function(ymin=-90, ymax=90, step=0.5, ...) {
+  ybreaks <- seq(ymin,ymax,step)
+  ylabels <- unlist(lapply(ybreaks, function(x) ifelse(x < 0, parse(text=paste0(x,"^o", "*S")), ifelse(x > 0, parse(text=paste0(x,"^o", "*N")),x))))
+  return(scale_y_continuous("", breaks = ybreaks, labels = ylabels, expand = c(0, 0), ...))
+} 
+
 #################################
 ### probablistic habitat maps ###
 #################################
@@ -36,7 +47,7 @@ d2 = df %>%
 
 d3 = rbind(d1, d2)
 
-pdf(paste0("Probabilistic_maps_", Sys.Date(), ".pdf"), height = 10, width = 10)
+pdf(paste0("~/Desktop/s6_Probabilistic_maps_", Sys.Date(), ".pdf"), height = 5, width = 10)
 
 d3 %>%
   ggplot(aes(x, y, fill = p)) +
@@ -44,10 +55,11 @@ d3 %>%
   scale_fill_viridis_c("") +  
   annotation_map(map_data("world")) +
   coord_fixed() + 
-  xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
-  cowplot::theme_cowplot() +
+  annotation_map(map_data("world")) +
+  scale_x_longitude(xmin=-180, xmax=180, step=10, limits = c(-126, -110)) +
+  scale_y_latitude(ymin=-180, ymax=180, step=5, limits = c(22.9, 47.4)) +
+  theme_minimal(I(15)) +
   facet_wrap(.~time, ncol = 3) +
-  scale_x_continuous(breaks = round(seq(min(df$x), max(df$x), by = 10), 0)) + 
   theme(legend.position = "right")
 
 dev.off()

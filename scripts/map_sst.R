@@ -6,7 +6,7 @@ rm(list = ls())
 
 scale_x_longitude <- function(xmin=-180, xmax=180, step=1, ...) {
   xbreaks <- seq(xmin,xmax,step)
-  xlabels <- unlist(lapply(xbreaks, function(x) ifelse(x < 0, parse(text=paste0(x,"^o", "*W")), ifelse(x > 0, parse(text=paste0(x,"^o", "*E")),x))))
+  xlabels <- unlist(lapply(xbreaks, function(x) ifelse(x < 0, parse(text=paste0(abs(x),"^o", "*W")), ifelse(x > 0, parse(text=paste0(abs(x),"^o", "*E")),x))))
   return(scale_x_continuous("", breaks = xbreaks, labels = xlabels, expand = c(0, 0), ...))
 }
 scale_y_latitude <- function(ymin=-90, ymax=90, step=0.5, ...) {
@@ -137,10 +137,10 @@ p1 = ggplot() +
   geom_point(data = r1, aes(x, y), color = "blue2", alpha = r1$cc) +
   geom_point(data = r1, aes(x, y), color = "red1", alpha = r1$hhh) +
   geom_point(data = r1, aes(x, y), color = "blue1", alpha = r1$ccc) +
-  scale_fill_viridis_c("degC", breaks = c(round(min(r1$layer), 1), 
+  scale_fill_viridis_c("°C", breaks = c(round(min(r1$layer), 1), 
                                           round(mean(r1$layer), 1), 
                                           round(max(r1$layer), 1))) +
-  scale_color_viridis_c("degC", breaks = c(round(min(r1$layer), 1), 
+  scale_color_viridis_c("°C", breaks = c(round(min(r1$layer), 1), 
                                            round(mean(r1$layer), 1), 
                                            round(max(r1$layer), 1))) + 
   scale_x_longitude(xmin=-180, xmax=180, step=10, limits = c(-126, -110)) +
@@ -154,36 +154,40 @@ p1 = ggplot() +
   facet_wrap(.~year) + 
   theme(legend.position = "right")
 
-p1 = r1 %>% 
+dev.off()
+
+pdf("~/Desktop/s3a.pdf", width = 4, height = 4)
+
+r1 %>% 
   ggplot(aes(x, y, fill = layer)) + 
-  geom_tile() + 
-  scale_fill_viridis_c("degC", breaks = c(round(min(r1$layer), 1), 
-                                          round(mean(r1$layer), 1), 
-                                          round(max(r1$layer), 1))) + 
-  scale_x_longitude(xmin=-180, xmax=180, step=10, limits = c(-126, -110)) +
-  scale_y_latitude(ymin=-180, ymax=180, step=10, limits = c(22.9, 47.4)) +
+  geom_tile(interpolate = T) +
+  scale_fill_viridis_c("°C", breaks = c(round(min(r1$layer), 1), 
+                                        round(mean(r1$layer), 1), 
+                                        round(max(r1$layer), 1))) +
   annotation_map(map_data("world")) +
-  theme_minimal(I(20)) +
+  scale_x_longitude(xmin=-180, xmax=180, step=5, limits = c(-126, -110)) +
+  scale_y_latitude(ymin=-180, ymax=180, step=5, limits = c(22.9, 47.4)) +
+  theme_minimal() +
   coord_fixed() + 
   facet_wrap(.~year) + 
   theme(legend.position = "right")
 
-p2 = r3 %>% 
-  ggplot(aes(x, y, fill = layer))  + 
-  xlab("") +
-  ylab("") +
-  geom_tile() + 
-  annotation_map(map_data("world")) +
-  scale_fill_viridis_c("degC", breaks = c(round(min(r3$layer), 1), 
+dev.off()
+
+pdf("~/Desktop/s3b.pdf", width = 4, height = 4)
+
+r3 %>% 
+  ggplot(aes(x, y, fill = layer)) + 
+  geom_tile(interpolate = T) +
+  scale_fill_viridis_c("°C", breaks = c(round(min(r3$layer), 1), 
                                           round(mean(r3$layer), 1), 
                                           round(max(r3$layer), 1))) +
-  scale_x_longitude(xmin=-180, xmax=180, step=10, limits = c(-126, -110)) +
-  scale_y_latitude(ymin=-180, ymax=180, step=10, limits = c(22.9, 47.4)) +
-  theme_minimal(I(20)) +
+  annotation_map(map_data("world")) +
+  scale_x_longitude(xmin=-180, xmax=180, step=5, limits = c(-126, -110)) +
+  scale_y_latitude(ymin=-180, ymax=180, step=5, limits = c(22.9, 47.4)) +
+  theme_minimal() +
   coord_fixed() + 
   facet_wrap(.~year) + 
   theme(legend.position = "right")
-
-cowplot::plot_grid(p1, p2)
 
 dev.off()

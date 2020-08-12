@@ -56,7 +56,7 @@ t3$Bin_width = "0.5 deg C"
 
 t = rbind(t1, t2, t3)
 
-# pdf("thermal_profile.pdf", height = 3, width = 4)
+pdf("~/Desktop/S5.pdf", height = 4, width = 4)
 
 # t %>%
 #   ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +
@@ -77,10 +77,10 @@ t$count = t$count / sum(t$count)
 t %>%
   ggplot(aes(x = Temperature, y = count, color = Temperature, fill = Temperature)) +
   geom_bar(stat = "identity") +
-  scale_color_viridis_c("deg C") +
-  scale_fill_viridis_c("deg C") +
+  scale_color_viridis_c("°C") +
+  scale_fill_viridis_c("°C") +
   ylab("Time spent (%)") +
-  xlab("Temperature (deg C)") + 
+  xlab("Temperature (°C)") + 
   theme_cowplot() + 
   theme(legend.position = "none")
 

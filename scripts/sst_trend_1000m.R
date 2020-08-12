@@ -38,16 +38,17 @@ sst = sst_ts %>%
   geom_line() +
   # scale_fill_viridis_c("") +  
   # scale_color_viridis_c("") +  
-  cowplot::theme_cowplot() + 
+  theme_pubr(I(15)) + 
   scale_x_continuous(breaks = seq(1982, 2019, 5)) + 
-  xlab("") + ylab("SST (deg C)") +
+  xlab("") + ylab("SST (°C)") +
   stat_smooth(method = "lm", linetype = "dashed", color = "gray20", se = F) 
+
 sst
 
 setwd("/Users/Kisei/Desktop")
 setwd("/Users/ktanaka/Desktop")
 
-pdf(paste0("S5_", Sys.Date(), ".pdf"), height = 5, width = 5)
+pdf(paste0("S7_", Sys.Date(), ".pdf"), height = 5, width = 7)
 sst
 dev.off()
 
