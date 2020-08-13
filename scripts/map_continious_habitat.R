@@ -4,32 +4,44 @@ library(dplyr)
 library(ggplot2)
 library(raster)
 
+scale_x_longitude <- function(xmin=-180, xmax=180, step=1, ...) {
+  xbreaks <- seq(xmin,xmax,step)
+  xlabels <- unlist(lapply(xbreaks, function(x) ifelse(x < 0, parse(text=paste0(abs(x),"^o", "*W")), ifelse(x > 0, parse(text=paste0(abs(x),"^o", "*E")),x))))
+  return(scale_x_continuous("", breaks = xbreaks, labels = xlabels, expand = c(0, 0), ...))
+}
+scale_y_latitude <- function(ymin=-90, ymax=90, step=0.5, ...) {
+  ybreaks <- seq(ymin,ymax,step)
+  ylabels <- unlist(lapply(ybreaks, function(x) ifelse(x < 0, parse(text=paste0(x,"^o", "*S")), ifelse(x > 0, parse(text=paste0(x,"^o", "*N")),x))))
+  return(scale_y_continuous("", breaks = ybreaks, labels = ylabels, expand = c(0, 0), ...))
+} 
+
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
 df$month = substr(as.character(df$time), 6, 7)
 df$year = substr(as.character(df$time), 1, 4)
 df$time_step = substr(as.character(df$time), 1, 7)
-# df$time_step = df$year
+df$time_step = df$year
 
 p1 = df %>%
-  subset(month %in% c("06", "07", "08", "09", "10")) %>% 
   subset(year %in% c(1982:2019)) %>% 
   group_by(x, y) %>% 
   summarise(p = mean(p, na.rm = T)) %>% 
   mutate(type = "mean") %>% 
   ggplot(aes(x, y, fill = p)) +
-  geom_raster() +
-  scale_fill_viridis_c("Mean") +  
+  geom_tile() +
+  scale_fill_viridis_c("", limits = c(0,1), breaks = c(0,0.5, 1)) +  
   borders(fill = "gray10") +
-  coord_quickmap(xlim = range(df$x),
-                 ylim = range(df$y)) + 
-  theme(legend.position = c(0.1, 0.1))
+  coord_quickmap(xlim = range(df$x), ylim = range(df$y)) +
+  scale_x_longitude(xmin=-180, xmax=180, step=5) +
+  scale_y_latitude(ymin=-180, ymax=180, step=5) +
+  theme_minimal() + 
+  theme(legend.position = c(0.15, 0.2)) + 
+  ggtitle("Mean 1982-2019")
 
 map = df %>%
-  subset(month %in% c("06", "07", "08", "09", "10")) %>% 
   subset(year %in% c(1982:2019)) %>% 
-  group_by(x, y, time_step) %>% 
+  group_by(x, y, time_step) %>% #monthly time step
   summarise(p = mean(p, na.rm = T)) 
   # summarise(p = sum(p, na.rm = T))
 
@@ -73,20 +85,54 @@ res = as.data.frame(apply(change[, 3:length(names(change))], 1, betaf))
 change = cbind(change[,1:2], res)
 colnames(change)[3] = "p"
 
-change$p = change$p*190
+# change$p = change$p*38
 
 p2 = change %>% 
   ggplot(aes(x, y, fill = p)) +
-  geom_raster() +
-  scale_fill_viridis_c("linear trend", limit = c(max(change$p)*-1, max(change$p))) +  
+  geom_tile() +
+  scale_fill_viridis_c("",
+                       limit = c(max(change$p)*-1, max(change$p))) +  
   borders(fill = "gray10") +
-  coord_quickmap(xlim = range(map$x),
-                 ylim = range(map$y)) + 
-  theme(legend.position = c(0.1, 0.1))
+  coord_quickmap(xlim = range(df$x), ylim = range(df$y)) +
+  scale_x_longitude(xmin=-180, xmax=180, step=5) +
+  scale_y_latitude(ymin=-180, ymax=180, step=5) +
+  theme_minimal() + 
+  theme(legend.position = c(0.15, 0.2)) + 
+  ggtitle("Linear Trend 1982-2019")
 
-setwd('/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/figures/figure 4 total habitat area/')
-pdf('map_probabilistic_a.pdf', height = 8, width = 10)
-gridExtra::grid.arrange(p1, p2, ncol = 2)
+p3 = df %>%
+  subset(time %in% c("2005-03-16")) %>%
+  group_by(x, y, time) %>%
+  summarise(p = mean(p, na.rm = T)) %>% 
+  ggplot(aes(x, y, fill = p)) +
+  geom_tile() +
+  scale_fill_viridis_c("") +  
+  borders(fill = "gray10") +
+  coord_quickmap(xlim = range(df$x), ylim = range(df$y)) +
+  scale_x_longitude(xmin=-180, xmax=180, step=5) +
+  scale_y_latitude(ymin=-180, ymax=180, step=5) +
+  theme_minimal() + 
+  theme(legend.position = c(0.15, 0.2))+ 
+  ggtitle("2005-03-16")
+
+p4 = df %>%
+  subset(time %in% c("2015-09-15")) %>%
+  group_by(x, y, time) %>%
+  summarise(p = mean(p, na.rm = T)) %>% 
+  ggplot(aes(x, y, fill = p)) +
+  geom_tile() +
+  scale_fill_viridis_c("") +  
+  borders(fill = "gray10") +
+  coord_quickmap(xlim = range(df$x), ylim = range(df$y)) +
+  scale_x_longitude(xmin=-180, xmax=180, step=5) +
+  scale_y_latitude(ymin=-180, ymax=180, step=5) +
+  theme_minimal() + 
+  theme(legend.position = c(0.15, 0.2))+ 
+  ggtitle("2015-09-15")
+
+pdf('~/Desktop/s6.pdf', height = 10, width = 15)
+# gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2)
+cowplot::plot_grid(p1, p2, p3, p4, ncol = 4)
 dev.off()
 
 df$period = ""

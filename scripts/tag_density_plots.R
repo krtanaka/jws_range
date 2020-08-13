@@ -18,7 +18,7 @@ JWS_Corrected$id = substr(as.character(JWS_Corrected$id), 1, 9)
 d1 = subset(JWS_Corrected, Depth <= 20); d1 = d1[,c("Temperature", "Depth", "id")]; d1$Depth_Range = "0-20m"; d1$count = 1
 d2 = subset(JWS_Corrected, Depth <= 2); d2 = d2[,c("Temperature", "Depth", "id")]; d2$Depth_Range = "0-2m"; d2$count = 1
 
-pdf("~/Desktop/thermal_profile_tag_raw.pdf", height = 10, width = 10)
+pdf("~/Desktop/s3_thermal_profile_tag_raw.pdf", height = 6, width = 8)
 
 # rbind(d1, d2) %>% 
 #   sample_frac(1) %>%
@@ -28,7 +28,13 @@ pdf("~/Desktop/thermal_profile_tag_raw.pdf", height = 10, width = 10)
 #   scale_color_viridis_d() + 
 #   facet_wrap(.~id, scale = "free_y")
 
-n <- ddply(.data = d1, .(id), summarize, n=paste("n =", formatC(length(count),format="e", digits = 1)))
+n <- ddply(.data = d1, .(id), summarize, n = paste("n =", formatC(length(count),format="e", digits = 1)))
+
+d1 %>% 
+  group_by(id) %>% 
+  summarise(median = wtd.quantile(Temperature, q = 0.025, weight = count, na.rm = T),
+            max = max(Temperature),
+            min = min(Temperature))
 
 d1 %>% 
   sample_frac(0.01) %>%
@@ -36,11 +42,11 @@ d1 %>%
   geom_density(alpha = 1) +
   scale_fill_viridis_d("") + 
   scale_color_viridis_d("") + 
-  cowplot::theme_cowplot(I(20)) + 
-  xlab("Temperature (deg C)") + ylab("Proportion of time spent") + 
+  ggpubr::theme_pubr() + 
+  xlab("Temperature (°C)") + ylab("Proportion of time spent") + 
   theme(legend.position = "none") + 
   facet_wrap(.~id, scale = "free_y") +
-  geom_text(data = n, aes(x = -Inf, y = Inf, label = n), colour="black", hjust = -0.1, vjust = 1)
+  geom_text(data = n, aes(x = Inf, y = Inf, label = n), colour="black", hjust = 1, vjust = 1)
 
 dev.off()
 
