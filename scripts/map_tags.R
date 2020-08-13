@@ -38,15 +38,17 @@ d %>%
   ggplot(aes(lon_pop, lat_pop,
              color = id,
              label = id)) +
-  scale_x_longitude(xmin=-180, xmax=180, step=5, limits = c(-126, -110)) +
-  scale_y_latitude(ymin=-180, ymax=180, step=5, limits = c(22.9, 47.4)) +
-  annotation_map(map_data("world")) +
-  geom_point(size = 5, alpha = 0.8) +
-  ggrepel::geom_text_repel(aes(color = id), box.padding = 1, point.padding = 3) +
-  # xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
-  theme_minimal() +
-  coord_fixed() + 
-  theme(legend.position = "none")
+  coord_quickmap(xlim = c(-126, -110), ylim = c(22.9, 47.4)) +
+  borders(fill = "gray10") +
+  geom_point(size = 5, alpha = 0.9) +
+  scale_color_discrete("") + 
+  # ggrepel::geom_text_repel(aes(color = id), box.padding = 1, point.padding = 5) +
+  scale_x_longitude(xmin = -180, xmax = 180, step = 5) +
+  scale_y_latitude(ymin = -180, ymax = 180, step = 5) +
+  theme_minimal() + 
+  theme(legend.position = c(0.62, 0.86), 
+        legend.text = element_text(color = "white"))+
+  guides(color = guide_legend(ncol = 2))
 
 dev.off()
 
@@ -79,19 +81,17 @@ df2 = JWS_Corrected %>%
 
 df = rbind(df1, df2)
 
-pdf("s1b.pdf", height = 10, width = 10)
+pdf("~/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/supplement/s2b.pdf", height = 8, width = 5)
 
-p3 = ggplot(df, aes(lon, lat, group = id)) +   
-  annotation_map(map_data("world")) +
-  geom_point(aes(shape = pop_rel, color = log10(count)), size = 5, alpha = 0.8) +
+p3 = ggplot(df, aes(lon, lat, group = id)) +  
+  annotation_map(map_data("world"))+ #Add the map as a base layer before the points
+  geom_point(aes(shape = pop_rel, color = log10(count)), alpha = 0.9) +
   scale_shape_manual(values = c(16, 17), "") +
   scale_color_viridis_c("log10(n)") +
+  scale_x_longitude(xmin=-180, xmax=180, step = 5, limits = range(pretty(df$lon))) +
+  scale_y_latitude(ymin=-180, ymax=180, step = 2, limits = range(pretty(df$lat))) +
   facet_wrap(.~id, scales = "fixed", ncol = 4) +
-  xlab("Longitude (dec deg)") + ylab("Latitude (dec deg)") +
-  coord_fixed() +
-  scale_x_longitude(xmin=-180, xmax=180, step=4) +
-  scale_y_latitude(ymin=-180, ymax=180, step=2) +
-  theme_minimal_grid()
+  theme_minimal()
   
 p3
 

@@ -56,7 +56,7 @@ t3$Bin_width = "0.5 deg C"
 
 t = rbind(t1, t2, t3)
 
-pdf("~/Desktop/S5.pdf", height = 4, width = 4)
+pdf("~/Desktop/s4.pdf", height = 6, width = 7)
 
 # t %>%
 #   ggplot(aes(x = Temperature, y = count, color = Depth_Range, fill = Depth_Range)) +

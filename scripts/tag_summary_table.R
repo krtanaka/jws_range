@@ -15,16 +15,19 @@ JWS_Corrected$year = substr(as.character(JWS_Corrected$Time_s), 1, 4)
 table = JWS_Corrected %>% 
   group_by(id) %>% 
   summarise(n = n(), 
-            begin_date = min(Date),
-            end_date = max(Date),
-            sex = unique(sex),
-            total_length = median(length),
-            median_temp = median(Temperature), 
-            max_temp = max(Temperature),
-            min_temp = min(Temperature),
-            median_depth = median(Depth),
-            max_depth = max(Depth),
-            min_depth = min(Depth))
+            Begin_date = min(Date),
+            End_date = max(Date),
+            Sex = unique(sex),
+            Release_location = unique(lon_pop),
+            Release_locatio = unique(lat_pop),
+            Pop_up_location = unique(lon_rel),
+            Pop_up_locatio = unique(lat_rel),
+            Total_length = median(length),
+            Median_temp = median(Temperature), 
+            Max_temp = max(Temperature),
+            Min_temp = min(Temperature),
+            Median_depth = median(Depth),
+            max_depth = max(Depth))
 
 table
 

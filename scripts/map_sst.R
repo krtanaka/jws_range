@@ -156,38 +156,41 @@ p1 = ggplot() +
 
 dev.off()
 
-pdf("~/Desktop/s3a.pdf", width = 4, height = 4)
+pdf("~/Desktop/s5a.pdf", width = 4, height = 4)
 
 r1 %>% 
-  ggplot(aes(x, y, fill = layer)) + 
-  geom_tile(interpolate = T) +
+  ggplot(aes(x, y, fill = round(layer, 0))) + 
+  geom_tile() +
   scale_fill_viridis_c("°C", breaks = c(round(min(r1$layer), 1), 
                                         round(mean(r1$layer), 1), 
                                         round(max(r1$layer), 1))) +
-  annotation_map(map_data("world")) +
-  scale_x_longitude(xmin=-180, xmax=180, step=5, limits = c(-126, -110)) +
-  scale_y_latitude(ymin=-180, ymax=180, step=5, limits = c(22.9, 47.4)) +
+  borders(fill = "gray10") +
+  coord_quickmap(xlim = c(-126, -110), ylim = c(22.9, 47.4)) +
+  scale_x_longitude(xmin=-180, xmax=180, step=5) +
+  scale_y_latitude(ymin=-180, ymax=180, step=5) +
   theme_minimal() +
-  coord_fixed() + 
+  # coord_fixed() + 
   facet_wrap(.~year) + 
   theme(legend.position = "right")
 
 dev.off()
 
-pdf("~/Desktop/s3b.pdf", width = 4, height = 4)
+pdf("~/Desktop/s5b.pdf", width = 4, height = 4)
 
 r3 %>% 
-  ggplot(aes(x, y, fill = layer)) + 
+  ggplot(aes(x, y, fill = round(layer, 1))) + 
   geom_tile(interpolate = T) +
   scale_fill_viridis_c("°C", breaks = c(round(min(r3$layer), 1), 
                                           round(mean(r3$layer), 1), 
                                           round(max(r3$layer), 1))) +
-  annotation_map(map_data("world")) +
-  scale_x_longitude(xmin=-180, xmax=180, step=5, limits = c(-126, -110)) +
-  scale_y_latitude(ymin=-180, ymax=180, step=5, limits = c(22.9, 47.4)) +
+  borders(fill = "gray10") +
+  coord_quickmap(xlim = c(-126, -110), ylim = c(22.9, 47.4)) +
+  scale_x_longitude(xmin=-180, xmax=180, step=5) +
+  scale_y_latitude(ymin=-180, ymax=180, step=5) +
   theme_minimal() +
-  coord_fixed() + 
+  # coord_fixed() + 
   facet_wrap(.~year) + 
   theme(legend.position = "right")
 
 dev.off()
+
