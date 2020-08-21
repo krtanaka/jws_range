@@ -59,7 +59,7 @@ write.csv(GWSlength_long, 'GWSlength_long.csv')
 ## this csv adds Sal's obs without randomizations at endof the 'long' csv we made above
 ## I could but yet have not added some random jitter/wiggle to Sal's obs
 ## this below treats Sal's davlidated observations as literal fact which is okay IMO
-GWSlength_long_saleric <- read.csv('~/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/community science/GWSlength_long_saleric.csv', header = T)
+GWSlength_long_saleric <- read.csv('~/Dropbox (MBA)/sharks/PAPER Kisei Bia JWS range shift/data/community science/GWSlength_long_saleric.csv', header = T)
 ggplot(GWSlength_long_saleric, aes(x = length_m, group = source, color = source)) +
   ggthemes::theme_few()+
   geom_density(aes(color = source, fill = source), alpha=0.4) +
@@ -70,8 +70,10 @@ ggplot(GWSlength_long_saleric, aes(x = length_m, group = source, color = source)
 d1 = subset(GWSlength_long_saleric, source == "eric")
 d2 = subset(GWSlength_long_saleric, source == "sal")
 
-d1$juv = ifelse(d1$length_m >= 1.75 & d1$length_m <= 3, 1, 0)
-d2$juv = ifelse(d2$length_m >= 1.75 & d2$length_m <= 3, 1, 0)
+## Kisei had 1.75-3, I am revising to 1-2.5
+## based on Sal's feedback 
+d1$juv = ifelse(d1$length_m >= 1 & d1$length_m <= 2.5, 1, 0)
+d2$juv = ifelse(d2$length_m >= 1 & d2$length_m <= 2.5, 1, 0)
 
 sum(d1$juv)/dim(d1)[1]
 sum(d2$juv)/dim(d2)[1]
