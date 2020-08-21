@@ -11,6 +11,8 @@ library(rgdal)
 cores = detectCores()/2
 registerDoParallel(cores = cores)
 
+## Kisei uses as a general directory syntax to avoid personal names and corrections
+## this avoids having to replace ktanaka' with 'kvanhoutan' for example
 dir = Sys.info()[7] 
 
 load(paste0("/Users/", dir, "/jws_range/data/depth_0.25.Rdata"))
