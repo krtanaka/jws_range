@@ -59,7 +59,7 @@ write.csv(GWSlength_long, 'GWSlength_long.csv')
 ## this csv adds Sal's obs without randomizations at endof the 'long' csv we made above
 ## I could but yet have not added some random jitter/wiggle to Sal's obs
 ## this below treats Sal's davlidated observations as literal fact which is okay IMO
-GWSlength_long_saleric <- read.csv('~/Dropbox (MBA)/sharks/PAPER Kisei Bia JWS range shift/data/community science/GWSlength_long_saleric.csv', header = T)
+GWSlength_long_saleric <- read.csv('./data/GWSlength_long_saleric.csv', header = T)
 ggplot(GWSlength_long_saleric, aes(x = length_m, group = source, color = source)) +
   ggthemes::theme_few()+
   geom_density(aes(color = source, fill = source), alpha=0.4) +
@@ -67,8 +67,8 @@ ggplot(GWSlength_long_saleric, aes(x = length_m, group = source, color = source)
   scale_fill_manual(values = c("#56B4E9", "#E7B800")) +
   geom_vline(aes(xintercept = mean(length_m)), color = "#56B4E9", linetype="dashed")
 
-d1 = subset(GWSlength_long_saleric, source == "eric")
-d2 = subset(GWSlength_long_saleric, source == "sal")
+d1 = subset(GWSlength_long_saleric, source == "sal")
+d2 = subset(GWSlength_long_saleric, source == "eric")
 
 ## Kisei had 1.75-3, I am revising to 1-2.5
 ## based on Sal's feedback 
