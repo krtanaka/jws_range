@@ -1,19 +1,9 @@
 library(ggpubr)
 library(dplyr)
 library(raster)
+library(metR)
 
 rm(list = ls())
-
-scale_x_longitude <- function(xmin=-180, xmax=180, step=1, ...) {
-  xbreaks <- seq(xmin,xmax,step)
-  xlabels <- unlist(lapply(xbreaks, function(x) ifelse(x < 0, parse(text=paste0(abs(x),"^o", "*W")), ifelse(x > 0, parse(text=paste0(abs(x),"^o", "*E")),x))))
-  return(scale_x_continuous("", breaks = xbreaks, labels = xlabels, expand = c(0, 0), ...))
-}
-scale_y_latitude <- function(ymin=-90, ymax=90, step=0.5, ...) {
-  ybreaks <- seq(ymin,ymax,step)
-  ylabels <- unlist(lapply(ybreaks, function(x) ifelse(x < 0, parse(text=paste0(x,"^o", "*S")), ifelse(x > 0, parse(text=paste0(x,"^o", "*N")),x))))
-  return(scale_y_continuous("", breaks = ybreaks, labels = ylabels, expand = c(0, 0), ...))
-} 
 
 #1982-2019
 r = raster::stack() 
@@ -143,8 +133,8 @@ p1 = ggplot() +
   scale_color_viridis_c("°C", breaks = c(round(min(r1$layer), 1), 
                                            round(mean(r1$layer), 1), 
                                            round(max(r1$layer), 1))) + 
-  scale_x_longitude(xmin=-180, xmax=180, step=10, limits = c(-126, -110)) +
-  scale_y_latitude(ymin=-180, ymax=180, step=10, limits = c(22.9, 47.4)) +
+  scale_x_longitude(limits = c(-126, -110)) +
+  scale_y_latitude(limits = c(22.9, 47.4)) +
   annotation_map(map_data("world")) +
   annotate(geom = "text", x = -114.5, y = 28, label = "Vizcaíno Bay", fontface = "italic", color = "white", size = 6) + 
   annotate(geom = "text", x = -120.5, y = 34.4486, label = "Point Conception", fontface = "italic", color = "white", size = 6) +   
@@ -158,39 +148,53 @@ dev.off()
 
 pdf("~/Desktop/s5a.pdf", width = 4, height = 4)
 
-r1 %>% 
+p1 = r1 %>% 
   ggplot(aes(x, y, fill = round(layer, 0))) + 
-  geom_tile() +
+  geom_raster() +
   scale_fill_viridis_c("°C", breaks = c(round(min(r1$layer), 1), 
                                         round(mean(r1$layer), 1), 
                                         round(max(r1$layer), 1))) +
-  borders(fill = "gray10") +
+  borders(fill = "gray10", colour = "gray10", size = 0.5) +
   coord_quickmap(xlim = c(-126, -110), ylim = c(22.9, 47.4)) +
-  scale_x_longitude(xmin=-180, xmax=180, step=5) +
-  scale_y_latitude(ymin=-180, ymax=180, step=5) +
+  scale_x_longitude() +
+  scale_y_latitude() +
   theme_minimal() +
   # coord_fixed() + 
   facet_wrap(.~year) + 
-  theme(legend.position = "right")
+  theme(legend.position = c(0.8,0.8),
+        legend.title = element_text(color = "white", size = 12),
+        legend.text = element_text(color = "white", size = 12))
+p1
 
 dev.off()
 
 pdf("~/Desktop/s5b.pdf", width = 4, height = 4)
 
-r3 %>% 
+p2 = r3 %>% 
   ggplot(aes(x, y, fill = round(layer, 1))) + 
-  geom_tile(interpolate = T) +
+  geom_raster() +
   scale_fill_viridis_c("°C", breaks = c(round(min(r3$layer), 1), 
                                           round(mean(r3$layer), 1), 
                                           round(max(r3$layer), 1))) +
-  borders(fill = "gray10") +
-  coord_quickmap(xlim = c(-126, -110), ylim = c(22.9, 47.4)) +
-  scale_x_longitude(xmin=-180, xmax=180, step=5) +
-  scale_y_latitude(ymin=-180, ymax=180, step=5) +
+  borders(fill = "gray10", colour = "gray10", size = 0.5) +
+  coord_quickmap(xlim = c(-126, -110), ylim = c(22.9, 47.4), ) +
+  scale_x_longitude() +
+  scale_y_latitude() +
   theme_minimal() +
   # coord_fixed() + 
   facet_wrap(.~year) + 
-  theme(legend.position = "right")
+  theme(legend.position = c(0.8,0.8),
+        legend.title = element_text(color = "white", size = 12),
+        legend.text = element_text(color = "white", size = 12))
+
+p2
+
+dev.off()
+
+pdf("~/Desktop/s5.pdf", width = 6, height = 6)
+
+library(patchwork)
+p1 + p2
 
 dev.off()
 
