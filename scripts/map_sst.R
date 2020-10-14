@@ -1,7 +1,10 @@
 library(ggpubr)
 library(dplyr)
 library(raster)
+library(ggOceanMaps)
 library(metR)
+library(PlotSvalbard)
+library(ggspatial)
 
 rm(list = ls())
 
@@ -112,8 +115,6 @@ r4 = data.frame(x = r1$x, y = r2$y, layer = r4$layer - r1$layer, year = "Sep 201
 
 r = rbind(r3, r4)
 
-basemap(limits = c(-126, -110, 22.9, 47.4)) + geom_spatial_point(data = r1, aes(x, y, color = layer)) + scale_color_viridis_c()
-
 pdf("~/Desktop/sst_climatology.pdf", width = 15, height = 10)
 
 p1 = ggplot() + 
@@ -150,20 +151,23 @@ pdf("~/Desktop/s5a.pdf", width = 4, height = 4)
 
 p1 = r1 %>% 
   ggplot(aes(x, y, fill = round(layer, 0))) + 
-  geom_raster() +
+  geom_tile(aes(height = 1, width = 1)) +
   scale_fill_viridis_c("°C", breaks = c(round(min(r1$layer), 1), 
                                         round(mean(r1$layer), 1), 
                                         round(max(r1$layer), 1))) +
   borders(fill = "gray10", colour = "gray10", size = 0.5) +
   coord_quickmap(xlim = c(-126, -110), ylim = c(22.9, 47.4)) +
+  annotate(geom = "text", x = -111, y = 47, label = "1982-2019 mean", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
   scale_x_longitude() +
   scale_y_latitude() +
-  theme_minimal() +
+  theme_void() + 
+  # theme_minimal() +
   # coord_fixed() + 
-  facet_wrap(.~year) + 
-  theme(legend.position = c(0.8,0.8),
-        legend.title = element_text(color = "white", size = 12),
-        legend.text = element_text(color = "white", size = 12))
+  theme(legend.position = c(0.8,0.75),
+        axis.text = element_blank(),
+        legend.title = element_text(color = "white", size = 14),
+        legend.text = element_text(color = "white", size = 14))
 p1
 
 dev.off()
@@ -172,29 +176,56 @@ pdf("~/Desktop/s5b.pdf", width = 4, height = 4)
 
 p2 = r3 %>% 
   ggplot(aes(x, y, fill = round(layer, 1))) + 
-  geom_raster() +
-  scale_fill_viridis_c("°C", breaks = c(round(min(r3$layer), 1), 
-                                          round(mean(r3$layer), 1), 
+  geom_tile(aes(height = 1, width = 1)) +
+  scale_fill_viridis_c("°C", breaks = c(round(min(r3$layer), 1),
+                                          round(mean(r3$layer), 1),
                                           round(max(r3$layer), 1))) +
   borders(fill = "gray10", colour = "gray10", size = 0.5) +
-  coord_quickmap(xlim = c(-126, -110), ylim = c(22.9, 47.4), ) +
+  coord_quickmap(xlim = c(-126, -109), ylim = c(22.9, 47.4), ) +
+  annotate(geom = "text", x = -110, y = 47, label = "2014-2019 anomalies", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
   scale_x_longitude() +
   scale_y_latitude() +
-  theme_minimal() +
+  theme_void() + 
+  # theme_minimal() +
   # coord_fixed() + 
-  facet_wrap(.~year) + 
-  theme(legend.position = c(0.8,0.8),
-        legend.title = element_text(color = "white", size = 12),
-        legend.text = element_text(color = "white", size = 12))
+  theme(legend.position = c(0.8,0.75),
+        axis.text = element_blank(),
+        legend.title = element_text(color = "white", size = 14),
+        legend.text = element_text(color = "white", size = 14))
 
 p2
 
 dev.off()
 
-pdf("~/Desktop/s5.pdf", width = 6, height = 6)
+places = data.frame(x = c(-114.5, -120.5, -121.94), 
+                    y = c(28, 34.5, 36.8),
+                    label = c("Vizcaíno Bay", "Point Conception", "Monterey Bay"))
+
+p3 = basemap(limits = c(-126, -109, 22.9, 47.4), 
+        land.col = "gray10", 
+        land.border.col = NA, 
+        bathymetry = TRUE) + 
+  scale_color_discrete("") + 
+  scale_x_longitude() +
+  scale_y_latitude() +
+  annotate(geom = "label", x = -114.5, y = 28, label = "Vizcaíno Bay",  size = 6,
+           fill = alpha(c("white"), 0.8)) + 
+  annotate(geom = "label", x = -120.5, y = 34.4486, label = "Point Conception",  size = 6,
+           fill = alpha(c("white"), 0.8)) +   
+  annotate(geom = "label", x = -121.94, y = 36.8, label = "Monterey Bay",  size = 6,
+           fill = alpha(c("white"), 0.8)) +
+  labs(x = "", y = "") + 
+  theme_void() + 
+  theme(legend.position = c(0.75,0.8),
+        legend.title = element_text(color = "white", size = 12),
+        legend.text = element_text(color = "white", size = 12))
+
+
+pdf("~/Desktop/s5.pdf", width = 10, height = 6)
 
 library(patchwork)
-p1 + p2
+p1 + p2 + p3
 
 dev.off()
 
