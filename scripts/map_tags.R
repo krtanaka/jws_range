@@ -4,6 +4,7 @@ library(ggpubr)
 library(dplyr)
 library(cowplot)
 library(reldist)
+library(metR)
 
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
@@ -39,15 +40,17 @@ d %>%
              color = id,
              label = id)) +
   coord_quickmap(xlim = c(-126, -110), ylim = c(22.9, 47.4)) +
-  borders(fill = "gray10") +
+  borders(fill = "gray10", colour = "gray10", size = 0.5) +
   geom_point(size = 5, alpha = 0.9) +
   scale_color_discrete("") + 
   # ggrepel::geom_text_repel(aes(color = id), box.padding = 1, point.padding = 5) +
-  scale_x_longitude(xmin = -180, xmax = 180, step = 5) +
-  scale_y_latitude(ymin = -180, ymax = 180, step = 5) +
-  theme_minimal() + 
+  # scale_x_longitude(xmin = -180, xmax = 180, step = 5) +
+  # scale_y_latitude(ymin = -180, ymax = 180, step = 5) +
+  # theme_minimal() + 
+  theme_void() + 
   theme(legend.position = c(0.62, 0.86), 
-        legend.text = element_text(color = "white"))+
+        legend.text = element_text(color = "white"), 
+        panel.background = element_rect(fill = alpha('gray80', 0.4), size = 0.01)) +
   guides(color = guide_legend(ncol = 2))
 
 dev.off()
