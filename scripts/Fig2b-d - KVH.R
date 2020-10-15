@@ -7,6 +7,9 @@
 
 JWS_depth_params <- read.csv('~/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/JWS_tag_params.csv', header=T)
 
+library(ggthemes)
+library(viridis)
+
 ggplot(JWS_depth_params, aes(x = DEPTH, y = VALUE)) +
   theme_few()+
   geom_point(aes(color = PARAM), alpha = 0.6, shape = 1, size = 2) +
