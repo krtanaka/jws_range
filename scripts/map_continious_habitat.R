@@ -133,6 +133,8 @@ p2 = ggplot() +
                  ylim = range(df$y)) + 
   annotate(geom = "text", x = -111, y = 47, label = "2005-03-16", 
            hjust = 1, vjust = 1, color = "white", size = 5) + 
+  annotate(geom = "text", x = -111, y = 45.8, label = "~271000 sq.km", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
   ylab("") + xlab("") + 
   scale_x_longitude() +
   scale_y_latitude() +
@@ -161,6 +163,8 @@ p3 = ggplot() +
                  ylim = range(df$y)) + 
   annotate(geom = "text", x = -111, y = 47, label = "2015-09-15", 
            hjust = 1, vjust = 1, color = "white", size = 5) + 
+  annotate(geom = "text", x = -111, y = 45.8, label = "~59100 sq.km", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
   ylab("") + xlab("") + 
   scale_x_longitude() +
   scale_y_latitude() +
@@ -172,7 +176,7 @@ p3 = ggplot() +
 
 
 pdf('~/Desktop/s6.pdf', height = 5, width = 10)
-gridExtra::grid.arrange(p0, p1, p2, p3, ncol = 4)
+gridExtra::grid.arrange(p2, p3, ncol = 2)
 dev.off()
 
 df$period = ""
