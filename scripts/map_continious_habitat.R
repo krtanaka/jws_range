@@ -175,7 +175,7 @@ p3 = ggplot() +
         legend.text = element_text(color = "white", size = 14))
 
 
-pdf('~/Desktop/s6.pdf', height = 5, width = 10)
+pdf('~/Desktop/s6.pdf', height = 5, width = 5)
 gridExtra::grid.arrange(p2, p3, ncol = 2)
 dev.off()
 
