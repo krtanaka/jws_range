@@ -139,7 +139,8 @@ p1_year = ggplot(t0_year, aes(x = year, y = area/10000, color = "type", fill = "
   stat_smooth(method = "lm", linetype = "dashed", se = F) +
   ylab(bquote('Available Habitat ('*10^4~km^2*')')) +  xlab("") +
   facet_wrap(.~type) + 
-  theme_few(I(12)) + 
+  ggdark::dark_theme_bw(I(20)) + 
+  # theme_few(I(12)) + 
   theme(legend.position = "none")
 
 p2 = ggplot(t, aes(x = time, y = area/10000, color = type, fill = type)) +
@@ -154,13 +155,14 @@ p2 = ggplot(t, aes(x = time, y = area/10000, color = type, fill = type)) +
 
 p2_year = ggplot(t_year, aes(x = year, y = area/10000, color = type, fill = type)) +
   # geom_point(shape = 1) + 
-  scale_fill_viridis_d("") +
-  scale_colour_viridis_d("") +
+  # scale_fill_viridis_d("") +
+  # scale_colour_viridis_d("") +
   stat_smooth(method = "loess", span = 0.2, aes(color = type)) +
   stat_smooth(method = "lm", linetype = "dashed", se = F) +
   ylab("") + xlab("") + 
-  facet_wrap(.~type, scales = "free_y", ncol = 1) + 
-  theme_few(I(12)) +
+  facet_wrap(.~type, scales = "free_y", ncol = 3) + 
+  ggdark::dark_theme_bw(I(20)) + 
+  # theme_few(I(12)) + 
   theme(legend.position = "none")
 
 setwd("/Users/Kisei/Desktop")
