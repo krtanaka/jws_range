@@ -91,15 +91,30 @@ t3 = rbind(t3, t3_missing_days)
 t3 <- t3[order(t3$time),]
 
 t = rbind(t1, t2, t3)
+t = rbind(t0, t1, t2, t3)
+
 
 t$type <- factor(t$type, levels = c(
   "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)",
   "34.4° N - 37.8° N (Point Conception - San Francisco)",
   "22.9° N - 34.4° N (S.boundary Cali CC LME - Point Conception)"))
 
+t$type <- factor(t$type, levels = c(
+  "22.9° N - 47.4° N (Cali CC LME)",
+  "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)",
+  "34.4° N - 37.8° N (Point Conception - San Francisco)",
+  "22.9° N - 34.4° N (S.boundary Cali CC LME - Point Conception)"))
+
 t_year = rbind(t1_year, t2_year, t3_year)
+t_year = rbind(t0_year, t1_year, t2_year, t3_year)
 
 t_year$type <- factor(t_year$type, levels = c(
+  "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)",
+  "34.4° N - 37.8° N (Point Conception - San Francisco)",
+  "22.9° N - 34.4° N (S.boundary Cali CC LME - Point Conception)"))
+
+t_year$type <- factor(t_year$type, levels = c(
+  "22.9° N - 47.4° N (Cali CC LME)",
   "37.8° N - 47.4° N (San Francisco - N.boundary Cali CC LME)",
   "34.4° N - 37.8° N (Point Conception - San Francisco)",
   "22.9° N - 34.4° N (S.boundary Cali CC LME - Point Conception)"))
