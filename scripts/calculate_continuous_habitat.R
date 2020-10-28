@@ -30,11 +30,11 @@ s$p = (s$p-min(s$p))/(max(s$p) - min(s$p))
 plot(s)
 
 #add lme
-lme <- readOGR(paste0("/Users/", dir, "/Google Drive/Research/GIS/LME66/LMEs66.shp"))
-CRS.new <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0+datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0") #EPSG:102003
+lme <- readOGR(paste0("/Users/", Sys.info()[7] , "/jws_range/data/LME66/LMEs66.shp"))
+CRS.new <- CRS("+proj=aeqd +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 proj4string(lme) <- CRS.new
 
-r = foreach(year = 1981:2020, .combine = rbind, .packages = 'dplyr') %dopar% {
+r = foreach(year = 1981:2020, .combine = rbind, .packages = c('dplyr', 'raster')) %dopar% {
   
   # year = 2019
   
