@@ -1,6 +1,9 @@
 library(sp)
 library(dplyr)
 library(raster)
+library(rgdal)
+library(ggplot2)
+library(metR)
 
 rm(list = ls())
 
@@ -10,7 +13,7 @@ for (y in 1982:1983) {
   
   # y = 1986
   
-  load(paste0("~/jws_range/data/sst.day.mean.", y, ".RData"))
+  load(paste0("/Users/ktanaka/jws_range/data/sst.day.mean.", y, ".RData"))
   
   df = mean(df)
   
@@ -25,7 +28,7 @@ r = rasterToPoints(r)
 r = as.data.frame(r)
 
 #add lme
-lme <- readOGR(paste0("/Users/", Sys.info()[7] , "/Google Drive/Research/GIS/LME66/LMEs66.shp"))
+lme <- readOGR(paste0("/Users/", Sys.info()[7] , "/jws_range/data/LME66/LMEs66.shp"))
 CRS.new <- CRS("+proj=aeqd +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 proj4string(lme) <- CRS.new
 
