@@ -87,6 +87,7 @@ r = foreach(year = 1981:2020, .combine = rbind, .packages = c('dplyr', 'raster')
   
   # cold = rbind(cold, year_y)
   
+  ### print out itiration id so you know where you are###
   # print(year)
   
 }
