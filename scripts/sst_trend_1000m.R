@@ -1,5 +1,10 @@
+rm(list = ls())
+
 load("/Users/Kisei/jws_range/data/temp_depth_1000m.RData")
 load("/Users/ktanaka/jws_range/data/temp_depth_1000m.RData")
+
+library(ggpubr)
+library(dplyr)
 
 temp = df
 
@@ -9,6 +14,7 @@ temp = df
 
 temp %>%
   subset(year %in% c(1982:2019)) %>%
+  subset(y < 35) %>% 
   # subset(time %in% c("2015-09-15", "2005-03-16")) %>%
   # group_by(x, y, year, time) %>%
   group_by(x, y, year) %>%
@@ -25,6 +31,7 @@ temp %>%
 
 sst_ts = temp %>% 
   subset(year %in% c(1982:2019)) %>%
+  subset(y < 35) %>% 
   group_by(year) %>% 
   summarise(sst = mean(z)) %>% 
   mutate(year = as.numeric(year),
