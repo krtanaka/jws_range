@@ -30,7 +30,7 @@ proj4string(lme) <- CRS.new
 
 r = foreach(year = 1981:2020, .combine = rbind, .packages = c('dplyr', 'raster')) %dopar% {
   
-  # year = 2019
+  # year = 2020
   
   load(paste0("/Users/", dir, "/jws_range/data/sst.day.mean.", year , ".RData"))
   
@@ -55,12 +55,12 @@ r = foreach(year = 1981:2020, .combine = rbind, .packages = c('dplyr', 'raster')
     area <- over(latlon, lme)
     colnames(area)[1] = "lme"
     d = cbind(d, area[2])
-    d = d %>% subset(LME_NUMBER == "3")
+    # d = d %>% subset(LME_NUMBER == "3")
     
     if (mode == "coldtail") {
       
       d = merge(d, depth, all = T)
-      d$z = ifelse(d$z <= 15.6 & d$z >= 14.7, 1, 0) # coldtail = 15.1 +/- 0.4 (centered around 15.1)
+      d$z = ifelse(d$z <= 15.6 & d$z >= 14.7, 1, 0) # cold edge = 15.1 +/- 0.4 (centered around 15.1)
       
       
     } else {
@@ -93,5 +93,6 @@ r = foreach(year = 1981:2020, .combine = rbind, .packages = c('dplyr', 'raster')
 }
 
 df = as.data.frame(r)
-save(df, file = paste0("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_", mode,"_lme.Rdata"))
+save(df, file = paste0("/Users/", dir, "/Desktop/t_", mode,".Rdata"))
+# save(df, file = paste0("/Users/", dir, "/Desktop/t_", mode,"_lme.Rdata"))
 
