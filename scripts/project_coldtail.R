@@ -3,6 +3,7 @@ rm(list = ls())
 library(dplyr)
 library(ggplot2)
 library(raster)
+library(ggthemes)
 
 setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/")
 setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
@@ -11,7 +12,7 @@ load("t_coldtail.Rdata")
 
 # reduce file size if you want to
 d = df %>% 
-  sample_frac(1)%>% 
+  sample_frac(0.01)%>% 
   # subset(y <= 42) %>%
   subset(depth > -1000) %>%
   mutate(year = substr(as.character(time), 1, 4),
@@ -33,7 +34,7 @@ d = merge(d1, d2, all = T)
 
 #2020 Jan-Apr
 d_2020 = df %>% 
-  sample_frac(1)%>% 
+  sample_frac(0.01)%>% 
   # subset(y <= 42) %>%
   subset(depth > -1000) %>%
   mutate(year = substr(as.character(time), 1, 4),
