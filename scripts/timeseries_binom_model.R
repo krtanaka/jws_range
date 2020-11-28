@@ -10,7 +10,7 @@ library(zoo)
 load("/Users/Kisei/jws_range/data/lat_area.RData")
 load("/Users/ktanaka/jws_range/data/lat_area.RData")
 
-load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/t_IQR.Rdata")
+load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_IQR.Rdata")
 load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_IQR.Rdata")
 
 df = merge(df, lat_area)
