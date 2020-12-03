@@ -6,9 +6,9 @@ library(plyr)
 library(mapdata)
 library(maptools)
 library(dplyr) 
+library(ggpubr)
 
-setwd("/Users/kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/citizen science/iNat/")
-setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/community science/iNat/")
+setwd("/Users/kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/community science/iNat/")
 
 i <- read_csv("iNat_observs-90879_21May2020.csv")
 # i <- read_csv("observations-79116.csv")
