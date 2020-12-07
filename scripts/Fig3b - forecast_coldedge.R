@@ -5,7 +5,6 @@ library(ggplot2)
 library(raster)
 library(ggthemes)
 
-setwd("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/")
 setwd("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/")
 
 load("t_coldtail.Rdata")
@@ -83,8 +82,8 @@ d %>%
   geom_point(size = 5, shape = 1, stroke = 2) +
   geom_smooth(method = "lm", se = F, color = "gray40") + 
   scale_color_viridis_c("") + 
-  scale_x_longitude(xmin=-30, xmax=40, step=1) +
-  scale_y_latitude(ymin=-30, ymax=40, step=1) +
+  # scale_x_longitude(xmin=-30, xmax=40, step=1) +
+  # scale_y_latitude(ymin=-30, ymax=40, step=1) +
   theme_few() + 
   coord_fixed() + 
   # theme(legend.position = c(0.1, 0.85)) + 

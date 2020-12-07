@@ -8,10 +8,7 @@ library(scales)
 library(zoo)
 
 load("/Users/Kisei/jws_range/data/lat_area.RData")
-load("/Users/ktanaka/jws_range/data/lat_area.RData")
-
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
-load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
 df = merge(df, lat_area)
 df = df %>% subset(depth > -1000)
@@ -115,7 +112,7 @@ ggplot(t_year, aes(x = year, y = area/10000, color = type, fill = type)) +
   stat_smooth(method = "lm", linetype = "dashed", se = F) +
   ylab(bquote('Available Habitat ('*10^4~km^2*')')) +  xlab("") +
   facet_wrap(.~type, ncol = 2, scales = "free_y") + 
-  ggdark::dark_theme_classic(I(12)) +
+  # ggdark::dark_theme_classic(I(12)) +
   # theme_few(I(12)) +
   theme(legend.position = "none")
 dev.off()

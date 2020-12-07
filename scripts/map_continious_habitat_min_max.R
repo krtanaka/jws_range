@@ -8,10 +8,7 @@ library(scales)
 library(zoo)
 
 load("/Users/Kisei/jws_range/data/lat_area.RData")
-load("/Users/ktanaka/jws_range/data/lat_area.RData")
-
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
-load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/t_probablistic.Rdata")
 
 df = merge(df, lat_area)
 df = df %>% subset(depth > -1000)
@@ -56,8 +53,8 @@ d3 %>%
   annotation_map(map_data("world")) +
   coord_fixed() + 
   annotation_map(map_data("world")) +
-  scale_x_longitude(xmin=-180, xmax=180, step=10, limits = c(-126, -110)) +
-  scale_y_latitude(ymin=-180, ymax=180, step=5, limits = c(22.9, 47.4)) +
+  # scale_x_longitude(xmin=-180, xmax=180, step=10, limits = c(-126, -110)) +
+  # scale_y_latitude(ymin=-180, ymax=180, step=5, limits = c(22.9, 47.4)) +
   theme_minimal(I(15)) +
   facet_wrap(.~time, ncol = 3) +
   theme(legend.position = "right")
