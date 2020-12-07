@@ -9,7 +9,6 @@ range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 probs <- c(0, 0.025, 0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95, 0.975, 1)
 
 load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
-load("/Users/ktanaka/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
 
 JWS_Corrected = JWS_Corrected %>% as.data.frame  
 # %>% sample_frac(0.1)
