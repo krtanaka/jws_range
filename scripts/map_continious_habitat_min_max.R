@@ -50,12 +50,12 @@ d3 %>%
   ggplot(aes(x, y, fill = p)) +
   geom_tile() +
   scale_fill_viridis_c("") +  
-  annotation_map(map_data("world")) +
+  annotation_map(map_data("world"), fill = "gray40") +
   coord_fixed() + 
-  annotation_map(map_data("world")) +
-  # scale_x_longitude(xmin=-180, xmax=180, step=10, limits = c(-126, -110)) +
-  # scale_y_latitude(ymin=-180, ymax=180, step=5, limits = c(22.9, 47.4)) +
-  theme_minimal(I(15)) +
+  metR::scale_x_longitude() +
+  metR::scale_y_latitude() +
+  # theme_minimal(I(15)) +
+  theme_pubr() + 
   facet_wrap(.~time, ncol = 3) +
   theme(legend.position = "right")
 
