@@ -22,6 +22,7 @@ themeKV <- theme_few() +
 ## load data from within repo
 mbay_jws <- read.csv('./data/JWS_obs_Mbay_2010_2019.csv', header = T)
 
+colnames(mbay_jws)[1] = "year"
 
 ggplot(data = mbay_jws, aes(x=year, y=rescale)) +
   themeKV+
