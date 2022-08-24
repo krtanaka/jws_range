@@ -6,6 +6,7 @@ library(raster)
 library(doParallel)
 library(sp)
 library(maptools)
+library(rgdal)
 
 cores = detectCores()/2
 registerDoParallel(cores = cores)
@@ -14,12 +15,12 @@ dir = Sys.info()[7]
 
 setwd(paste0('/Users/', dir, '/jws_range/data/'))
 
-load('depth_0.25.Rdata')
+load('data/depth_0.25.Rdata')
 depth = d
 depth = rasterToPoints(depth)
 depth = as.data.frame(depth)
 
-load('occupancy.RData')
+load('data/occupancy.RData')
 occup = subset(occup, Depth_Range == "0-20m")
 occup = subset(occup, Bin_width == "0.5 deg C")
 s = occup[,c("Temperature", "count")]
@@ -27,10 +28,10 @@ colnames(s) = c("z", "p")
 # s$p = s$p/sum(s$p)
 s$p = (s$p-min(s$p))/(max(s$p) - min(s$p))
 
-plot(s)
+plot(s, bty = "l")
 
 #add lme
-lme <- readOGR(paste0("/Users/", Sys.info()[7] , "/jws_range/data/LME66/LMEs66.shp"))
+lme <- readOGR("data/LME66/LMEs66.shp")
 CRS.new <- CRS("+proj=aeqd +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 proj4string(lme) <- CRS.new
 
@@ -38,10 +39,8 @@ r = foreach(year = 1981:2020, .combine = rbind, .packages = c('dplyr', 'raster')
   
   # year = 2019
   
-  # load(paste0("/Users/Kisei/jws_range/data/sst.day.mean.", year , ".RData"))
-  load(paste0("/Users/", dir, "/jws_range/data/sst.day.mean.", year , ".RData"))
+  load(paste0("data/sst.day.mean.", year , ".RData"))
   
-
   year_sum = NULL
   
   for (day in 1:dim(df)[3]) {
