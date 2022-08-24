@@ -13,8 +13,6 @@ registerDoParallel(cores = cores)
 
 dir = Sys.info()[7]
 
-setwd(paste0('/Users/', dir, '/jws_range/data/'))
-
 load('data/depth_0.25.Rdata')
 depth = d
 depth = rasterToPoints(depth)
@@ -31,7 +29,7 @@ s$p = (s$p-min(s$p))/(max(s$p) - min(s$p))
 plot(s, bty = "l")
 
 #add lme
-lme <- readOGR("data/LME66/LMEs66.shp")
+lme <- readOGR("data/LMEs66.shp")
 CRS.new <- CRS("+proj=aeqd +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 proj4string(lme) <- CRS.new
 
