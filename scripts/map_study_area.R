@@ -1,11 +1,11 @@
 library(ggOceanMaps)
 library(metR)
 
+# devtools::install_github("MikkoVihtakari/ggOceanMapsData")
+
 places = data.frame(x = c(-114.5, -120.5, -121.94), 
                     y = c(28, 34.5, 36.8),
                     label = c("Vizcaíno Bay", "Point Conception", "Monterey Bay"))
-
-pdf("~/Desktop/S1.pdf", height = 8, width = 8)
 
 basemap(limits = c(-126, -110, 22.9, 47.4), 
         land.col = "gray20", 

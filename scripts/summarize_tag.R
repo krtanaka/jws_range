@@ -5,7 +5,8 @@ library(dplyr)
 library(cowplot)
 library(reldist)
 
-load("/Users/Kisei/Dropbox/PAPER Kisei Bia JWS range shift/data/tags/JWS_Corrected.RData")
+# download "JWS_Corrected.RData" from https://osf.io/vcwjp/
+load("/Users/kisei.tanaka/Desktop/JWS_Corrected.RData")
 
 JWS_Corrected$id = substr(as.character(JWS_Corrected$id), 1, 9)
 JWS_Corrected$month = substr(as.character(JWS_Corrected$Time_s), 6, 7)
@@ -29,5 +30,3 @@ table = JWS_Corrected %>%
             max_depth = max(Depth))
 
 table
-
-readr::write_csv(table, "~/Dropbox (MBA)/PAPER Kisei Bia JWS range shift/figures/supplement/TableS1_jws_tag_summary.csv")
