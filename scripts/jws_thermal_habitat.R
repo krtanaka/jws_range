@@ -7,6 +7,7 @@ library(doParallel)
 library(sp)
 library(maptools)
 library(rgdal)
+library(patchwork)
 
 cores = detectCores()/2
 registerDoParallel(cores = cores)
@@ -96,24 +97,161 @@ df$year = substr(as.character(df$time), 1, 4)
 df$time_step = substr(as.character(df$time), 1, 7)
 df$time_step = df$year
 
-p = df %>%
+p0 = df %>%
   subset(year %in% c(1982:2019)) %>% 
   group_by(x, y) %>% 
   summarise(p = mean(p, na.rm = T)) 
 
-(ggplot() + 
-    geom_contour(data = b, 
-                 aes(x = x, y = y, z = z),
-                 breaks = c(-1000, -1500, -2000, -2500, -3000, -3500, -4000, -4500, -5000),
-                 size = c(0.3),
-                 colour = "grey") +
-    geom_tile(data = p, aes(x, y, fill = p, height = 0.3, width = 0.3)) +
-    scale_fill_gradientn(colors = matlab.like(100), "", limits = c(0, 1), breaks = c(0, 0.5, 1)) +  
-    borders(fill = "gray10", colour = "gray10", size = 0.5) +
-    coord_quickmap(xlim = range(df$x),
-                   ylim = range(df$y)) + 
-    annotate(geom = "text", x = -111, y = 47, label = "1982-2019 average", 
-             hjust = 1, vjust = 1, color = "white", size = 5) + 
-    theme_minimal() + 
-    scale_x_longitude() +
-    scale_y_latitude())
+# 1982-2019 average map
+(p0 = ggplot() + 
+  geom_contour(data = b, 
+               aes(x = x, y = y, z = z),
+               breaks = c(-1000, -1500, -2000, -2500, -3000, -3500, -4000, -4500, -5000),
+               size = c(0.3),
+               colour = "grey") +
+  geom_tile(data = p0, aes(x, y, fill = p, height = 0.3, width = 0.3)) + 
+  scale_fill_viridis_c("", limits = c(0, 1), breaks = c(0, 1)) +  
+  borders(fill = "gray10", colour = "gray10", size = 0.5) +
+  coord_quickmap(xlim = range(df$x),
+                 ylim = range(df$y)) + 
+  annotate(geom = "text", x = -111, y = 47, label = "1982-2019 mean", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
+  ylab("") + xlab("") + 
+  scale_x_longitude() +
+  scale_y_latitude() +
+  theme_void() + 
+  theme(legend.position = c(0.8,0.75),
+        axis.text = element_blank(),
+        legend.title = element_text(color = "white", size = 14),
+        legend.text = element_text(color = "white", size = 14)))
+
+map = df %>%
+  subset(year %in% c(1982:2019)) %>% 
+  group_by(x, y, time_step) %>% #monthly time step
+  summarise(p = mean(p, na.rm = T)) 
+
+map = as.data.frame(map)
+
+time_list = unique(map$time_step)
+
+mm = NULL
+
+for (t in 1:length(time_list)) {
+  
+  # t = 1
+  
+  m = subset(map, time_step == time_list[[t]])
+  m = m[,c("p")]
+  mm = cbind(mm, m)
+  
+}
+
+mm = as.data.frame(mm)
+colnames(mm) = unique(map$time_step)
+
+xy = subset(map, time_step == time_list[[1]])
+xy = xy[,1:2]
+
+change = cbind(xy, mm)
+
+betaf = function(vec){
+  
+  n = length(vec)
+  
+  beta = lm(vec ~ seq(1:n))$coef[2] 
+  
+  # p = summary(lm(vec ~ seq(1:36)))$ coefficients [2,4]
+  return(beta) # beta gives you a slope, if you want p-value, change it to p
+  #   return(p) # beta gives you a slope, if you want p-value, change it to p
+  
+}
+
+res = as.data.frame(apply(change[, 3:length(names(change))], 1, betaf)) 
+change = cbind(change[,1:2], res)
+colnames(change)[3] = "p"
+
+# slope coefficient for 1982-2019
+change$p = change$p*38
+
+(p1 = ggplot() + 
+  geom_contour(data = b, 
+               aes(x = x, y = y, z = z),
+               breaks = c(-1000, -1500, -2000, -2500, -3000, -3500, -4000, -4500, -5000),
+               size = c(0.3),
+               colour = "grey") +
+  geom_tile(data = change, aes(x, y, fill = p, height = 0.3, width = 0.3)) + 
+  scale_fill_viridis_c("") +  
+  borders(fill = "gray10", colour = "gray10", size = 0.5) +
+  coord_quickmap(xlim = range(df$x),
+                 ylim = range(df$y)) + 
+  annotate(geom = "text", x = -111, y = 47, label = "1982-2019 change", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
+  ylab("") + xlab("") + 
+  scale_x_longitude() +
+  scale_y_latitude() +
+  theme_void() + 
+  theme(legend.position = c(0.8,0.75),
+        axis.text = element_blank(),
+        legend.title = element_text(color = "white", size = 14),
+        legend.text = element_text(color = "white", size = 14)))
+
+p2 = df %>%
+  subset(time %in% c("2005-03-16")) %>%
+  group_by(x, y, time) %>%
+  summarise(p = mean(p, na.rm = T)) 
+
+(p2 = ggplot() + 
+  geom_contour(data = b, 
+               aes(x = x, y = y, z = z),
+               breaks = c(-1000, -1500, -2000, -2500, -3000, -3500, -4000, -4500, -5000),
+               size = c(0.3),
+               colour = "grey") +
+  geom_tile(data = p2, aes(x, y, fill = p, height = 0.3, width = 0.3)) + 
+  scale_fill_viridis_c("", limits = c(0, 1), breaks = c(0, 1)) +  
+  borders(fill = "gray10", colour = "gray10", size = 0.5) +
+  coord_quickmap(xlim = range(df$x),
+                 ylim = range(df$y)) + 
+  annotate(geom = "text", x = -111, y = 47, label = "2005-03-16", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
+  annotate(geom = "text", x = -111, y = 45.8, label = "~271000 sq.km", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
+  ylab("") + xlab("") + 
+  scale_x_longitude() +
+  scale_y_latitude() +
+  theme_void() + 
+  theme(legend.position = c(0.8,0.75),
+        axis.text = element_blank(),
+        legend.title = element_text(color = "white", size = 14),
+        legend.text = element_text(color = "white", size = 14)))
+
+p3 = df %>%
+  subset(time %in% c("2015-09-15")) %>%
+  group_by(x, y, time) %>%
+  summarise(p = mean(p, na.rm = T))
+
+
+(p3 = ggplot() + 
+  geom_contour(data = b, 
+               aes(x = x, y = y, z = z),
+               breaks = c(-1000, -1500, -2000, -2500, -3000, -3500, -4000, -4500, -5000),
+               size = c(0.3),
+               colour = "grey") +
+  geom_tile(data = p3, aes(x, y, fill = p, height = 0.3, width = 0.3)) + 
+  scale_fill_viridis_c("", limits = c(0, 1), breaks = c(0, 1)) +  
+  borders(fill = "gray10", colour = "gray10", size = 0.5) +
+  coord_quickmap(xlim = range(df$x),
+                 ylim = range(df$y)) + 
+  annotate(geom = "text", x = -111, y = 47, label = "2015-09-15", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
+  annotate(geom = "text", x = -111, y = 45.8, label = "~59100 sq.km", 
+           hjust = 1, vjust = 1, color = "white", size = 5) + 
+  ylab("") + xlab("") + 
+  scale_x_longitude() +
+  scale_y_latitude() +
+  theme_void() + 
+  theme(legend.position = c(0.8,0.75),
+        axis.text = element_blank(),
+        legend.title = element_text(color = "white", size = 14),
+        legend.text = element_text(color = "white", size = 14)))
+
+p2 + p3
