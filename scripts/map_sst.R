@@ -1,3 +1,5 @@
+# map SST climatologies 1982-2019 and anomalies 
+
 library(ggpubr)
 library(dplyr)
 library(raster)
@@ -5,6 +7,7 @@ library(ggOceanMaps)
 library(metR)
 library(PlotSvalbard)
 library(ggspatial)
+library(colorRamps)
 
 rm(list = ls())
 
@@ -141,7 +144,7 @@ pdf("~/Desktop/sst_climatology.pdf", width = 15, height = 10)
     annotate(geom = "text", x = -120.5, y = 34.4486, label = "Point Conception", fontface = "italic", color = "white", size = 6) +   
     annotate(geom = "text", x = -121.94, y = 36.8, label = "Monterey Bay", fontface = "italic", color = "white", size = 6) +
     theme_minimal() +
-    coord_fixed() + 
+    coord_fixed() +
     facet_wrap(.~year) + 
     theme(legend.position = "right"))
 

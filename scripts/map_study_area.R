@@ -7,10 +7,10 @@ places = data.frame(x = c(-114.5, -120.5, -121.94),
                     y = c(28, 34.5, 36.8),
                     label = c("Vizcaíno Bay", "Point Conception", "Monterey Bay"))
 
-basemap(limits = c(-126, -110, 22.9, 47.4), 
-        land.col = "gray20", 
-        land.border.col = NA, 
-        bathymetry = TRUE) + 
+ggOceanMaps::basemap(limits = c(-126, -110, 22.9, 47.4), 
+                     land.col = "gray20", 
+                     land.border.col = NA, 
+                     bathymetry = TRUE) + 
   # geom_spatial_point(data = places, aes(x, y, color = label), size = 5) +
   scale_color_discrete("") + 
   scale_x_longitude() +
@@ -26,7 +26,3 @@ basemap(limits = c(-126, -110, 22.9, 47.4),
   theme(legend.position = c(0.75,0.83),
         legend.title = element_text(color = "white", size = 15),
         legend.text = element_text(color = "white", size = 15))
-
-dev.off()
-  
-  

@@ -7,17 +7,17 @@ library(reldist)
 library(metR)
 
 # download "JWS_Corrected.RData" from https://osf.io/vcwjp/
-load("/Users/kisei.tanaka/Desktop/JWS_Corrected.RData")
+load(paste0("/Users/", Sys.info()[7], "/Desktop/JWS_Corrected.RData"))
 
 JWS_Corrected$id = substr(as.character(JWS_Corrected$id), 1, 9)
 JWS_Corrected$month = substr(as.character(JWS_Corrected$Time_s), 6, 7)
-plot(table(JWS_Corrected$month))
+plot(table(JWS_Corrected$month), bty = "l")
 
 JWS_Corrected$count = 1
 JWS_Corrected$year = substr(as.character(JWS_Corrected$Time_s), 1, 4)
 JWS_Corrected$year = as.numeric(JWS_Corrected$year)
 JWS_Corrected %>% group_by(id) %>% summarise(y = mean(year))
-plot(table(JWS_Corrected$year))
+plot(table(JWS_Corrected$year), bty = "l")
 
 d = JWS_Corrected %>% group_by(lat_pop, lon_pop, id, sex) %>% summarise(count = sum(count))
 d$id = as.factor(d$id)
@@ -54,7 +54,7 @@ df = rbind(df1, df2)
 
 (p3 = ggplot(df, aes(lon, lat, group = id)) +  
   annotation_map(map_data("world"))+ #Add the map as a base layer before the points
-  geom_point(aes(shape = pop_rel, color = log10(count)), alpha = 0.9) +
+  geom_point(aes(shape = pop_rel, color = log10(count), size = log10(count)), alpha = 0.9) +
   scale_shape_manual(values = c(16, 17), "") +
   scale_color_viridis_c("log10(n)") +
   facet_wrap(.~id, scales = "fixed", ncol = 4))
