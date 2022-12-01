@@ -5,6 +5,7 @@ library(dplyr)
 library(ggplot2)
 library(ncdf4)
 library(colorRamps)
+library(maps)
 
 setwd(paste0("/Users/", Sys.info()[7], "/Desktop"))
 
