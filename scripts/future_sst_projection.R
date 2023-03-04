@@ -20,11 +20,11 @@ sst_climatology_2 = stack(paste0("/Users/", Sys.info()[7], "/Desktop/nep_95A4_t0
 sst_climatology_3 = stack(paste0("/Users/", Sys.info()[7], "/Desktop/nep_A5B2_t00_10.nc"), varname = "t_an")[[1]] #2005-2012, surface (0m)
 sst_climatology = mean(sst_climatology_1, sst_climatology_2, sst_climatology_3) #1985-2012 average
 
-par(mfrow = c(1,4))
-plot(sst_climatology_1, col = matlab.like(100), zlim = c(8, 28)); map(add = T, fill = T, col = "gray20")
-plot(sst_climatology_2, col = matlab.like(100), zlim = c(8, 28)); map(add = T, fill = T, col = "gray20")
-plot(sst_climatology_3, col = matlab.like(100), zlim = c(8, 28)); map(add = T, fill = T, col = "gray20")
-plot(sst_climatology, col = matlab.like(100), zlim = c(8, 28)); map(add = T, fill = T, col = "gray20")
+par(mfrow = c(2,2))
+plot(sst_climatology_1, col = matlab.like(10), zlim = c(8, 28)); map(add = T, fill = T, col = "gray20")
+plot(sst_climatology_2, col = matlab.like(10), zlim = c(8, 28)); map(add = T, fill = T, col = "gray20")
+plot(sst_climatology_3, col = matlab.like(10), zlim = c(8, 28)); map(add = T, fill = T, col = "gray20")
+plot(sst_climatology, col = matlab.like(10), zlim = c(8, 28)); map(add = T, fill = T, col = "gray20")
 
 ### future SST ensemble projection ###
 # "CMIP6 ENSMN ssp585 anomaly (2020-2049)-(1985-2014)"
@@ -37,8 +37,21 @@ future_sst = raster::rotate(future_sst)
 future_sst = resample(future_sst, sst_climatology, method = "bilinear")
 future_sst = sst_climatology + future_sst
 
-plot(future_sst, col = matlab.like(100), zlim = c(8, 28)); map(add = T, fill = T)
+# add bathymetry data
+bathymetry = raster(paste0("/Users/", Sys.info()[7], "/Desktop/etopo180_9352_4538_72ee.nc"))
+bathymetry = resample(bathymetry, future_sst, method = "bilinear")
+future_sst = stack(future_sst, sst_climatology, bathymetry)
+names(future_sst) = c("Future", "Baseline", "Bathymetry")
 
-future_sst = rasterToPoints(future_sst) %>% as.data.frame()
+future_sst = rasterToPoints(future_sst) %>% as.data.frame() %>% na.omit()
+
+future_sst %>% 
+  melt(id = 1:2, measure = 3:4) %>% 
+  ggplot(aes(x, y, fill = value)) + 
+  geom_raster() + 
+  facet_wrap(~variable) + 
+  scale_fill_gradientn("SST", colours = matlab.like(100)) + 
+  annotation_map(map = map_data("world")) + 
+  theme_minimal()
 
 save(future_sst, file = "output/future_sst.Rdata")

@@ -9,22 +9,16 @@ library(maptools)
 library(rgdal)
 library(patchwork)
 
-# gridded bathymetry data
-load('data/depth_0.25.Rdata')
-depth = d
-depth = rasterToPoints(depth)
-depth = as.data.frame(depth)
-depth$x = round(depth$x, 2)
-depth$y = round(depth$y, 2)
-
 # juvnile white shark thermal affinity model
 load('data/occupancy.RData')
-occup = subset(occup, Depth_Range == "0-20m")
-occup = subset(occup, Bin_width == "0.5 deg C")
-s = occup[,c("Temperature", "count")]
-plot(s, bty = "l")
-colnames(s) = c("z", "p")
-s$p = (s$p-min(s$p))/(max(s$p) - min(s$p))
+thermal_occupancy = occup %>% 
+  subset(Depth_Range == "0-20m") %>% 
+  subset(Bin_width == "0.5 deg C") %>% 
+  dplyr::select(Temperature, count)
+
+colnames(thermal_occupancy) = c("temp", "prop")
+thermal_occupancy$prop = (thermal_occupancy$prop-min(thermal_occupancy$prop))/(max(thermal_occupancy$prop) - min(thermal_occupancy$prop))
+plot(thermal_occupancy, bty = "n")
 
 # add Large Marine Ecosystem GIS shapefile (#66 = California Current)
 lme <- readOGR("data/LME66/LMEs66.shp")
@@ -34,14 +28,61 @@ proj4string(lme) <- CRS.new
 # future SST data from "future_sst_projection.R"
 load("output/future_sst.Rdata")
 
-colnames(future_sst) = c("x", "y", "z")
-future_sst$z = plyr::round_any(future_sst$z, 0.5, floor)
-future_sst = merge(future_sst, s)
-future_sst = left_join(future_sst, depth)
+baseline_jws_habitat = future_sst[,c(1:2, 4:5)]
 
-future_sst %>% 
-  ggplot(aes(x, y, fill = p)) + 
-  # geom_point(shape = 21) + 
-  geom_raster() + 
-  coord_fixed() + 
-  scale_fill_viridis_c()
+colnames(baseline_jws_habitat) = c("x", "y", "temp", "depth")
+baseline_jws_habitat$temp = plyr::round_any(baseline_jws_habitat$temp, 0.5, floor)
+baseline_jws_habitat = merge(baseline_jws_habitat, thermal_occupancy)
+
+# add lme layer, subset by California Current LME
+latlon = baseline_jws_habitat[,c("x", "y")]
+coordinates(latlon) = ~x+y
+proj4string(latlon) <- CRS.new
+area <- over(latlon, lme)
+colnames(area)[1] = "lme"
+baseline_jws_habitat = cbind(baseline_jws_habitat, area[2])
+baseline_jws_habitat = baseline_jws_habitat %>% subset(LME_NUMBER == "3")
+
+(p1 = baseline_jws_habitat %>% 
+    subset(depth > -500) %>% 
+    ggplot(aes(x, y, fill = prop)) + 
+    geom_point(shape = 21) +
+    geom_raster() +
+    coord_fixed() + 
+    theme_minimal() + 
+    xlab("") + ylab("") + 
+    annotation_map(map = map_data("world")) + 
+    theme(legend.position = c(0.1, 0.2)) + 
+    ggtitle("Modeled distribution of JWS \nthermal habitat suitability, 1985-2014") + 
+    scale_fill_gradientn("", colours = matlab.like(100)))
+
+future_jws_habitat = future_sst[,c(1:3, 5)]
+
+colnames(future_jws_habitat) = c("x", "y", "temp", "depth")
+future_jws_habitat$temp = plyr::round_any(future_jws_habitat$temp, 0.5, floor)
+future_jws_habitat = merge(future_jws_habitat, thermal_occupancy)
+
+# add lme layer, subset by California Current LME
+latlon = future_jws_habitat[,c("x", "y")]
+coordinates(latlon) = ~x+y
+proj4string(latlon) <- CRS.new
+area <- over(latlon, lme)
+colnames(area)[1] = "lme"
+future_jws_habitat = cbind(future_jws_habitat, area[2])
+future_jws_habitat = future_jws_habitat %>% subset(LME_NUMBER == "3")
+
+(p2 = future_jws_habitat %>% 
+    subset(depth > -500) %>% 
+    ggplot(aes(x, y, fill = prop)) + 
+    geom_point(shape = 21, alpha = 0.5) +
+    geom_raster() +
+    coord_fixed() + 
+    theme_minimal() + 
+    xlab("") + ylab("") + 
+    annotation_map(map = map_data("world")) + 
+    theme(legend.position = c(0.1, 0.2)) + 
+    ggtitle("Projected distribution of JWS \nthermal habitat suitability, 2020-2049") + 
+    scale_fill_gradientn("", colours = matlab.like(100)))
+
+library(patchwork)
+p1 + p2
