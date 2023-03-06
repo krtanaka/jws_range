@@ -1,4 +1,5 @@
 # project future juvenile white shark thermal habitat distribution 
+# analyze spatial overlap between jws thermal habitat and sea otter density
 
 rm(list = ls())
 
@@ -88,6 +89,14 @@ future_jws_habitat = future_jws_habitat %>% subset(LME_NUMBER == "3")
     theme(legend.position = c(0.1, 0.2)) + 
     ggtitle("Projected distribution of JWS \nthermal habitat suitability, 2020-2049") + 
     scale_fill_gradientn("", colours = matlab.like(100)))
+
+future_jws_habitat$period = "2020-2049"
+baseline_jws_habitat$period = "1984-2014"
+
+rbind(future_jws_habitat, baseline_jws_habitat) %>% 
+  subset(depth > -500) %>% 
+  ggplot(aes(prop, period, color = period)) + 
+  geom_joy()
 
 library(patchwork)
 p1 + p2
