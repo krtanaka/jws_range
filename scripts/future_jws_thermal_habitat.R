@@ -1,3 +1,5 @@
+# project future juvenile white shark thermal habitat distribution 
+
 rm(list = ls())
 
 library(dplyr)
@@ -8,8 +10,9 @@ library(sp)
 library(maptools)
 library(rgdal)
 library(patchwork)
+library(colorRamps)
 
-# juvnile white shark thermal affinity model
+# load the juvenile white shark thermal affinity model
 load('data/occupancy.RData')
 thermal_occupancy = occup %>% 
   subset(Depth_Range == "0-20m") %>% 
@@ -20,12 +23,12 @@ colnames(thermal_occupancy) = c("temp", "prop")
 thermal_occupancy$prop = (thermal_occupancy$prop-min(thermal_occupancy$prop))/(max(thermal_occupancy$prop) - min(thermal_occupancy$prop))
 plot(thermal_occupancy, bty = "n")
 
-# add Large Marine Ecosystem GIS shapefile (#66 = California Current)
+# load Large Marine Ecosystem (LME) GIS shapefile (#66 = California Current)
 lme <- readOGR("data/LME66/LMEs66.shp")
 CRS.new <- CRS("+proj=aeqd +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 proj4string(lme) <- CRS.new
 
-# future SST data from "future_sst_projection.R"
+# load future SST data from "future_sst_projection.R"
 load("output/future_sst.Rdata")
 
 baseline_jws_habitat = future_sst[,c(1:2, 4:5)]
@@ -34,7 +37,7 @@ colnames(baseline_jws_habitat) = c("x", "y", "temp", "depth")
 baseline_jws_habitat$temp = plyr::round_any(baseline_jws_habitat$temp, 0.5, floor)
 baseline_jws_habitat = merge(baseline_jws_habitat, thermal_occupancy)
 
-# add lme layer, subset by California Current LME
+# add LME layer, subset by California Current LME
 latlon = baseline_jws_habitat[,c("x", "y")]
 coordinates(latlon) = ~x+y
 proj4string(latlon) <- CRS.new
@@ -43,6 +46,7 @@ colnames(area)[1] = "lme"
 baseline_jws_habitat = cbind(baseline_jws_habitat, area[2])
 baseline_jws_habitat = baseline_jws_habitat %>% subset(LME_NUMBER == "3")
 
+# plot JWS thermal habitat distribution 1984-2014 (baseline)
 (p1 = baseline_jws_habitat %>% 
     subset(depth > -500) %>% 
     ggplot(aes(x, y, fill = prop)) + 
@@ -62,7 +66,7 @@ colnames(future_jws_habitat) = c("x", "y", "temp", "depth")
 future_jws_habitat$temp = plyr::round_any(future_jws_habitat$temp, 0.5, floor)
 future_jws_habitat = merge(future_jws_habitat, thermal_occupancy)
 
-# add lme layer, subset by California Current LME
+# add LME layer, subset by California Current LME
 latlon = future_jws_habitat[,c("x", "y")]
 coordinates(latlon) = ~x+y
 proj4string(latlon) <- CRS.new
@@ -71,6 +75,7 @@ colnames(area)[1] = "lme"
 future_jws_habitat = cbind(future_jws_habitat, area[2])
 future_jws_habitat = future_jws_habitat %>% subset(LME_NUMBER == "3")
 
+# plot JWS thermal habitat distribution 2020-2049 (future)
 (p2 = future_jws_habitat %>% 
     subset(depth > -500) %>% 
     ggplot(aes(x, y, fill = prop)) + 
