@@ -48,18 +48,18 @@ baseline_jws_habitat = cbind(baseline_jws_habitat, area[2])
 baseline_jws_habitat = baseline_jws_habitat %>% subset(LME_NUMBER == "3")
 
 # plot JWS thermal habitat distribution 1984-2014 (baseline)
-(p1 = baseline_jws_habitat %>% 
-    subset(depth > -500) %>% 
-    ggplot(aes(x, y, fill = prop)) + 
-    geom_point(shape = 21) +
-    geom_raster() +
-    coord_fixed() + 
-    theme_minimal() + 
-    xlab("") + ylab("") + 
-    annotation_map(map = map_data("world")) + 
-    theme(legend.position = c(0.1, 0.2)) + 
-    ggtitle("Modeled distribution of JWS \nthermal habitat suitability, 1985-2014") + 
-    scale_fill_gradientn("", colours = matlab.like(100)))
+p1 = baseline_jws_habitat %>% 
+  subset(depth > -500) %>% 
+  ggplot(aes(x, y, fill = prop)) + 
+  geom_point(shape = 21) +
+  geom_raster() +
+  coord_fixed() + 
+  theme_minimal() + 
+  xlab("") + ylab("") + 
+  annotation_map(map = map_data("world")) + 
+  theme(legend.position = c(0.1, 0.2)) + 
+  ggtitle("Modeled distribution of JWS \nthermal habitat suitability, 1985-2014") + 
+  scale_fill_gradientn("", colours = matlab.like(100))
 
 future_jws_habitat = future_sst[,c(1:3, 5)]
 
@@ -77,43 +77,62 @@ future_jws_habitat = cbind(future_jws_habitat, area[2])
 future_jws_habitat = future_jws_habitat %>% subset(LME_NUMBER == "3")
 
 # plot JWS thermal habitat distribution 2020-2049 (future)
-(p2 = future_jws_habitat %>% 
-    subset(depth > -500) %>% 
-    ggplot(aes(x, y, fill = prop)) + 
-    geom_point(shape = 21, alpha = 0.5) +
-    geom_raster() +
-    coord_fixed() + 
-    theme_minimal() + 
-    xlab("") + ylab("") + 
-    annotation_map(map = map_data("world")) + 
-    theme(legend.position = c(0.1, 0.2)) + 
-    ggtitle("Projected distribution of JWS \nthermal habitat suitability, 2020-2049") + 
-    scale_fill_gradientn("", colours = matlab.like(100)))
+p2 = future_jws_habitat %>% 
+  subset(depth > -500) %>% 
+  ggplot(aes(x, y, fill = prop)) + 
+  geom_point(shape = 21, alpha = 0.5) +
+  geom_raster() +
+  coord_fixed() + 
+  theme_minimal() + 
+  xlab("") + ylab("") + 
+  annotation_map(map = map_data("world")) + 
+  theme(legend.position = c(0.1, 0.2)) + 
+  ggtitle("Projected distribution of JWS \nthermal habitat suitability, 2020-2049") + 
+  scale_fill_gradientn("", colours = matlab.like(100))
 
 library(patchwork)
 p1 + p2
 
-future_jws_habitat$period = "2020-2049"
-baseline_jws_habitat$period = "1984-2014"
+# combine future jws thermal habitat distributions and known sea otter density
+future_jws_habitat$group = "JWS thermal habitat suitability 2020-2049"
+baseline_jws_habitat$group = "JWS thermal habitat suitability 1984-2014"
 jws = rbind(future_jws_habitat, baseline_jws_habitat) %>% 
   subset(depth > -500) %>% 
   mutate(y = plyr::round_any(y, 0.05, floor)) %>% 
-  group_by(y, period) %>% 
-  summarise(prop = mean(prop)) %>% 
+  group_by(y, group) %>% 
+  summarise(z = mean(prop)) %>% 
   as.data.frame()
 
 load("output/otter_ca.RData")
 otter = otter_df %>% 
   mutate(y = plyr::round_any(y, 0.05, floor)) %>% 
   group_by(y) %>% 
-  summarise(otter_den = mean(layer)) %>% 
-  mutate(otter_den = (otter_den - min(otter_den)) / (max(otter_den) - min(otter_den))) %>% 
+  summarise(z = mean(layer)) %>% 
+  mutate(z = (z - min(z)) / (max(z) - min(z)),
+         group = "Kwown SeaOtter Density 1985-2019") %>% 
   as.data.frame()
 
-ggplot() + 
-  geom_point(data = otter, aes(y, otter_den, fill = "otter_den"), alpha = 0.5, shape = 21) +  
-  geom_point(data = jws, aes(y, prop, fill = period), alpha = 0.5, shape = 21) 
-  
+jws_otter = rbind(jws, otter) %>% 
+  mutate(y = round(y, 0)) %>% 
+  group_by(y, group) %>% 
+  summarise(z = mean(z))
 
+p1 = jws_otter %>% 
+  subset(group %in% c("JWS thermal habitat suitability 1984-2014", "Kwown SeaOtter Density 1985-2019")) %>% 
+  ggplot(aes(x = y, y = z, fill = group)) +
+  geom_bar(stat = "identity", position = "identity", alpha = 0.8) + 
+  labs(x = "Lat", y = "Normalized \nJWS thermal habitat suitability \nand known Otter density") + 
+  coord_fixed(ratio = 8) + 
+  scale_fill_viridis_d("") + 
+  theme_minimal()
 
+p2 = jws_otter %>% 
+  subset(group %in% c("JWS thermal habitat suitability 2020-2049", "Kwown SeaOtter Density 1985-2019")) %>% 
+  ggplot(aes(x = y, y = z, fill = group)) +
+  geom_bar(stat = "identity", position = "identity", alpha = 0.8) + 
+  labs(x = "Lat", y = "Normalized \nJWS thermal habitat suitability \nand known Otter density") + 
+  coord_fixed(ratio = 8) + 
+  scale_fill_viridis_d("") + 
+  theme_minimal()
 
+p1 / p2
