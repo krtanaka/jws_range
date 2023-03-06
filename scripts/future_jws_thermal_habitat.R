@@ -90,13 +90,30 @@ future_jws_habitat = future_jws_habitat %>% subset(LME_NUMBER == "3")
     ggtitle("Projected distribution of JWS \nthermal habitat suitability, 2020-2049") + 
     scale_fill_gradientn("", colours = matlab.like(100)))
 
-future_jws_habitat$period = "2020-2049"
-baseline_jws_habitat$period = "1984-2014"
-
-rbind(future_jws_habitat, baseline_jws_habitat) %>% 
-  subset(depth > -500) %>% 
-  ggplot(aes(prop, period, color = period)) + 
-  geom_joy()
-
 library(patchwork)
 p1 + p2
+
+future_jws_habitat$period = "2020-2049"
+baseline_jws_habitat$period = "1984-2014"
+jws = rbind(future_jws_habitat, baseline_jws_habitat) %>% 
+  subset(depth > -500) %>% 
+  mutate(y = plyr::round_any(y, 0.05, floor)) %>% 
+  group_by(y, period) %>% 
+  summarise(prop = mean(prop)) %>% 
+  as.data.frame()
+
+load("output/otter_ca.RData")
+otter = otter_df %>% 
+  mutate(y = plyr::round_any(y, 0.05, floor)) %>% 
+  group_by(y) %>% 
+  summarise(otter_den = mean(layer)) %>% 
+  mutate(otter_den = (otter_den - min(otter_den)) / (max(otter_den) - min(otter_den))) %>% 
+  as.data.frame()
+
+ggplot() + 
+  geom_point(data = otter, aes(y, otter_den, fill = "otter_den"), alpha = 0.5, shape = 21) +  
+  geom_point(data = jws, aes(y, prop, fill = period), alpha = 0.5, shape = 21) 
+  
+
+
+
