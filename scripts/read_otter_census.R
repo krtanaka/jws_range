@@ -8,22 +8,32 @@ library(dplyr)
 
 rm(list = ls())
 
-# read sea otter census shapefile
-df <- shapefile(paste0("/Users/", Sys.info()[7], "/Desktop/Census_sum_2019/Census_sum_2019.shp"), verbose = T)
-df <- spTransform(df, CRS('+proj=longlat +datum=WGS84'))
+# read sea otter census shapefiles
+shp_list = list.files(path = "data/otter/", pattern = "\\.shp$", full.names = T); shp_list
 
-r.raster <- raster()
+for (shp_i in 1:length(shp_list)) {
+  
+  shp_i = 1
+  
+  df <- shapefile(shp_list[shp_i], verbose = T)
+  df <- spTransform(df, CRS('+proj=longlat +datum=WGS84'))
+  
+  r.raster <- raster()
+  
+  # Define raster extent
+  extent(r.raster) <- extent(df)
+  
+  # list variables
+  names(df)
+  
+  # rasterize otter data
+  ras <- rasterize(x = df, y = r.raster, field = "dens_sm")
+  
+  otter_df <- as.data.frame(rasterToPoints(ras))
+  
+}
+  
 
-# Define raster extent
-extent(r.raster) <- extent(df)
-
-# list variables
-names(df)
-
-# rasterize otter data
-ras <- rasterize(x = df, y = r.raster, field = "dens_sm")
-
-otter_df <- as.data.frame(rasterToPoints(ras))
 
 (p1 = otter_df %>% 
     ggplot(aes(x, y, fill = layer, color = layer)) +  

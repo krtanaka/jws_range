@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <idinfo>
+    <citation>
+      <citeinfo>
+        <origin>M. Tim Tinker</origin>
+        <origin>Brian B. Hatfield</origin>
+        <pubdate>20170929</pubdate>
+        <title>Annual California Sea Otter Census: 2017 Census Summary Shapefile</title>
+        <geoform>vector digital data</geoform>
+        <onlink>https://doi.org/10.5066/F7R2109J</onlink>
+        <lworkcit>
+          <citeinfo>
+            <origin>Tinker, M.T.</origin>
+            <origin>Hatfield, B.B.</origin>
+            <pubdate>20170929</pubdate>
+            <title>California sea otter (Enhydra lutris nereis) census results, spring 2017</title>
+            <geoform>publication</geoform>
+            <serinfo>
+              <sername>USGS Data Series</sername>
+              <issue>1067</issue>
+            </serinfo>
+            <pubinfo>
+              <pubplace>Reston, VA</pubplace>
+              <publish>U.S. Geological Survey</publish>
+            </pubinfo>
+            <onlink>https://doi.org/10.3133/ds1067</onlink>
+          </citeinfo>
+        </lworkcit>
+      </citeinfo>
+    </citation>
+    <descript>
+      <abstract>The GIS shapefile "Census summary of southern sea otter 2017" provides a standardized tool for examining spatial patterns in abundance and demographic trends of the southern sea otter (Enhydra lutris nereis), based on data collected during the spring 2017 range-wide census. The USGS range-wide sea otter census has been undertaken twice a year since 1982, once in May and once in October, using consistent methodology involving both ground-based and aerial-based counts. The spring census is considered more accurate than the fall count, and provides the primary basis for gauging population trends by State and Federal management agencies. This Shape file includes a series of summary statistics derived from the raw census data, including sea otter density (otters per square km of habitat), linear density (otters per km of coastline), relative pup abundance (ratio of pups to independent animals) and 5-year population trend (calculated as exponential rate of change). All statistics are calculated and plotted for small sections of habitat in order to illustrate local variation in these statistics across the entire mainland distribution of sea otters in California (as of 2017). Sea otter habitat is considered to extend offshore from the mean low tide line and out to the 60m isobath: this depth range includes over 99% of sea otter feeding dives, based on dive-depth data from radio tagged sea otters (Tinker et al 2006, 2007). Sea otter distribution in California (the mainland range) is considered to comprise this band of potential habitat stretching along the coast of California, and bounded to the north and south by range limits defined as "the points farthest from the range center at which 5 or more otters are counted within a 10km contiguous stretch of coastline (as measured along the 10m bathymetric contour) during the two most recent spring censuses, or at which these same criteria were met in the previous year". The polygon corresponding to the range definition was then sub-divided into onshore/offshore strips roughly 500 meters in width. The boundaries between these strips correspond to ATOS (As-The-Otter-Swims) points, which are arbitrary locations established approximately every 500 meters along a smoothed 5 fathom bathymetric contour (line) offshore of the State of California.
+
+References:
+Tinker, M. T., Doak, D. F., Estes, J. A., Hatfield, B. B., Staedler, M. M. and Bodkin, J. L. (2006), INCORPORATING DIVERSE DATA AND REALISTIC COMPLEXITY INTO DEMOGRAPHIC ESTIMATION PROCEDURES FOR SEA OTTERS. Ecological Applications, 16: 2293–2312, https://doi.org/10.1890/1051-0761(2006)016[2293:IDDARC]2.0.CO;2
+
+Tinker, M. T. , D. P. Costa , J. A. Estes , and N. Wieringa . 2007. Individual dietary specialization and dive behaviour in the California sea otter: using archival time–depth data to detect alternative foraging strategies. Deep Sea Research II 54: 330–342, https://doi.org/10.1016/j.dsr2.2006.11.012</abstract>
+      <purpose>The range-wide census is conducted to monitor trends in abundance of the southern sea otter, and thus provide State and Federal resource agencies with the information they need for effective management. Because the censuses represent uncorrected total counts (rather than sample-based surveys), they cannot be considered as accurate estimates of true population abundance. Instead, these data represent a valuable time-series of index counts, and provide the means of assessing spatial and temporal trends in relative abundance. The 3-year running average of the spring counts have been identified as the best index of trends and status of the population, because these averages decrease the influence of year-to-year sampling variance. The 3-year average counts are used by the US Fish and Wildlife Service in its listing determinations (de-listing or up-listing) for this legally threatened population.</purpose>
+      <supplinf>1. Census Methods During each census, the entire mainland range of the sea otter in coastal California is counted by one of two methods: aerial surveys or shore-based counts. The latter method is used in all areas that are accessible by ground-based observers, except in a few regions where otters often move far off shore (such as shallow, sandy embayments) and are therefore difficult to count reliably from the shore. For the majority of the sea otter's range, however, ground surveys are practical, and are considered the more reliable means of censusing. It has been estimated that shore-based observers generally detect about 90-95% of the otters located in a given area (Estes and Jameson 1988). The ground survey area is divided into sections and each section is assigned to a team of observers. Each team consists of two individuals, a primary and secondary observer. The primary observer in every case is an individual with considerable experience counting and observing sea otters. Generally, the secondary observer has less experience than the primary, but in some cases the teams consisted of equally skilled individuals. Occasionally, small areas are counted by a single individual, but this occurs infrequently, and in every instance the individual is highly skilled with many years of experience and intimately familiar with the area to be surveyed. Each team is equipped with a high resolution 50-80X telescope and each member has binoculars (10X). Shore-based procedures are as follows: the team starts at one end of their assigned section and selects an observation point that provides good viewing of a "viewable area of habitat", which generally consists of 100-300m of coastline and all waters out to approximately 1.5 km from shore. In most cases observers use the same counting locations year after year, for consistency. The observers scan the area with unaided eye and binoculars for otters or objects that are suspected to be sea otters. Large groups and suspicious objects are scanned by the primary observer with the aid of the telescope while the secondary observer continuously scans the area with binoculars for foraging or resting otters missed during the initial scan. After having taken sufficient time (15-30 minutes) to make a thorough count of all otters within this first area of habitat, the observers move down the coast to another location that provides good viewing of the next area of habitat, contiguous with the first area. This process is continued until the entire section is counted. All sea otter observations are marked as points directly onto field maps (scale 1:6000) that show all major features of the area (including offshore rocks and kelp beds) for reference. These features allow data to be precisely placed on the maps, and reduce the chances of recounting or undercounting when the team moves to the next observation point. In addition to the otter locations, associated data recorded directly onto the maps include the following: number of independent otters, number and relative age of pups (pups are classed as either small or large depending primarily on the presence or absence of the natal pelage, but sometimes on relative size or behavior), behavior (resting, foraging, or "other"), group size, and micro-habitat type (open water, kelp, or hauled out). Time and general counting conditions are also recorded. Viewing conditions are rated from excellent to poor (coded 4 to 0). Teams are instructed to not begin surveying if conditions are "poor", or to abort the survey if conditions deteriorate to "poor". Because each team is headed by an experienced observer, it is left to that individual to determine if conditions are suitable for counting. For those portions of the range where ground counting is impossible or impractical, aerial surveys are conducted using a Partenavia PN68 "Observer" fixed-wing plane. The plane carries three observers and a pilot, and flies at an air speed of approximately 167 kilometers per hour (90 knots) at an altitude of approximately 60 meters (200 feet). Pilot and data recorder/observer occupy front seats; principal observers occupy middle seats viewing out through bubble-type viewing windows. The flight path is a predetermined track line constructed using GIS software and loaded into a GPS for the pilot to follow. Transects are oriented parallel to the coastline, with the nearshore transect line centered approximately 300 meters from shore. At survey section boundaries, the plane turns offshore, reverses direction and flies parallel to the first transect, continuing to follow pre-established tracklines on the pilot's GPS. The distance moved offshore is dependent of habitat type: transects over kelp habitat are spaced 600 meters apart (300 meter viewing area to each side of the plane), while transects over open water are spaced 800 meters apart (400 meter viewing area to each side of the plane). The survey transects are established to cover all waters within 60m of depth (30 fathoms). In some areas, such as Pismo Beach, this includes over 10 transects spaced at 800 meters. The survey track line and waypoints for otter sightings are recorded on a separate handheld GPS unit. Additional information on each sea otter sighting is recorded onto data sheets which are later transferred to a spreadsheet. The data fields include group size (with adults and pups tallied separately), observer, and viewing conditions (ranked on a 1-10 scale). 2. Data Processing Census data recorded on paper survey maps are digitized directly into a GIS system using a standard digitizing tablet. All paper survey maps have 4 geo-reference calibration points marked on them to ensure spatial accuracy. A custom GIS data capture interface program was designed for this purpose (using ESRI ArcView 3.2 software and Avenue programming language) by Brian Fulfrost, Department of Environmental Studies, UC Santa Cruz. After completing the digitizing of all survey maps from the ground-based count, all spatial data collected during the aerial survey (including waypoints and associated attribute data in spreadsheet form) are imported into the program. Rigorous error checking is then conducted to ensure that the totals for each paper survey map and each aerial survey section are consistent with the data in the GIS database. 3. Data Analysis and Summarization Calculation of the sea otter's range along the mainland coast is facilitated by measuring the coast in linear units called "ATOS" points. The ATOS (As-The-Otter-Swims) points are arbitrary locations established approximately every 500 meters along a smoothed 5 fathom bathymetric contour (line) offshore of the State of California. Each ATOS point is identified by an integer value, and these integer values increase consecutively from north to south: ATOS 0 is located at the middle of the Golden Gate Bridge, and ATOS 2024 is located at the California/Mexico border. The ATOS line that these points fall along corresponds (in principal) to the track that would be followed by a sea otter travelling parallel to the coast to the north or south, and thus is useful for measuing distances travelled by sea otters or other coastal wildlife. The current locations of living sea otters, or the stranding locations of beach-cast otter carcasses, can be easily referred to by the nearest ATOS point number (e.g. ATOS 321 indicates the mouth of Elkhorn Slough, at Moss Landing, CA). All sea otter sighting locations are assigned the number of the nearest ATOS point, by conducting a spatial join with the Shape file "ATOS_teae_83". The numbers of otters associated with each ATOS point are then summed. The northern and southern range limits are then identified as the ATOS points farthest from the range center (ATOS 481) at which 5 or more otters are counted within 20 contiguous ATOS units (or a 10km contiguous stretch of coastline as measured along the 10m bathymetric contour) during the two most recent spring censuses, or at which these same criteria were met in the previous year. All ATOS points that fall between these range limits are selected, and converted into a single polyline that represents the current sea otter distribution. References Estes, J. A., and R. J. Jameson. 1988. A double-survey estimate for sighting probability of sea otters in California. Journal of Wildlife Management 52(1):70-76.</supplinf>
+    </descript>
+    <timeperd>
+      <timeinfo>
+        <rngdates>
+          <begdate>20170430</begdate>
+          <enddate>20170712</enddate>
+        </rngdates>
+      </timeinfo>
+      <current>ground condition</current>
+    </timeperd>
+    <status>
+      <progress>Complete</progress>
+      <update>Annually</update>
+    </status>
+    <spdom>
+      <bounding>
+        <westbc>-122.423222821</westbc>
+        <eastbc>-120.27277221</eastbc>
+        <northbc>37.2009909007</northbc>
+        <southbc>34.3902457219</southbc>
+      </bounding>
+      <descgeog>World</descgeog>
+    </spdom>
+    <keywords>
+      <theme>
+        <themekt>ISO 19115 Topic Category</themekt>
+        <themekey>biota</themekey>
+        <themekey>environment</themekey>
+      </theme>
+      <theme>
+        <themekt>None</themekt>
+        <themekey>aerial counts</themekey>
+        <themekey>sea otter census</themekey>
+        <themekey>distribution</themekey>
+        <themekey>shore counts</themekey>
+        <themekey>range</themekey>
+        <themekey>sea otters</themekey>
+      </theme>
+      <theme>
+        <themekt>Marine Realms Information Bank (MRIB) keywords</themekt>
+        <themekey>sea otters</themekey>
+        <themekey>ocean</themekey>
+      </theme>
+      <theme>
+        <themekt>USGS Metadata Identifier</themekt>
+        <themekey>USGS:59bc4169e4b091459a591363</themekey>
+      </theme>
+      <place>
+        <placekt>None</placekt>
+        <placekey>Coast</placekey>
+      </place>
+      <place>
+        <placekt>Common geographic areas</placekt>
+        <placekey>California</placekey>
+        <placekey>Central California Coastal</placekey>
+        <placekey>Southern California Coastal</placekey>
+      </place>
+    </keywords>
+    <accconst>None.</accconst>
+    <useconst>The authors of these data require that users direct any questions pertaining to appropriate use or assistance with understanding limitations and interpretation of the data to the individuals/organization listed in the Point of Contact section.</useconst>
+    <ptcontac>
+      <cntinfo>
+        <cntperp>
+          <cntper>M. Tim Tinker</cntper>
+          <cntorg>U.S. Geological Survey, PACIFIC REGION</cntorg>
+        </cntperp>
+        <cntpos>Supv. Research Wildlife Biologist</cntpos>
+        <cntaddr>
+          <addrtype>mailing address</addrtype>
+          <address>100 Shaffer Road</address>
+          <city>Santa Cruz</city>
+          <state>CA</state>
+          <postal>95060</postal>
+          <country>United States</country>
+        </cntaddr>
+        <cntvoice>831-459-2357</cntvoice>
+        <cntfax>831-459-2249</cntfax>
+        <cntemail>ttinker@usgs.gov</cntemail>
+      </cntinfo>
+    </ptcontac>
+    <datacred>California Department of Fish and Wildlife Monterey Bay Aquarium University of California-Santa Cruz U.S. Fish and Wildlife Service</datacred>
+    <taxonomy>
+      <keywtax>
+        <taxonkt>None</taxonkt>
+        <taxonkey>southern sea otter</taxonkey>
+      </keywtax>
+      <taxoncl>
+        <taxonrn>Kingdom</taxonrn>
+        <taxonrv>Animalia</taxonrv>
+        <common>animals</common>
+        <taxoncl>
+          <taxonrn>Subkingdom</taxonrn>
+          <taxonrv>Bilateria</taxonrv>
+          <taxoncl>
+            <taxonrn>Infrakingdom</taxonrn>
+            <taxonrv>Deuterostomia</taxonrv>
+            <taxoncl>
+              <taxonrn>Phylum</taxonrn>
+              <taxonrv>Chordata</taxonrv>
+              <common>chordates</common>
+              <taxoncl>
+                <taxonrn>Subphylum</taxonrn>
+                <taxonrv>Vertebrata</taxonrv>
+                <common>vertebrates</common>
+                <taxoncl>
+                  <taxonrn>Infraphylum</taxonrn>
+                  <taxonrv>Gnathostomata</taxonrv>
+                  <taxoncl>
+                    <taxonrn>Superclass</taxonrn>
+                    <taxonrv>Tetrapoda</taxonrv>
+                    <taxoncl>
+                      <taxonrn>Class</taxonrn>
+                      <taxonrv>Mammalia</taxonrv>
+                      <common>mammals</common>
+                      <taxoncl>
+                        <taxonrn>Subclass</taxonrn>
+                        <taxonrv>Theria</taxonrv>
+                        <taxoncl>
+                          <taxonrn>Infraclass</taxonrn>
+                          <taxonrv>Eutheria</taxonrv>
+                          <taxoncl>
+                            <taxonrn>Order</taxonrn>
+                            <taxonrv>Carnivora</taxonrv>
+                            <common>carnivores</common>
+                            <taxoncl>
+                              <taxonrn>Suborder</taxonrn>
+                              <taxonrv>Caniformia</taxonrv>
+                              <common>dog-like carnivores</common>
+                              <taxoncl>
+                                <taxonrn>Family</taxonrn>
+                                <taxonrv>Mustelidae</taxonrv>
+                                <common>mustelids</common>
+                                <taxoncl>
+                                  <taxonrn>Subfamily</taxonrn>
+                                  <taxonrv>Lutrinae</taxonrv>
+                                  <common>otters</common>
+                                  <taxoncl>
+                                    <taxonrn>Genus</taxonrn>
+                                    <taxonrv>Enhydra</taxonrv>
+                                    <common>sea otters</common>
+                                    <taxoncl>
+                                      <taxonrn>Species</taxonrn>
+                                      <taxonrv>Enhydra lutris</taxonrv>
+                                      <common>Sea Otter</common>
+                                      <taxoncl>
+                                        <taxonrn>Subspecies</taxonrn>
+                                        <taxonrv>Enhydra lutris nereis</taxonrv>
+                                        <common>southern sea otter</common>
+                                        <common>TSN: 202390</common>
+                                      </taxoncl>
+                                    </taxoncl>
+                                  </taxoncl>
+                                </taxoncl>
+                              </taxoncl>
+                            </taxoncl>
+                          </taxoncl>
+                        </taxoncl>
+                      </taxoncl>
+                    </taxoncl>
+                  </taxoncl>
+                </taxoncl>
+              </taxoncl>
+            </taxoncl>
+          </taxoncl>
+        </taxoncl>
+      </taxoncl>
+    </taxonomy>
+  </idinfo>
+  <dataqual>
+    <attracc>
+      <attraccr>No formal attribute accuracy tests were conducted.</attraccr>
+    </attracc>
+    <logic>No formal logical accuracy tests were conducted.</logic>
+    <complete>Data set is considered complete for the information presented, as described in the abstract.  Users are advised to read the rest of the metadata record carefully for additional details.</complete>
+    <posacc>
+      <horizpa>
+        <horizpar>A formal accuracy assessment of the horizontal positional information in the data set has not been conducted.</horizpar>
+      </horizpa>
+      <vertacc>
+        <vertaccr>A formal accuracy assessment of the vertical positional information in the data set has either not been conducted, or is not applicable.</vertaccr>
+      </vertacc>
+    </posacc>
+    <lineage>
+      <procstep>
+        <procdesc>Development of the data set by the agency / individuals identified in the 'Originator' element in the Identification Info section of the record.</procdesc>
+        <procdate>2017</procdate>
+      </procstep>
+    </lineage>
+  </dataqual>
+  <spdoinfo>
+    <direct>Vector</direct>
+    <ptvctinf>
+      <sdtsterm>
+        <sdtstype>G-polygon</sdtstype>
+        <ptvctcnt>1987</ptvctcnt>
+      </sdtsterm>
+    </ptvctinf>
+  </spdoinfo>
+  <spref>
+    <horizsys>
+      <planar>
+        <mapproj>
+          <mapprojn>Albers Conical Equal Area</mapprojn>
+          <albers>
+            <stdparll>34.0</stdparll>
+            <stdparll>40.5</stdparll>
+            <longcm>-120.0</longcm>
+            <latprjo>0.0</latprjo>
+            <feast>0.0</feast>
+            <fnorth>-4000000.0</fnorth>
+          </albers>
+        </mapproj>
+        <planci>
+          <plance>coordinate pair</plance>
+          <coordrep>
+            <absres>0.6096</absres>
+            <ordres>0.6096</ordres>
+          </coordrep>
+          <plandu>meters</plandu>
+        </planci>
+      </planar>
+      <geodetic>
+        <horizdn>North_American_Datum_1983</horizdn>
+        <ellips>GRS_1980</ellips>
+        <semiaxis>6378137.0</semiaxis>
+        <denflat>298.257222101</denflat>
+      </geodetic>
+    </horizsys>
+  </spref>
+  <eainfo>
+    <detailed>
+      <enttyp>
+        <enttypl>Census_sum_17.shp Attribute Table</enttypl>
+        <enttypd>Table containing attribute information associated with the data set.</enttypd>
+        <enttypds>Producer defined</enttypds>
+      </enttyp>
+      <attr>
+        <attrlabl>PERIMETER</attrlabl>
+        <attrdef>Perimeter length of the polygon feature (units = km)</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>1.00580419025</rdommin>
+            <rdommax>39.068426206</rdommax>
+            <attrunit>km</attrunit>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>AREA</attrlabl>
+        <attrdef>Two-dimensional area encompassed by the polygon feature (units = square km)</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.04801863653</rdommin>
+            <rdommax>7.92847153745</rdommax>
+            <attrunit>square km</attrunit>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>DEPTH</attrlabl>
+        <attrdef>Depth interval of the polygon feature (units = meters below sea level)</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <edom>
+            <edomv>0 to -30m</edomv>
+            <edomvd>depth interval in meters</edomvd>
+            <edomvds>Producer defined</edomvds>
+          </edom>
+        </attrdomv>
+        <attrdomv>
+          <edom>
+            <edomv>-30 to -60m</edomv>
+            <edomvd>depth interval in meters</edomvd>
+            <edomvds>Producer defined</edomvds>
+          </edom>
+        </attrdomv>
+        <attrdomv>
+          <edom>
+            <edomv>0 to -30m bay</edomv>
+            <edomvd>depth interval in meters</edomvd>
+            <edomvds>Producer defined</edomvds>
+          </edom>
+        </attrdomv>
+        <attrdomv>
+          <edom>
+            <edomv>-30 to -60m beyond 10k</edomv>
+            <edomvd>depth interval in meters</edomvd>
+            <edomvds>Producer defined</edomvds>
+          </edom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>ATOS_ID</attrlabl>
+        <attrdef>The "As The Otter Swims" point associated with an individual polygon feature</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>162</rdommin>
+            <rdommax>1153</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>HAB_ID</attrlabl>
+        <attrdef>Unique combination of the ATOS_ID and a letter that indicates the position of the polygon relative to the coast (from field ZONE_CODE)</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <udom>Unique combination of the ATOS_ID and a letter that indicates the position of the polygon relative to the coast (from field ZONE_CODE)</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>ACRES</attrlabl>
+        <attrdef>Two-dimensional area encompassed by the polygon feature (units = acres)</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>11.8656634971</rdommin>
+            <rdommax>1959.16798371</rdommax>
+            <attrunit>acres</attrunit>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>HECTARES</attrlabl>
+        <attrdef>Two-dimensional area encompassed by the polygon feature (units = hectares)</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>4.80186365291</rdommin>
+            <rdommax>792.847153745</rdommax>
+            <attrunit>hectares</attrunit>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>ZONE_CODE</attrlabl>
+        <attrdef>Depth zone of the polygon feature, delineated by a letter code: b = bay or slough, n = "nearshore" (low tide line out to the 30m depth isobath), o = "offshore" (30m isobath out to the 60m isobath or 10km from shore, whichever is closer), w = "way offshore" (depths up to 60m but farther than 10km from shore)</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <edom>
+            <edomv>n</edomv>
+            <edomvd>nearshore (low tide line out to the 30m depth isobath)</edomvd>
+            <edomvds>Producer defined</edomvds>
+          </edom>
+        </attrdomv>
+        <attrdomv>
+          <edom>
+            <edomv>o</edomv>
+            <edomvd>offshore - (30m isobath out to the 60m isobath or 10km from shore, whichever is closer)</edomvd>
+            <edomvds>Producer defined</edomvds>
+          </edom>
+        </attrdomv>
+        <attrdomv>
+          <edom>
+            <edomv>b</edomv>
+            <edomvd>bay or slough</edomvd>
+            <edomvds>Producer defined</edomvds>
+          </edom>
+        </attrdomv>
+        <attrdomv>
+          <edom>
+            <edomv>w</edomv>
+            <edomvd>way offshore - (depths up to 60m but farther than 10km from shore)</edomvd>
+            <edomvds>Producer defined</edomvds>
+          </edom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>ZONE</attrlabl>
+        <attrdef>Depth zone of the polygon feature, delineated by a letter code: 1 = bay or slough, 2 = "nearshore" (low tide line out to the 30m depth isobath), 3 = "offshore" (30m isobath out to the 60m isobath or 10km from shore, whichever is closer), 4 = "way offshore" (depths up to 60m but farther than 10km from shore)</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>1</rdommin>
+            <rdommax>4</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Year</attrlabl>
+        <attrdef>Year that the survey was conducted</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>2017</rdommin>
+            <rdommax>2017</rdommax>
+            <attrunit>year</attrunit>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>POLY_ID</attrlabl>
+        <attrdef>Unique identifier or primary key, created by combining the ATOS_ID with a letter code that indicates the position of the polygon relative to the coast</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <udom>unique id</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>dens_sm</attrlabl>
+        <attrdef>Local sea otter density, calculated as the 3-year average number of sea otters counted per square km for each polygon feature, smoothed by averaging over 10km of coastline.</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.0</rdommin>
+            <rdommax>37.6922989817</rdommax>
+            <attrunit>number of otters per square km</attrunit>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>pupratio</attrlabl>
+        <attrdef>The ratio of pups to independent animals, calculated from 3-year average counts at each 500m interval of the coast, smoothed by averaging over 10km of coastline.</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.0</rdommin>
+            <rdommax>0.5</rdommax>
+            <attrunit>ratio of pups to independent animals</attrunit>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>lin_dens</attrlabl>
+        <attrdef>The 3-year average number of sea otters counted at each 500m interval of the coast, smoothed by averaging over 10km of coastline.</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.0</rdommin>
+            <rdommax>12.5873015873</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>trend5yr</attrlabl>
+        <attrdef>The local rate of population change over the past 5 years, calculated as exponential growth rates fit to local population counts, and smoothed by averaging over 10km of coastline.</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>-0.265475726839</rdommin>
+            <rdommax>0.147474892356</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Sect_ID</attrlabl>
+        <attrdef>Integer code that identifies the larger geographic region (referred to as a "coastline section") to which the polygon belongs.</attrdef>
+        <attrdefs>M. Tim Tinker, USGS</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>2</rdommin>
+            <rdommax>14</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+    </detailed>
+    <overview>
+      <eaover>The entity and attribute information provided here describes the tabular data associated with the data set. Please review the detailed descriptions that are provided (the individual attribute descriptions) for information on the values that appear as fields/table entries of the data set.</eaover>
+      <eadetcit>The entity and attribute information was generated by the individual and/or agency identified as the originator of the data set. Please review the rest of the metadata record for additional details and information.</eadetcit>
+    </overview>
+  </eainfo>
+  <distinfo>
+    <distrib>
+      <cntinfo>
+        <cntperp>
+          <cntper>GS ScienceBase</cntper>
+          <cntorg>U.S. Geological Survey</cntorg>
+        </cntperp>
+        <cntaddr>
+          <addrtype>mailing address</addrtype>
+          <address>Denver Federal Center, Building 810, Mail Stop 302</address>
+          <city>Denver</city>
+          <state>CO</state>
+          <postal>80225</postal>
+          <country>United States</country>
+        </cntaddr>
+        <cntvoice>1-888-275-8747</cntvoice>
+        <cntemail>sciencebase@usgs.gov</cntemail>
+      </cntinfo>
+    </distrib>
+    <distliab>Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data on any other system or for general or scientific purposes, nor shall the act of distribution constitute any such warranty. Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.</distliab>
+    <stdorder>
+      <digform>
+        <digtinfo>
+          <formname>Digital Data</formname>
+        </digtinfo>
+        <digtopt>
+          <onlinopt>
+            <computer>
+              <networka>
+                <networkr>https://doi.org/10.5066/F7R2109J</networkr>
+              </networka>
+            </computer>
+          </onlinopt>
+        </digtopt>
+      </digform>
+      <fees>None</fees>
+    </stdorder>
+  </distinfo>
+  <metainfo>
+    <metd>20200827</metd>
+    <metc>
+      <cntinfo>
+        <cntorgp>
+          <cntorg>U.S. Geological Survey, Western Ecological Research Center</cntorg>
+        </cntorgp>
+        <cntaddr>
+          <addrtype>Mailing and Physical</addrtype>
+          <address>3020 State University Dr., Modoc Hall, Ste 4004</address>
+          <city>Sacramento</city>
+          <state>CA</state>
+          <postal>95819</postal>
+        </cntaddr>
+        <cntvoice>916-278-9467</cntvoice>
+        <cntemail>gs-b-werc_data_management@usgs.gov</cntemail>
+      </cntinfo>
+    </metc>
+    <metstdn>FGDC Biological Data Profile of the CDGSM</metstdn>
+    <metstdv>FGDC-STD-001.1-1999</metstdv>
+    <metuc>Record created using USGS Metadata Wizard tool. (https://github.com/usgs/fort-pymdwizard)</metuc>
+  </metainfo>
+</metadata>
