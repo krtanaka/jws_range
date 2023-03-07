@@ -46,32 +46,31 @@ otter_df = otter_df_85_19 %>%
   summarise(layer = mean(layer))
 
 # plot average otter density along CA coast
-
 p1 = otter_df %>% 
-  mutate(x = round(x, 2),
-         y = round(y, 2)) %>% 
+  mutate(x = round(x, 1),
+         y = round(y, 1)) %>% 
   group_by(x, y) %>% 
   summarise(layer = mean(layer)) %>% 
   ggplot(aes(x, y, fill = layer)) +  
-  geom_raster(show.legend = T) + 
+  geom_raster(show.legend = F) + 
   coord_equal() + 
   scale_fill_gradientn(colours = matlab.like(100),"otter density (m2)", trans = "sqrt") + 
-  annotation_map(map = map_data("usa"), fill = "gray20") +
+  # annotation_map(map = map_data("usa"), fill = "gray20") +
   labs(x = "lon", y = "lat") + 
   theme_minimal() +
-  theme(legend.position = c(0.15, 0.2))
+  theme(legend.position = "top")
 
 p2 = otter_df %>% 
-  mutate(x = round(x, 2),
-         y = round(y, 2)) %>% 
+  mutate(x = round(x, 1),
+         y = round(y, 1)) %>% 
   group_by(y) %>% 
   summarise(layer = mean(layer)) %>% 
-  ggplot(aes(layer, y, fill = layer, color = layer, size = layer)) +  
-  geom_point(shape = 21, show.legend = F) + 
+  ggplot(aes(x = y, y = layer, fill = layer)) +
+  geom_bar(stat = "identity", position = "identity", alpha = 0.8, show.legend = T) + 
   scale_fill_gradientn(colours = matlab.like(100),"otter_dens_sm", trans = "sqrt") +  
   scale_color_gradientn(colours = matlab.like(100),"otter_dens_sm", trans = "sqrt") + 
-  labs(x = "otter_dens_sm", y = "lat") + 
-  coord_fixed(ratio = 12) + 
+  coord_flip(expand = F) + 
+  labs(y = "otter_dens_sm", x = "lat") + 
   theme_minimal()
 
 p1 + p2

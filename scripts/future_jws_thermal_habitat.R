@@ -121,8 +121,9 @@ p1 = jws_otter %>%
   subset(group %in% c("JWS thermal habitat suitability 1984-2014", "Kwown SeaOtter Density 1985-2019")) %>% 
   ggplot(aes(x = y, y = z, fill = group)) +
   geom_bar(stat = "identity", position = "identity", alpha = 0.8) + 
-  labs(x = "Lat", y = "Normalized \nJWS thermal habitat suitability \nand known Otter density") + 
+  labs(x = "Lat", y = "") + 
   coord_fixed(ratio = 8) + 
+  coord_flip() + 
   scale_fill_viridis_d("") + 
   theme_minimal()
 
@@ -130,9 +131,11 @@ p2 = jws_otter %>%
   subset(group %in% c("JWS thermal habitat suitability 2020-2049", "Kwown SeaOtter Density 1985-2019")) %>% 
   ggplot(aes(x = y, y = z, fill = group)) +
   geom_bar(stat = "identity", position = "identity", alpha = 0.8) + 
-  labs(x = "Lat", y = "Normalized \nJWS thermal habitat suitability \nand known Otter density") + 
+  labs(x = "Lat", y = "Normalized JWS thermal habitat suitability \nand known Otter density") + 
   coord_fixed(ratio = 8) + 
+  coord_flip() + 
   scale_fill_viridis_d("") + 
   theme_minimal()
 
+# plot results
 p1 / p2
