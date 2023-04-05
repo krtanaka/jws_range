@@ -6,6 +6,8 @@ library(ggplot2)
 library(ncdf4)
 library(colorRamps)
 library(maps)
+library(reshape2)
+library(patchwork)
 
 # download climatology files on your desktop first
 
@@ -38,20 +40,41 @@ future_sst = resample(future_sst, sst_climatology, method = "bilinear")
 future_sst = sst_climatology + future_sst
 
 # add bathymetry data
-bathymetry = raster(paste0("/Users/", Sys.info()[7], "/Desktop/etopo180_9352_4538_72ee.nc"))
+bathymetry = raster("data/etopo180_9352_4538_72ee.nc")
 bathymetry = resample(bathymetry, future_sst, method = "bilinear")
 future_sst = stack(future_sst, sst_climatology, bathymetry)
-names(future_sst) = c("Future", "Baseline", "Bathymetry")
+names(future_sst) = c("Future_2020-2049", "Baseline_1985-2014", "Bathymetry")
 
 future_sst = rasterToPoints(future_sst) %>% as.data.frame() %>% na.omit()
+future_sst$Difference = future_sst$Future - future_sst$Baseline
 
-future_sst %>% 
+p1 = future_sst %>% 
   melt(id = 1:2, measure = 3:4) %>% 
   ggplot(aes(x, y, fill = value)) + 
   geom_raster() + 
   facet_wrap(~variable) + 
   scale_fill_gradientn("SST", colours = matlab.like(100)) + 
   annotation_map(map = map_data("world")) + 
+  labs(x = "Lon", y = "Lat") + 
+  coord_fixed() + 
   theme_minimal()
+
+p2 = future_sst %>% 
+  melt(id = 1:2, measure = 6) %>% 
+  ggplot(aes(x, y, fill = value)) + 
+  geom_raster() + 
+  facet_wrap(~variable) + 
+  scale_fill_gradientn("deg C", colours = matlab.like(100)) +
+  annotation_map(map = map_data("world")) + 
+  labs(x = "Lon", y = "Lat") + 
+  coord_fixed() + 
+  theme_minimal()
+
+hist(future_sst$Difference)
+
+png(paste0("/Users/", Sys.info()[7], "/Desktop/future_CC_SST_projection.png"), height = 8, width = 19, units = "in", res = 300)
+p1 + p2
+dev.off()
+
 
 save(future_sst, file = "output/future_sst.Rdata")
