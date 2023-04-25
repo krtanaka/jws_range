@@ -27,6 +27,13 @@ plot(s, bty = "l")
 colnames(s) = c("z", "p")
 s$p = (s$p-min(s$p))/(max(s$p) - min(s$p))
 
+s %>% 
+  ggplot(aes(z, p, fill = p)) + 
+  geom_point(shape = 21, size = 5, alpha = 0.8) + 
+  scale_fill_gradientn(colours = matlab.like(100)) + 
+  # geom_smooth(method = "lm") + 
+  theme_classic()
+
 # add Large Marine Ecosystem GIS shapefile (#66 = California Current)
 lme <- readOGR("data/LME66/LMEs66.shp")
 CRS.new <- CRS("+proj=aeqd +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
