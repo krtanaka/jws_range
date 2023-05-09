@@ -51,14 +51,16 @@ p1 = otter_df %>%
          y = round(y, 1)) %>% 
   group_by(x, y) %>% 
   summarise(layer = mean(layer)) %>% 
-  ggplot(aes(x, y, fill = layer)) +  
-  geom_raster(show.legend = F) + 
+  ggplot(aes(x, y)) +  
+  annotation_map(map = map_data("usa"), fill = "gray20") +
+  geom_point(aes(size = layer, fill = layer), shape = 21, alpha = 0.9) +
+  scale_fill_gradientn(colours = matlab.like(100), guide = "legend", trans = "sqrt") +
   coord_equal() + 
-  scale_fill_gradientn(colours = matlab.like(100),"otter density (m2)", trans = "sqrt") + 
-  # annotation_map(map = map_data("usa"), fill = "gray20") +
   labs(x = "lon", y = "lat") + 
   theme_minimal() +
-  theme(legend.position = "top")
+  guides(fill = guide_legend("otter_dens_sm"),
+         size = guide_legend("otter_dens_sm")) + 
+  theme(legend.position = c(0.2, 0.2))
 
 p2 = otter_df %>% 
   mutate(x = round(x, 1),
@@ -71,7 +73,8 @@ p2 = otter_df %>%
   scale_color_gradientn(colours = matlab.like(100),"otter_dens_sm", trans = "sqrt") + 
   coord_flip(expand = F) + 
   labs(y = "otter_dens_sm", x = "lat") + 
-  theme_minimal()
+  theme_minimal() + 
+  theme(legend.position = c(0.8, 0.2))
 
 p1 + p2
 
